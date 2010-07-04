@@ -22,5 +22,12 @@ describe Toy::Attributes do
       record.name = 'John'
       record.name.should == 'John'
     end
+    
+    it "adds query-ers" do
+      record = model.new
+      record.name?.should be_false
+      record.name = 'John'
+      record.name?.should be_true
+    end
   end
 end

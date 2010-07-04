@@ -5,7 +5,7 @@ module Toy
 
     module ClassMethods
       def define_attribute_methods
-        attribute_method_suffix "", "="
+        attribute_method_suffix "", "=", "?"
         super(attributes.keys)
       end
 
@@ -52,6 +52,10 @@ module Toy
 
       def attribute=(name, value)
         attributes[name] = value
+      end
+
+      def attribute?(name)
+        attribute(name).present?
       end
   end
 end

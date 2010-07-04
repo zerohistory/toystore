@@ -1,5 +1,6 @@
 # encoding: UTF-8
 require 'active_model'
+require 'active_support/core_ext/object'
 
 module Toy
   autoload :Attribute,    'toy/attribute'
