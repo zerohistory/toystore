@@ -1,14 +1,9 @@
 require 'helper'
 
-class User
-  include Toy::Store
-end
-
 describe Toy::Store do
   describe "including" do
     it "adds model naming" do
       model_name = User.model_name
-
       model_name.should           == 'User'
       model_name.singular.should  == 'user'
       model_name.plural.should    == 'users'

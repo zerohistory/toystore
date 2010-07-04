@@ -1,3 +1,9 @@
+class User
+  include Toy::Store
+end
+
+__END__
+
 # creates /users/:user_id => serialized user (json?)
 class User < Toystore::Base
   attribute :name, String, :required => true

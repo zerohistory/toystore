@@ -5,6 +5,7 @@ module Toy
     included do
       extend  ActiveModel::Naming
       include ActiveModel::Conversion
+      include Attributes
     end
 
     def persisted?
