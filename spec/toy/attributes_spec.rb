@@ -1,6 +1,12 @@
 require 'helper'
 
 describe Toy::Attributes do
+  describe "including" do
+    it "adds #attributes defaulting to empty hash" do
+      Model().new.attributes.should == {}
+    end
+  end
+
   describe "declaring an attribute" do
     before do
       @model = Model() do
@@ -22,12 +28,19 @@ describe Toy::Attributes do
       record.name = 'John'
       record.name.should == 'John'
     end
-    
+
     it "adds query-ers" do
       record = model.new
       record.name?.should be_false
       record.name = 'John'
       record.name?.should be_true
+    end
+
+    it "knows if it responds to attribute method" do
+      record = model.new
+      record.respond_to?(:name)
+      record.respond_to?(:name=)
+      record.respond_to?(:name?)
     end
   end
 end
