@@ -1,31 +1,39 @@
+# encoding: UTF-8
 module Toy
   module Attributes
     extend ActiveSupport::Concern
     include ActiveModel::AttributeMethods
 
+    included do
+      class_inheritable_hash :model_attributes
+    end
+
     module ClassMethods
       def define_attribute_methods
         attribute_method_suffix "", "=", "?"
-        super(attributes.keys)
+        super(model_attributes.keys)
       end
 
-      def attribute(name)
-        name = name.to_sym
-        attributes[name] = Attribute.new(self, name)
+      def attribute(key)
+        key = key.to_sym
+        write_inheritable_hash :model_attributes, {key => Attribute.new(self, key)}
       end
 
-      def attributes
-        @attributes ||= {}
-      end
-
-      def attribute?(name)
-        attributes.keys.include?(name)
+      def model_attribute?(key)
+        model_attributes.keys.include?(key.to_sym)
       end
     end
 
     module InstanceMethods
+      def initialize(attrs={})
+        return if attrs.nil?
+        attrs.each do |key, value|
+          write_attribute(key, value)
+        end
+      end
+
       def attributes
-        @attributes ||= {}
+        @attributes ||= {}.with_indifferent_access
       end
 
       def respond_to?(*args)
@@ -43,20 +51,28 @@ module Toy
       end
 
       protected
-        def attribute_method?(name)
-          self.class.attribute?(name)
+        def write_attribute(key, value)
+          attributes[key] = value
         end
 
-        def attribute(name)
-          attributes[name]
+        def read_attribute(key)
+          attributes[key]
         end
 
-        def attribute=(name, value)
-          attributes[name] = value
+        def attribute_method?(key)
+          self.class.model_attribute?(key)
         end
 
-        def attribute?(name)
-          attribute(name).present?
+        def attribute(key)
+          read_attribute(key)
+        end
+
+        def attribute=(key, value)
+          write_attribute(key, value)
+        end
+
+        def attribute?(key)
+          read_attribute(key).present?
         end
     end
   end

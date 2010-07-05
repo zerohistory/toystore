@@ -1,3 +1,4 @@
+# encoding: UTF-8
 module Toy
   class Attribute
     attr_reader :model, :name

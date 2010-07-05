@@ -7,6 +7,26 @@ describe Toy::Attributes do
     end
   end
 
+  describe "initialization" do
+    before do
+      @model = Model do
+        attribute :name
+        attribute :age
+      end
+    end
+    let(:model) { @model }
+
+    it "sets attributes" do
+      instance = model.new(:name => 'John', :age => 28)
+      instance.name.should == 'John'
+      instance.age.should  == 28
+    end
+
+    it "does not fail with nil" do
+      model.new(nil).should be_instance_of(model)
+    end
+  end
+
   describe "declaring an attribute" do
     before do
       @model = Model() do
@@ -17,10 +37,10 @@ describe Toy::Attributes do
     let(:model) { @model }
 
     it "adds attribute to attributes" do
-      model.attributes.size.should == 2
-      model.attributes.keys.should == [:age, :name]
-      model.attributes[:name].should be_instance_of(Toy::Attribute)
-      model.attributes[:age].should be_instance_of(Toy::Attribute)
+      model.model_attributes.size.should == 2
+      model.model_attributes.keys.should == [:age, :name]
+      model.model_attributes[:name].should be_instance_of(Toy::Attribute)
+      model.model_attributes[:age].should be_instance_of(Toy::Attribute)
     end
 
     it "adds accessors" do
