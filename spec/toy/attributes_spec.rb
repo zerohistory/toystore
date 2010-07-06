@@ -27,6 +27,25 @@ describe Toy::Attributes do
     end
   end
 
+  describe ".attribute?" do
+    before do
+      @model = Model { attribute :age }
+    end
+    let(:model) { @model }
+
+    it "returns true if attribute (symbol)" do
+      model.attribute?(:age).should be_true
+    end
+
+    it "returns true if attribute (string)" do
+      model.attribute?('age').should be_true
+    end
+    
+    it "returns false if not attribute" do
+      model.attribute?(:foobar).should be_false
+    end
+  end
+
   describe "declaring an attribute" do
     before do
       @model = Model() do

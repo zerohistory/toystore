@@ -19,7 +19,7 @@ module Toy
         write_inheritable_hash :model_attributes, {key => Attribute.new(self, key)}
       end
 
-      def model_attribute?(key)
+      def attribute?(key)
         model_attributes.keys.include?(key.to_sym)
       end
     end
@@ -60,7 +60,7 @@ module Toy
         end
 
         def attribute_method?(key)
-          self.class.model_attribute?(key)
+          self.class.attribute?(key)
         end
 
         def attribute(key)
