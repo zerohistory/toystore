@@ -6,6 +6,7 @@ require 'active_support/core_ext/class/inheritable_attributes'
 
 $:.unshift('/Users/jnunemaker/dev/projects/moneta/lib')
 require 'moneta'
+require 'uuid'
 
 module Toy
   autoload :Attribute,    'toy/attribute'
@@ -13,4 +14,14 @@ module Toy
   autoload :Persistence,  'toy/persistence'
   autoload :Store,        'toy/store'
   autoload :Version,      'toy/version'
+
+  def uuid
+    @uuid ||= UUID.new
+  end
+
+  def next_id
+    uuid.generate
+  end
+
+  extend self
 end
