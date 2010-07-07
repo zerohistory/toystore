@@ -5,22 +5,26 @@ module Toy
     include ActiveModel::AttributeMethods
 
     included do
-      class_inheritable_hash :model_attributes
+      attribute :id
     end
 
     module ClassMethods
       def define_attribute_methods
         attribute_method_suffix "", "=", "?"
-        super(model_attributes.keys)
+        super(attributes.keys)
+      end
+
+      def attributes
+        @attributes ||= {}
       end
 
       def attribute(key)
         key = key.to_sym
-        write_inheritable_hash :model_attributes, {key => Attribute.new(self, key)}
+        attributes[key] = Attribute.new(self, key)
       end
 
       def attribute?(key)
-        model_attributes.keys.include?(key.to_sym)
+        attributes.keys.include?(key.to_sym)
       end
     end
 

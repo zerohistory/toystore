@@ -2,8 +2,14 @@ require 'helper'
 
 describe Toy::Attributes do
   describe "including" do
-    it "adds #attributes defaulting to empty hash" do
-      Model().new.attributes.should == {}
+    it "adds id attribute" do
+      Model().attributes.keys.should == [:id]
+    end
+  end
+
+  describe ".attributes" do
+    it "defaults to hash with id" do
+      Model().attributes.keys.should == [:id]
     end
   end
 
@@ -46,6 +52,12 @@ describe Toy::Attributes do
     end
   end
 
+  describe "#attributes" do
+    it "defaults to empty hash" do
+      Model().new.attributes.should == {}
+    end
+  end
+
   describe "declaring an attribute" do
     before do
       @model = Model() do
@@ -56,10 +68,8 @@ describe Toy::Attributes do
     let(:model) { @model }
 
     it "adds attribute to attributes" do
-      model.model_attributes.size.should == 2
-      model.model_attributes.keys.should == [:age, :name]
-      model.model_attributes[:name].should be_instance_of(Toy::Attribute)
-      model.model_attributes[:age].should be_instance_of(Toy::Attribute)
+      model.attributes.should include(:age)
+      model.attributes.should include(:name)
     end
 
     it "adds accessors" do
