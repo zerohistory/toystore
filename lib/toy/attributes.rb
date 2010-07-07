@@ -30,14 +30,17 @@ module Toy
 
     module InstanceMethods
       def initialize(attrs={})
-        return if attrs.nil?
-        attrs.each do |key, value|
-          write_attribute(key, value)
-        end
+        write_attribute :id, Toy.next_id
+        self.attributes = attrs
       end
 
       def attributes
         @attributes ||= {}.with_indifferent_access
+      end
+
+      def attributes=(attrs)
+        return if attrs.nil?
+        attrs.each { |key, value| write_attribute(key, value) }
       end
 
       def respond_to?(*args)
@@ -54,14 +57,16 @@ module Toy
         end
       end
 
-      protected
-        def write_attribute(key, value)
-          attributes[key] = value
-        end
-
+      private
         def read_attribute(key)
           attributes[key]
         end
+        alias :[] :read_attribute
+
+        def write_attribute(key, value)
+          attributes[key] = value
+        end
+        alias :[]= :write_attribute
 
         def attribute_method?(key)
           self.class.attribute?(key)

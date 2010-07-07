@@ -46,15 +46,29 @@ describe Toy::Attributes do
     it "returns true if attribute (string)" do
       model.attribute?('age').should be_true
     end
-    
+
     it "returns false if not attribute" do
       model.attribute?(:foobar).should be_false
     end
   end
 
   describe "#attributes" do
-    it "defaults to empty hash" do
-      Model().new.attributes.should == {}
+    it "defaults to hash with id" do
+      attrs = Model().new.attributes
+      attrs.keys.should == ['id']
+    end
+  end
+
+  describe "#attributes=" do
+    it "sets attributes if present" do
+      model = Model { attribute :age }.new
+      model.attributes = {:age => 20}
+      model.age.should == 20
+    end
+
+    it "does nothing if nil" do
+      model = Model().new
+      lambda { model.attributes = nil }.should_not raise_error
     end
   end
 
@@ -90,6 +104,17 @@ describe Toy::Attributes do
       record.respond_to?(:name)
       record.respond_to?(:name=)
       record.respond_to?(:name?)
+    end
+
+    it "aliases [] to read_attribute" do
+      record = model.new(:name => 'John')
+      record[:name].should == 'John'
+    end
+
+    it "aliases []= to write_attribute" do
+      record = model.new
+      record[:name] = 'John'
+      record.name.should == 'John'
     end
   end
 end
