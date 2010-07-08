@@ -3,9 +3,9 @@ require 'toy'
 require 'spec'
 require 'models'
 
-require 'moneta/file'
-require 'moneta/redis'
-require 'moneta/mongodb'
+require File.expand_path('../../vendor/moneta/lib/moneta/file', __FILE__)
+require File.expand_path('../../vendor/moneta/lib/moneta/redis', __FILE__)
+require File.expand_path('../../vendor/moneta/lib/moneta/mongodb', __FILE__)
 
 def Model(name=nil, &block)
   klass = Class.new do
