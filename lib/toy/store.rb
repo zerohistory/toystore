@@ -7,6 +7,7 @@ module Toy
       extend  ActiveModel::Naming
       include ActiveModel::Conversion
       include Attributes
+      include Callbacks
       include Persistence
       include Validations
     end

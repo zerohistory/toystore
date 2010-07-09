@@ -10,6 +10,7 @@ require 'uuid'
 module Toy
   autoload :Attribute,    'toy/attribute'
   autoload :Attributes,   'toy/attributes'
+  autoload :Callbacks,    'toy/callbacks'
   autoload :Dirty,        'toy/dirty'
   autoload :Persistence,  'toy/persistence'
   autoload :Store,        'toy/store'
