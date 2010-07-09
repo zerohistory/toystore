@@ -11,6 +11,12 @@ FileStore  = Moneta::File.new(:path => 'testing')
 MongoStore = Moneta::MongoDB.new
 RedisStore = Moneta::Redis.new
 
+Spec::Runner.configure do |config|
+  config.before(:each) do
+    [FileStore, MongoStore, RedisStore].each(&:clear)
+  end
+end
+
 def Model(name=nil, &block)
   klass = Class.new do
     include Toy::Store
