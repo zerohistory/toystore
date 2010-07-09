@@ -12,6 +12,7 @@ module Toy
   autoload :Attributes,   'toy/attributes'
   autoload :Persistence,  'toy/persistence'
   autoload :Store,        'toy/store'
+  autoload :Validations,  'toy/validations'
   autoload :Version,      'toy/version'
 
   # Not ideal, we'll need to have id factories for each store

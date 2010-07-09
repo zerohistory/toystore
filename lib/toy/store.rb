@@ -8,6 +8,7 @@ module Toy
       include ActiveModel::Conversion
       include Attributes
       include Persistence
+      include Validations
     end
 
     def persisted?
