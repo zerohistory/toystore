@@ -22,6 +22,12 @@ describe Toy::Attributes do
     end
     let(:model) { @model }
 
+    it "writes id" do
+      id = model.new.id
+      id.should_not be_nil
+      id.size.should == 36
+    end
+
     it "sets attributes" do
       instance = model.new(:name => 'John', :age => 28)
       instance.name.should == 'John'

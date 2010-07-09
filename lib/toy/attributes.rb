@@ -30,8 +30,12 @@ module Toy
 
     module InstanceMethods
       def initialize(attrs={})
-        write_attribute :id, Toy.next_id
+        write_attribute :id, SimpleUUID::UUID.new.to_guid
         self.attributes = attrs
+      end
+
+      def id
+        read_attribute(:id)
       end
 
       def attributes
