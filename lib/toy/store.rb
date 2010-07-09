@@ -10,10 +10,7 @@ module Toy
       include Callbacks
       include Persistence
       include Validations
-    end
-
-    def persisted?
-      false
+      include Querying
     end
   end
 end

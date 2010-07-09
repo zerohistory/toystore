@@ -3,7 +3,7 @@ require 'helper'
 describe Toy::Dirty do
   before :each do
     model = Model('Foo') do
-      store Moneta::File.new(:path => 'testing')
+      store FileStore
       attribute :name
     end
     @foo = model.create(:name => 'Geoffrey')

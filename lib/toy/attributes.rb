@@ -29,9 +29,15 @@ module Toy
     end
 
     module InstanceMethods
-      def initialize(attrs={})
-        write_attribute :id, SimpleUUID::UUID.new.to_guid
-        self.attributes = attrs
+      def initialize(attrs={}, from_database=false)
+        if from_database
+          @_new_record = false
+          self.attributes = attrs
+        else
+          @_new_record = true
+          write_attribute :id, SimpleUUID::UUID.new.to_guid
+          self.attributes = attrs
+        end
       end
 
       def id

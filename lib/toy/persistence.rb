@@ -8,6 +8,52 @@ module Toy
         @store = new_store unless new_store.nil?
         @store
       end
+
+      def store_key(id)
+        [model_name.plural, id].join(':')
+      end
+
+      def create(attrs={})
+        new(attrs).tap { |doc| doc.save }
+      end
+    end
+
+    module InstanceMethods
+      def store
+        self.class.store
+      end
+
+      def store_key
+        self.class.store_key(id)
+      end
+
+      def new_record?
+        @_new_record
+      end
+
+      def persisted?
+        !new_record?
+      end
+
+      def save
+        create_or_update
+      end
+
+      private
+        def create_or_update
+          new_record? ? create : update
+        end
+
+        def create
+          store[store_key] = Toy.encode(attributes)
+          @_new_record = false
+          true
+        end
+
+        def update
+          store[store_key] = Toy.encode(attributes)
+          true
+        end
     end
   end
 end

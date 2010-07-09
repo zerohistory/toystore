@@ -3,7 +3,7 @@ require 'helper'
 describe Toy::Callbacks do
   before :all do
     @model = Model('Foo') do
-      store Moneta::File.new(:path => 'testing')
+      store FileStore
       attribute :name
       
       after_create :set_after_create_called
