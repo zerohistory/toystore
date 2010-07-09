@@ -1,4 +1,3 @@
-# encoding: UTF-8
 require 'simple_uuid'
 require 'active_model'
 require 'active_support/json'

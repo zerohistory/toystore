@@ -1,4 +1,3 @@
-# encoding: UTF-8
 module Toy
   module Attributes
     extend ActiveSupport::Concern
