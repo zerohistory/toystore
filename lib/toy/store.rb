@@ -11,6 +11,7 @@ module Toy
 
       include Callbacks
       include Validations
+      include Serialization
     end
   end
 end
