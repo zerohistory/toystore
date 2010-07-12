@@ -68,14 +68,18 @@ module Toy
 
       private
         def read_attribute(key)
-          self.class.attributes[key.to_sym].type.from_store(attributes[key])
+          attribute_definition(key).read(attributes[key])
         end
         alias :[] :read_attribute
 
         def write_attribute(key, value)
-          attributes[key] = self.class.attributes[key.to_sym].type.to_store(value)
+          attributes[key] = attribute_definition(key).write(value)
         end
         alias :[]= :write_attribute
+        
+        def attribute_definition(key)
+          self.class.attributes[key.to_sym]
+        end
 
         def attribute_method?(key)
           self.class.attribute?(key)

@@ -17,4 +17,12 @@ describe Toy::Attribute do
   it "has type" do
     attribute.type.should == attr_type
   end
+  
+  it "should write using the attribute type" do
+    attribute.write(12).should == '12'
+  end
+  
+  it "should write using the attribute type" do
+    attribute.read(12).should == '12'
+  end
 end
