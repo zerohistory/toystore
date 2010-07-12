@@ -8,15 +8,16 @@ require 'active_support/core_ext/class/inheritable_attributes'
 require File.expand_path('../../vendor/moneta/lib/moneta', __FILE__)
 
 module Toy
-  autoload :Attribute,    'toy/attribute'
-  autoload :Attributes,   'toy/attributes'
-  autoload :Callbacks,    'toy/callbacks'
-  autoload :Dirty,        'toy/dirty'
-  autoload :Persistence,  'toy/persistence'
-  autoload :Store,        'toy/store'
-  autoload :Validations,  'toy/validations'
-  autoload :Querying,     'toy/querying'
-  autoload :Version,      'toy/version'
+  autoload :Attribute,     'toy/attribute'
+  autoload :Attributes,    'toy/attributes'
+  autoload :Callbacks,     'toy/callbacks'
+  autoload :Dirty,         'toy/dirty'
+  autoload :Persistence,   'toy/persistence'
+  autoload :Store,         'toy/store'
+  autoload :Serialization, 'toy/serialization'
+  autoload :Validations,   'toy/validations'
+  autoload :Querying,      'toy/querying'
+  autoload :Version,       'toy/version'
 
   def encode(obj)
     ActiveSupport::JSON.encode(obj)
