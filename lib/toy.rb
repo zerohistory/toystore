@@ -28,3 +28,7 @@ module Toy
 
   extend self
 end
+
+Dir[File.join(File.dirname(__FILE__), 'toy', 'extensions', '*.rb')].each do |extension|
+  require extension
+end
