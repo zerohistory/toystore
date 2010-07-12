@@ -2,6 +2,9 @@ $:.unshift(File.expand_path('../../lib', __FILE__))
 require 'toy'
 require 'spec'
 require 'models'
+require 'log_buddy'
+
+LogBuddy.init
 
 require File.expand_path('../../vendor/moneta/lib/moneta/file', __FILE__)
 require File.expand_path('../../vendor/moneta/lib/moneta/redis', __FILE__)

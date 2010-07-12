@@ -1,7 +1,7 @@
 require 'helper'
 
 describe Toy::Querying do
-  before      { @model = Model() { attribute :name } }
+  before      { @model = Model() { attribute :name, String } }
   let(:model) { @model }
 
   describe ".[]" do

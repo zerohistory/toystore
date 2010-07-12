@@ -25,8 +25,8 @@ describe Toy::Persistence do
 
   describe ".create" do
     before do
-      model.attribute :name
-      model.attribute :age
+      model.attribute :name, String
+      model.attribute :age, Integer
       @doc = model.create(:name => 'John', :age => 50)
     end
     let(:doc) { @doc }
@@ -80,8 +80,8 @@ describe Toy::Persistence do
 
   describe "#save" do
     before do
-      model.attribute :name
-      model.attribute :age
+      model.attribute :name, String
+      model.attribute :age, Integer
     end
 
     describe "with new record" do

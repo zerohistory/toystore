@@ -3,8 +3,8 @@ require 'helper'
 describe Toy::Validations do
   before do
     @model = Model('User') do
-      attribute :name
-      attribute :age
+      attribute :name, String
+      attribute :age, Integer
     end
   end
   let(:model) { @model }

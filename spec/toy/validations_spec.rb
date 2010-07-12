@@ -3,7 +3,7 @@ require 'helper'
 describe Toy::Validations do
   before do
     @model = Model('User') do
-      attribute :name
+      attribute :name, String
       validates_presence_of :name
 
       [:before_validation, :after_validation].each do |callback|
@@ -28,7 +28,7 @@ describe Toy::Validations do
   describe "validate callback" do
     before do
       @model = Model('User') do
-        attribute :name
+        attribute :name, String
         validate :name_not_john
 
         private

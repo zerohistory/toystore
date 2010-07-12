@@ -16,8 +16,8 @@ describe Toy::Attributes do
   describe "initialization" do
     before do
       @model = Model do
-        attribute :name
-        attribute :age
+        attribute :name, String
+        attribute :age, Integer
       end
     end
     let(:model) { @model }
@@ -41,7 +41,7 @@ describe Toy::Attributes do
 
   describe ".attribute?" do
     before do
-      @model = Model { attribute :age }
+      @model = Model { attribute :age, Integer }
     end
     let(:model) { @model }
 
@@ -67,7 +67,7 @@ describe Toy::Attributes do
 
   describe "#attributes=" do
     it "sets attributes if present" do
-      model = Model { attribute :age }.new
+      model = Model { attribute :age, Integer }.new
       model.attributes = {:age => 20}
       model.age.should == 20
     end
@@ -81,8 +81,8 @@ describe Toy::Attributes do
   describe "declaring an attribute" do
     before do
       @model = Model() do
-        attribute :name
-        attribute :age
+        attribute :name, String
+        attribute :age, Integer
       end
     end
     let(:model) { @model }
@@ -96,6 +96,12 @@ describe Toy::Attributes do
       record = model.new
       record.name = 'John'
       record.name.should == 'John'
+    end
+
+    it "converts to attribute type" do
+      record = model.new
+      record.age = '12'
+      record.age.should == 12
     end
 
     it "adds query-ers" do

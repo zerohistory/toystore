@@ -4,7 +4,7 @@ module Toy
     include ActiveModel::AttributeMethods
 
     included do
-      attribute :id
+      attribute :id, String
     end
 
     module ClassMethods
@@ -17,9 +17,9 @@ module Toy
         @attributes ||= {}
       end
 
-      def attribute(key)
+      def attribute(key, type)
         key = key.to_sym
-        attributes[key] = Attribute.new(self, key)
+        attributes[key] = Attribute.new(self, key, type)
       end
 
       def attribute?(key)
@@ -68,12 +68,12 @@ module Toy
 
       private
         def read_attribute(key)
-          attributes[key]
+          self.class.attributes[key.to_sym].type.from_store(attributes[key])
         end
         alias :[] :read_attribute
 
         def write_attribute(key, value)
-          attributes[key] = value
+          attributes[key] = self.class.attributes[key.to_sym].type.to_store(value)
         end
         alias :[]= :write_attribute
 
