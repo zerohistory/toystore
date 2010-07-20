@@ -1,3 +1,4 @@
+require 'forwardable'
 require 'simple_uuid'
 require 'active_model'
 require 'active_support/json'
@@ -8,8 +9,10 @@ require 'active_support/core_ext/class/inheritable_attributes'
 require File.expand_path('../../vendor/moneta/lib/moneta', __FILE__)
 
 module Toy
+  extend Forwardable
+
   autoload :RecordInvalidError,    'toy/exceptions'
-  
+
   autoload :Attribute,     'toy/attribute'
   autoload :Attributes,    'toy/attributes'
   autoload :Callbacks,     'toy/callbacks'
@@ -21,13 +24,7 @@ module Toy
   autoload :Querying,      'toy/querying'
   autoload :Version,       'toy/version'
 
-  def encode(obj)
-    ActiveSupport::JSON.encode(obj)
-  end
-
-  def decode(json)
-    ActiveSupport::JSON.decode(json)
-  end
+  def_delegators ActiveSupport::JSON, :encode, :decode
 
   extend self
 end
