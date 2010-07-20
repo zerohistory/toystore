@@ -8,6 +8,12 @@ module Toy
       define_model_callbacks :validation
     end
 
+    module ClassMethods
+      def create!(attrs={})
+        new(attrs).tap { |doc| doc.save! }
+      end
+    end
+
     module InstanceMethods
       def valid?
         run_callbacks(:validation) { super }
@@ -15,6 +21,10 @@ module Toy
 
       def save
         valid? ? super : false
+      end
+      
+      def save!
+        save || raise(RecordInvalidError.new(self))
       end
     end
   end

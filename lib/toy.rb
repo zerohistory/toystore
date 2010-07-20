@@ -8,6 +8,8 @@ require 'active_support/core_ext/class/inheritable_attributes'
 require File.expand_path('../../vendor/moneta/lib/moneta', __FILE__)
 
 module Toy
+  autoload :RecordInvalidError,    'toy/exceptions'
+  
   autoload :Attribute,     'toy/attribute'
   autoload :Attributes,    'toy/attributes'
   autoload :Callbacks,     'toy/callbacks'

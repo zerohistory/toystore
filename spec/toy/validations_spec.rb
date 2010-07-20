@@ -82,4 +82,47 @@ describe Toy::Validations do
       end
     end
   end
+
+  describe "#save!" do
+    describe "with valid" do
+      before do
+        @doc = model.new(:name => 'John')
+        @result = @doc.save!
+      end
+
+      it "returns true" do
+        @result.should be_true
+      end
+
+      it "persists the instance" do
+        @doc.should be_persisted
+      end
+    end
+
+    describe "with invalid" do
+      before do
+        @doc = model.new
+      end
+
+      it "raises an RecordInvalidError" do
+        lambda { @doc.save! }.should raise_error(Toy::RecordInvalidError)
+      end
+    end
+  end
+  
+  describe "#create!" do
+    describe "with valid" do
+      it "persists the instance" do
+        @doc = model.create!(:name => 'John')
+        @doc.should be_persisted
+      end
+    end
+
+    describe "with invalid" do
+      it "raises an RecordInvalidError" do
+        lambda { model.create! }.should raise_error(Toy::RecordInvalidError)
+      end
+    end
+  end
+  
 end
