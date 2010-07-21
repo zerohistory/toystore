@@ -41,5 +41,4 @@ describe Toy::Callbacks do
     doc.destroy
     doc.history.should == [:before_destroy, :after_destroy]
   end
-  
 end

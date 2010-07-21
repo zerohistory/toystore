@@ -15,6 +15,20 @@ module Toy
       def create(attrs={})
         new(attrs).tap { |doc| doc.save }
       end
+      
+      def delete(*ids)
+        ids.each do |id|
+          next unless key?(id)
+          self[id].delete
+        end
+      end
+      
+      def destroy(*ids)
+        ids.each do |id|
+          next unless key?(id)
+          self[id].destroy
+        end
+      end
     end
 
     module InstanceMethods

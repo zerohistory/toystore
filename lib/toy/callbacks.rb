@@ -11,6 +11,10 @@ module Toy
       run_callbacks(:save) { super }
     end
 
+    def destroy
+      run_callbacks(:destroy) { super }
+    end
+
     private
       def create
         run_callbacks(:create) { super }
@@ -18,10 +22,6 @@ module Toy
 
       def update
         run_callbacks(:update) { super }
-      end
-
-      def destroy
-        run_callbacks(:destroy) { super }
       end
   end
 end

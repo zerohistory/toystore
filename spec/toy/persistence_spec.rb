@@ -153,4 +153,57 @@ describe Toy::Persistence do
       doc.should be_destroyed
     end
   end
+  
+  describe ".delete(*ids)" do
+    it "should delete a single record" do
+      doc = model.create
+
+      model.delete(doc.id)
+      
+      model.key?(doc.id).should be_false
+    end
+    
+    it "should delete multiple records" do
+      doc1 = model.create
+      doc2 = model.create
+      
+      model.delete(doc1.id, doc2.id)
+      
+      model.key?(doc1.id).should be_false
+      model.key?(doc2.id).should be_false
+    end
+    
+    it "should not complain when records do not exist" do
+      doc = model.create
+
+      model.delete("taco:bell:tacos")
+    end    
+  end
+  
+  describe ".destroy(*ids)" do
+    it "should destroy a single record" do
+      doc = model.create
+
+      model.destroy(doc.id)
+      
+      model.key?(doc.id).should be_false
+    end
+    
+    it "should destroy multiple records" do
+      doc1 = model.create
+      doc2 = model.create
+      
+      model.destroy(doc1.id, doc2.id)
+      
+      model.key?(doc1.id).should be_false
+      model.key?(doc2.id).should be_false
+    end
+    
+    it "should not complain when records do not exist" do
+      doc = model.create
+
+      model.destroy("taco:bell:tacos")
+    end
+  end
+  
 end
