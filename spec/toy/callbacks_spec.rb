@@ -34,4 +34,12 @@ describe Toy::Callbacks do
     doc.save
     doc.history.should == [:before_save, :before_update, :after_update, :after_save]
   end
+  
+  it "runs callbacks in correct order for destroy" do
+    doc = model.create
+    doc.clear_history
+    doc.destroy
+    doc.history.should == [:before_destroy, :after_destroy]
+  end
+  
 end

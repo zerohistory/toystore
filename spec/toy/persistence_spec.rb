@@ -76,6 +76,12 @@ describe Toy::Persistence do
     it "returns false if not persisted" do
       model.new.should_not be_persisted
     end
+    
+    it "returns false if deleted" do
+      doc = model.create
+      doc.delete
+      doc.should_not be_persisted
+    end
   end
 
   describe "#save" do
@@ -113,6 +119,38 @@ describe Toy::Persistence do
       it "updates the attributes in the instance" do
         doc.name.should == 'Bill'
       end
+    end
+  end
+  
+  describe "#delete" do
+    it "should remove the instance from the store" do
+      doc = model.create
+      doc.delete
+      
+      model.key?(doc.id).should be_false
+    end
+  end
+  
+  describe "#destroy" do
+    it "should remove the instance from the store" do
+      doc = model.create
+      doc.destroy
+      
+      model.key?(doc.id).should be_false
+    end
+  end
+  
+  describe "#destroyed?" do
+    it "should be false if not deleted" do
+      doc = model.create
+      doc.should_not be_destroyed
+    end
+    
+    it "should be true if deleted" do
+      doc = model.create
+      doc.delete
+      
+      doc.should be_destroyed
     end
   end
 end

@@ -29,13 +29,26 @@ module Toy
       def new_record?
         @_new_record
       end
+      
+      def destroyed?
+        @_destroyed == true
+      end
 
       def persisted?
-        !new_record?
+        !new_record? && !destroyed?
       end
 
       def save
         create_or_update
+      end
+      
+      def destroy
+        delete
+      end
+      
+      def delete
+        @_destroyed = true
+        store.delete(store_key)
       end
 
       private

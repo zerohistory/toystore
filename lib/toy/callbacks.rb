@@ -19,5 +19,9 @@ module Toy
       def update
         run_callbacks(:update) { super }
       end
+
+      def destroy
+        run_callbacks(:destroy) { super }
+      end
   end
 end
