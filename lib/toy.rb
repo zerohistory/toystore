@@ -5,6 +5,8 @@ require 'active_support/json'
 require 'active_support/core_ext/object'
 require 'active_support/core_ext/hash/indifferent_access'
 require 'active_support/core_ext/class/inheritable_attributes'
+require 'active_support/core_ext/string/conversions'
+require 'active_support/core_ext/string/inflections'
 
 require File.expand_path('../../vendor/moneta/lib/moneta', __FILE__)
 
@@ -22,6 +24,8 @@ module Toy
   autoload :Serialization, 'toy/serialization'
   autoload :Validations,   'toy/validations'
   autoload :Querying,      'toy/querying'
+  autoload :List,          'toy/list'
+  autoload :Lists,         'toy/lists'
   autoload :Version,       'toy/version'
 
   def_delegators ActiveSupport::JSON, :encode, :decode
