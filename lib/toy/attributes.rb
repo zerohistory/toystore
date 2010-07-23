@@ -18,8 +18,7 @@ module Toy
       end
 
       def attribute(key, type)
-        key = key.to_sym
-        attributes[key] = Attribute.new(self, key, type)
+        Attribute.new(self, key, type)
       end
 
       def attribute?(key)

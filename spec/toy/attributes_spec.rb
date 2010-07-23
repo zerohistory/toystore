@@ -88,8 +88,8 @@ describe Toy::Attributes do
     let(:model) { @model }
 
     it "adds attribute to attributes" do
-      model.attributes.should include(:age)
-      model.attributes.should include(:name)
+      model.attributes[:name].should == Toy::Attribute.new(model, :name, String)
+      model.attributes[:age].should  == Toy::Attribute.new(model, :age, Integer)
     end
 
     it "adds accessors" do
