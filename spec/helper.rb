@@ -1,7 +1,6 @@
 $:.unshift(File.expand_path('../../lib', __FILE__))
 require 'toy'
 require 'spec'
-require 'models'
 require 'log_buddy'
 
 LogBuddy.init
