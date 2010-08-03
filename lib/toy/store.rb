@@ -7,6 +7,7 @@ module Toy
       include ActiveModel::Conversion
       include Attributes
       include Persistence
+      include Dirty
       include Querying
 
       include Callbacks
