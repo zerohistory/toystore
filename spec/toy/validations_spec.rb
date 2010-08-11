@@ -1,8 +1,10 @@
 require 'helper'
 
 describe Toy::Validations do
+  uses_constants('User')
+
   before do
-    @model = Model('User') do
+    class User
       attribute :name, String
       validates_presence_of :name
 
@@ -17,17 +19,16 @@ describe Toy::Validations do
       end
     end
   end
-  let(:model) { @model }
 
   it "runs validation callbacks around valid?" do
-    doc = model.new(:name => 'John')
+    doc = User.new(:name => 'John')
     doc.valid?
     doc.history.should == [:before_validation, :after_validation]
   end
 
   describe "validate callback" do
     before do
-      @model = Model('User') do
+      class User
         attribute :name, String
         validate :name_not_john
 
@@ -37,16 +38,15 @@ describe Toy::Validations do
           end
       end
     end
-    let(:model) { @model }
 
     it "adds error if fails" do
-      doc = model.new(:name => 'John')
+      doc = User.new(:name => 'John')
       doc.valid?
       doc.errors[:name].should include('cannot be John')
     end
 
     it "does not add error if all good" do
-      doc = model.new(:name => 'Frank')
+      doc = User.new(:name => 'Frank')
       doc.should be_valid
     end
   end
@@ -54,7 +54,7 @@ describe Toy::Validations do
   describe "#save" do
     describe "with valid" do
       before do
-        @doc = model.new(:name => 'John')
+        @doc = User.new(:name => 'John')
         @result = @doc.save
       end
 
@@ -69,7 +69,7 @@ describe Toy::Validations do
 
     describe "with invalid" do
       before do
-        @doc = model.new
+        @doc = User.new
         @result = @doc.save
       end
 
@@ -86,7 +86,7 @@ describe Toy::Validations do
   describe "#save!" do
     describe "with valid" do
       before do
-        @doc = model.new(:name => 'John')
+        @doc = User.new(:name => 'John')
         @result = @doc.save!
       end
 
@@ -101,7 +101,7 @@ describe Toy::Validations do
 
     describe "with invalid" do
       before do
-        @doc = model.new
+        @doc = User.new
       end
 
       it "raises an RecordInvalidError" do
@@ -109,20 +109,20 @@ describe Toy::Validations do
       end
     end
   end
-  
+
   describe "#create!" do
     describe "with valid" do
       it "persists the instance" do
-        @doc = model.create!(:name => 'John')
+        @doc = User.create!(:name => 'John')
         @doc.should be_persisted
       end
     end
 
     describe "with invalid" do
       it "raises an RecordInvalidError" do
-        lambda { model.create! }.should raise_error(Toy::RecordInvalidError)
+        lambda { User.create! }.should raise_error(Toy::RecordInvalidError)
       end
     end
   end
-  
+
 end

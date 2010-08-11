@@ -1,60 +1,58 @@
 require 'helper'
 
 describe Toy::Attributes do
+  uses_constants('User')
+
   describe "including" do
     it "adds id attribute" do
-      Model().attributes.keys.should == [:id]
+      User.attributes.keys.should == [:id]
     end
   end
 
   describe ".attributes" do
     it "defaults to hash with id" do
-      Model().attributes.keys.should == [:id]
+      User.attributes.keys.should == [:id]
     end
   end
 
   describe "initialization" do
     before do
-      @model = Model do
-        attribute :name, String
-        attribute :age, Integer
-      end
+      User.attribute :name, String
+      User.attribute :age,  Integer
     end
-    let(:model) { @model }
 
     it "writes id" do
-      id = model.new.id
+      id = User.new.id
       id.should_not be_nil
       id.size.should == 36
     end
 
     it "sets attributes" do
-      instance = model.new(:name => 'John', :age => 28)
+      instance = User.new(:name => 'John', :age => 28)
       instance.name.should == 'John'
       instance.age.should  == 28
     end
 
     it "does not fail with nil" do
-      model.new(nil).should be_instance_of(model)
+      User.new(nil).should be_instance_of(User)
     end
   end
 
   describe ".attribute?" do
     before do
-      @model = Model { attribute :age, Integer }
+      User.attribute :age, Integer
     end
-    let(:model) { @model }
 
     it "returns true if attribute (symbol)" do
-      model.attribute?(:age).should be_true
+      User.attribute?(:age).should be_true
     end
 
     it "returns true if attribute (string)" do
-      model.attribute?('age').should be_true
+      User.attribute?('age').should be_true
     end
 
     it "returns false if not attribute" do
-      model.attribute?(:foobar).should be_false
+      User.attribute?(:foobar).should be_false
     end
   end
 
@@ -67,69 +65,67 @@ describe Toy::Attributes do
 
   describe "#attributes=" do
     it "sets attributes if present" do
-      model = Model { attribute :age, Integer }.new
-      model.attributes = {:age => 20}
-      model.age.should == 20
+      User.attribute :age, Integer
+      record = User.new
+      record.attributes = {:age => 20}
+      record.age.should == 20
     end
 
     it "does nothing if nil" do
-      model = Model().new
-      lambda { model.attributes = nil }.should_not raise_error
+      record = User.new
+      lambda { record.attributes = nil }.should_not raise_error
     end
   end
 
   describe "declaring an attribute" do
     before do
-      @model = Model() do
-        attribute :name, String
-        attribute :age, Integer
-      end
+      User.attribute :name, String
+      User.attribute :age, Integer
     end
-    let(:model) { @model }
 
     it "adds attribute to attributes" do
-      model.attributes[:name].should == Toy::Attribute.new(model, :name, String)
-      model.attributes[:age].should  == Toy::Attribute.new(model, :age, Integer)
+      User.attributes[:name].should == Toy::Attribute.new(User, :name, String)
+      User.attributes[:age].should  == Toy::Attribute.new(User, :age, Integer)
     end
 
     it "adds accessors" do
-      record = model.new
+      record = User.new
       record.name = 'John'
       record.name.should == 'John'
     end
 
     it "converts to attribute type" do
-      record = model.new
+      record = User.new
       record.age = '12'
       record.age.should == 12
     end
 
     it "adds query-ers" do
-      record = model.new
+      record = User.new
       record.name?.should be_false
       record.name = 'John'
       record.name?.should be_true
     end
 
     it "knows if it responds to attribute method" do
-      record = model.new
+      record = User.new
       record.should respond_to(:name)
       record.should respond_to(:name=)
       record.should respond_to(:name?)
     end
 
     it "know if it does not respond to method" do
-      record = model.new
+      record = User.new
       record.should_not respond_to(:foobar)
     end
 
     it "aliases [] to read_attribute" do
-      record = model.new(:name => 'John')
+      record = User.new(:name => 'John')
       record[:name].should == 'John'
     end
 
     it "aliases []= to write_attribute" do
-      record = model.new
+      record = User.new
       record[:name] = 'John'
       record.name.should == 'John'
     end

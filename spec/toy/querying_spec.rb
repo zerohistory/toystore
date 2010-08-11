@@ -1,40 +1,43 @@
 require 'helper'
 
 describe Toy::Querying do
-  before      { @model = Model() { attribute :name, String } }
-  let(:model) { @model }
+  uses_constants('User')
+
+  before do
+    User.attribute :name, String
+  end
 
   describe ".[]" do
     it "returns loaded document" do
-      john = model.create(:name => 'John')
-      model[john.id].name.should == 'John'
+      john = User.create(:name => 'John')
+      User[john.id].name.should == 'John'
     end
   end
 
   describe ".key?" do
     it "returns true if key exists" do
-      doc = model.create(:name => 'John')
-      model.key?(doc.id).should be_true
+      doc = User.create(:name => 'John')
+      User.key?(doc.id).should be_true
     end
 
     it "returns false if key does not exist" do
-      model.key?('taco:bell:tacos').should be_false
+      User.key?('taco:bell:tacos').should be_false
     end
   end
 
   describe ".has_key?" do
     it "returns true if key exists" do
-      doc = model.create(:name => 'John')
-      model.has_key?(doc.id).should be_true
+      doc = User.create(:name => 'John')
+      User.has_key?(doc.id).should be_true
     end
 
     it "returns false if key does not exist" do
-      model.has_key?('taco:bell:tacos').should be_false
+      User.has_key?('taco:bell:tacos').should be_false
     end
   end
 
   describe ".load" do
-    before    { @doc = model.create(:name => 'John') }
+    before    { @doc = User.create(:name => 'John') }
     let(:doc) { @doc }
 
     it "marks object as persisted" do
@@ -42,7 +45,7 @@ describe Toy::Querying do
     end
 
     it "decodes the object" do
-      model[doc.id].name.should == 'John'
+      User[doc.id].name.should == 'John'
     end
   end
 end

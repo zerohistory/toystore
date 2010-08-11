@@ -1,21 +1,24 @@
 require 'helper'
 
 describe Toy::Attribute do
-  let(:model)     { Model() }
-  let(:attr_name) { :age }
-  let(:attr_type) { String }
-  let(:attribute) { Toy::Attribute.new(model, attr_name, attr_type) }
+  uses_constants('User')
+
+  before do
+    @attribute = Toy::Attribute.new(User, :age, String)
+  end
+
+  let(:attribute) { @attribute }
 
   it "has model" do
-    attribute.model.should == model
+    attribute.model.should == User
   end
 
   it "has name" do
-    attribute.name.should == attr_name
+    attribute.name.should == :age
   end
   
   it "has type" do
-    attribute.type.should == attr_type
+    attribute.type.should == String
   end
   
   it "should write using the attribute type" do

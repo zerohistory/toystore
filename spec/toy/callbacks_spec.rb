@@ -1,8 +1,10 @@
 require 'helper'
 
 describe Toy::Callbacks do
-  before :all do
-    @model = Model('Foo') do
+  uses_constants('Foo')
+
+  before do
+    class Foo
       [ :before_create,  :after_create,
         :before_update,  :after_update,
         :before_save,    :after_save,
@@ -21,22 +23,21 @@ describe Toy::Callbacks do
       end
     end
   end
-  let(:model) { @model }
 
   it "runs callbacks in correct order for create" do
-    doc = model.create
+    doc = Foo.create
     doc.history.should == [:before_save, :before_create, :after_create, :after_save]
   end
 
   it "runs callbacks in correct order for update" do
-    doc = model.create
+    doc = Foo.create
     doc.clear_history
     doc.save
     doc.history.should == [:before_save, :before_update, :after_update, :after_save]
   end
   
   it "runs callbacks in correct order for destroy" do
-    doc = model.create
+    doc = Foo.create
     doc.clear_history
     doc.destroy
     doc.history.should == [:before_destroy, :after_destroy]

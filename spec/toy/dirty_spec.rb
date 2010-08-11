@@ -1,12 +1,14 @@
 require 'helper'
 
 describe Toy::Dirty do
-  before :each do
-    model = Model('Foo') do
+  uses_constants('Foo')
+
+  before do
+    class Foo
       store RedisStore
       attribute :name, String
     end
-    @foo = model.create(:name => 'Geoffrey')
+    @foo = Foo.create(:name => 'Geoffrey')
   end
   let(:foo) { @foo }
   
