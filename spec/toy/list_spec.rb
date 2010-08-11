@@ -1,19 +1,23 @@
 require 'helper'
 
 describe Toy::List do
-  before  { class ::Game; include Toy::Store end }
-  after   { Object.send :remove_const, 'Game' if defined?(::Game) }
+  before  { create_constant('Game') }
+  after   { remove_constant('Game') }
 
-  let(:model)     { Model() }
-  let(:attr_name) { :games }
-  let(:list) { Toy::List.new(model, attr_name) }
+  before do
+    @model = Model()
+    @list = Toy::List.new(model, :games)
+  end
+
+  let(:model) { @model }
+  let(:list)  { @list }
 
   it "has model" do
     list.model.should == model
   end
 
   it "has name" do
-    list.name.should == attr_name
+    list.name.should == :games
   end
 
   it "has type" do
@@ -22,5 +26,13 @@ describe Toy::List do
 
   it "has key" do
     list.key.should == :game_ids
+  end
+
+  it "adds list to model" do
+    model.lists.keys.should include(:games)
+  end
+
+  it "adds attribute to model" do
+    model.attributes.keys.should include(:game_ids)
   end
 end

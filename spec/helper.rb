@@ -1,13 +1,21 @@
-$:.unshift(File.expand_path('../../lib', __FILE__))
+require 'pathname'
+
+root_path   = Pathname(__FILE__).dirname.join('..').expand_path
+lib_path    = root_path.join('lib')
+moneta_path = root_path.join('vendor', 'moneta', 'lib')
+
+$:.unshift(lib_path, moneta_path)
+
 require 'toy'
 require 'spec'
 require 'log_buddy'
+require 'support/constants'
+
+require 'moneta/file'
+require 'moneta/redis'
+require 'moneta/mongodb'
 
 LogBuddy.init
-
-require File.expand_path('../../vendor/moneta/lib/moneta/file', __FILE__)
-require File.expand_path('../../vendor/moneta/lib/moneta/redis', __FILE__)
-require File.expand_path('../../vendor/moneta/lib/moneta/mongodb', __FILE__)
 
 FileStore  = Moneta::File.new(:path => 'testing')
 MongoStore = Moneta::MongoDB.new
@@ -17,18 +25,6 @@ Spec::Runner.configure do |config|
   config.before(:each) do
     [FileStore, MongoStore, RedisStore].each(&:clear)
   end
-end
 
-def Model(name=nil, &block)
-  klass = Class.new do
-    include Toy::Store
-    store RedisStore
-
-    if name
-      class_eval "def self.name; '#{name}' end"
-      class_eval "def self.to_s; '#{name}' end"
-    end
-  end
-  klass.class_eval(&block) if block_given?
-  klass
+  config.include(Support::Constants)
 end

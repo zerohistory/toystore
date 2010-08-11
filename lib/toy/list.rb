@@ -5,6 +5,7 @@ module Toy
     def initialize(model, name)
       @model, @name = model, name.to_sym
       model.lists[name] = self
+      model.attribute(key, Array)
     end
 
     def type
