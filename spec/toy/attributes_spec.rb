@@ -113,9 +113,14 @@ describe Toy::Attributes do
 
     it "knows if it responds to attribute method" do
       record = model.new
-      record.respond_to?(:name)
-      record.respond_to?(:name=)
-      record.respond_to?(:name?)
+      record.should respond_to(:name)
+      record.should respond_to(:name=)
+      record.should respond_to(:name?)
+    end
+
+    it "know if it does not respond to method" do
+      record = model.new
+      record.should_not respond_to(:foobar)
     end
 
     it "aliases [] to read_attribute" do

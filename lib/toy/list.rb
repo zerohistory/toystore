@@ -6,6 +6,7 @@ module Toy
       @model, @name = model, name.to_sym
       model.lists[name] = self
       model.attribute(key, Array)
+      create_accessors
     end
 
     def type
@@ -22,5 +23,14 @@ module Toy
         name  == other.name
     end
     alias :== :eql?
+
+    private
+      def create_accessors
+        model::ListAccessors.module_eval """
+          def #{name}
+            @#{name} ||= #{key}.map { |id| self.class[id] }
+          end
+        """
+      end
   end
 end

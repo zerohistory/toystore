@@ -1,19 +1,16 @@
 require 'helper'
 
 describe Toy::List do
-  before  { create_constant('Game') }
-  after   { remove_constant('Game') }
+  uses_constants('User', 'Game')
 
   before do
-    @model = Model()
-    @list = Toy::List.new(model, :games)
+    @list = Toy::List.new(User, :games)
   end
 
-  let(:model) { @model }
   let(:list)  { @list }
 
   it "has model" do
-    list.model.should == model
+    list.model.should == User
   end
 
   it "has name" do
@@ -29,10 +26,14 @@ describe Toy::List do
   end
 
   it "adds list to model" do
-    model.lists.keys.should include(:games)
+    User.lists.keys.should include(:games)
   end
 
   it "adds attribute to model" do
-    model.attributes.keys.should include(:game_ids)
+    User.attributes.keys.should include(:game_ids)
+  end
+
+  it "adds reader to model" do
+    User.new.should respond_to(:games)
   end
 end

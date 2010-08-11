@@ -1,5 +1,24 @@
 module Support
   module Constants
+    def self.included(base)
+      base.extend(ClassMethods)
+    end
+
+    module ClassMethods
+      def uses_constants(*constants)
+        before  { create_constants(*constants) }
+        after   { remove_constants(*constants) }
+      end
+    end
+
+    def create_constants(*constants)
+      constants.each { |constant| create_constant(constant) }
+    end
+
+    def remove_constants(*constants)
+      constants.each { |constant| remove_constant(constant) }
+    end
+
     def create_constant(constant)
       Object.send(:const_set, constant, Model(constant))
     end
