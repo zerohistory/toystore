@@ -16,6 +16,7 @@ module Toy
       include Serialization
 
       include Lists
+      include Roxy::Moxie
     end
   end
 end

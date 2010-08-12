@@ -69,7 +69,7 @@ describe Toy::List do
       @user = User.create(:game_ids => [@game.id])
     end
 
-    it "returns instances from ids attribute" do
+    it "returns instances" do
       @user.games.should == [@game]
     end
 
@@ -89,14 +89,52 @@ describe Toy::List do
       @user.games = [@game2]
     end
 
-    it "set ids attribute" do
+    it "set attribute" do
       @user.game_ids.should == [@game2.id]
     end
 
-    it "unmemoizes reader method" do
+    it "unmemoizes reader" do
       @user.games.should == [@game2]
       @user.games         = [@game1]
       @user.games.should == [@game1]
+    end
+  end
+
+  describe "list#push" do
+    before do
+      @game = Game.create
+      @user = User.create
+      @user.games.push(@game)
+    end
+
+    it "adds id to attribute" do
+      @user.game_ids.should == [@game.id]
+    end
+  end
+  
+  describe "list#concat" do
+    before do
+      @game1 = Game.create
+      @game2 = Game.create
+      @user  = User.create
+      @user.games.concat(@game1, @game2)
+    end
+
+    it "adds id to attribute" do
+      @user.game_ids.should == [@game1.id, @game2.id]
+    end
+  end
+  
+  describe "list#concat (with array)" do
+    before do
+      @game1 = Game.create
+      @game2 = Game.create
+      @user  = User.create
+      @user.games.concat([@game1, @game2])
+    end
+
+    it "adds id to attribute" do
+      @user.game_ids.should == [@game1.id, @game2.id]
     end
   end
 end

@@ -1,9 +1,10 @@
 require 'pathname'
+require 'forwardable'
 
 root_path       = Pathname(__FILE__).dirname.join('..').expand_path
 extensions_path = root_path.join('lib', 'toy', 'extensions')
 
-require 'forwardable'
+require 'roxy'
 require 'simple_uuid'
 require 'active_model'
 require 'active_support/json'
@@ -14,7 +15,7 @@ require 'active_support/core_ext/string/conversions'
 require 'active_support/core_ext/string/inflections'
 
 require root_path.join('vendor', 'moneta', 'lib', 'moneta')
-Dir[extensions_path + '*.rb'].each { |file| require(file) }
+Dir[extensions_path + '**/*.rb'].each { |file| require(file) }
 
 module Toy
   extend self

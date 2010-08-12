@@ -28,6 +28,26 @@ module Toy
     end
     alias :== :eql?
 
+    module ListProxy
+      def push(instance)
+        value = proxy_target_ids + [instance.id]
+        proxy_owner.send("#{proxy_reflection.key}=", value)
+      end
+
+      def concat(*instances)
+        value = proxy_target_ids + instances.flatten.map { |i| i.id }
+        proxy_owner.send("#{proxy_reflection.key}=", value)
+      end
+
+      def reset
+        instance_variable_set(proxy_reflection.key, nil)
+      end
+
+      def proxy_target_ids
+        proxy_owner.send(proxy_reflection.key)
+      end
+    end
+
     private
       def create_accessors
         model.class_eval """
@@ -40,6 +60,7 @@ module Toy
             self.#{key} = instances.map { |instance| instance.id }
           end
         """
+        model.proxy(name, :reflection => self, :extend => ListProxy)
       end
   end
 end
