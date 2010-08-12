@@ -6,7 +6,6 @@ extensions_path = root_path.join('lib', 'toy', 'extensions')
 require 'forwardable'
 require 'simple_uuid'
 require 'active_model'
-require 'active_support/basic_object'
 require 'active_support/json'
 require 'active_support/core_ext/object'
 require 'active_support/core_ext/hash/indifferent_access'

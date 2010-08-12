@@ -17,6 +17,10 @@ module Toy
       @key ||= :"#{name.to_s.singularize}_ids"
     end
 
+    def instance_variable
+      @instance_variable ||= :"@_#{name}"
+    end
+
     def eql?(other)
       self.class.eql?(other.class) &&
         model == other.model &&
@@ -28,7 +32,12 @@ module Toy
       def create_accessors
         model::ListAccessors.module_eval """
           def #{name}
-            @#{name} ||= #{key}.map { |id| self.class[id] }
+            #{instance_variable} ||= #{type}.get_multi(#{key})
+          end
+
+          def #{name}=(instances)
+            #{instance_variable} = nil
+            self.#{key} = instances.map { |instance| instance.id }
           end
         """
       end

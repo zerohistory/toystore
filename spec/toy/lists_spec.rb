@@ -5,7 +5,7 @@ describe Toy::Lists do
 
   describe "declaring a list" do
     before do
-      User.list :games
+      User.list(:games)
     end
 
     it "knows about its lists" do
