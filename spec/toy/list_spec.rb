@@ -64,10 +64,20 @@ describe Toy::List do
   end
 
   describe "list reader" do
-    it "loads objects from ids when reading" do
-      game = Game.create
-      user = User.create(:game_ids => [game.id])
-      user.games.should == [game]
+    before do
+      @game = Game.create
+      @user = User.create(:game_ids => [@game.id])
+    end
+    
+    it "returns instances from ids attribute" do
+      @user.games.should == [@game]
+    end
+    
+    it "memoizes result" do
+      @user.games.should == [@game]
+      Game.should_not_receive(:get_multi)
+      Game.should_not_receive(:get)
+      @user.games.should == [@game]
     end
   end
 
