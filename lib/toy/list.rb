@@ -41,11 +41,21 @@ module Toy
       end
 
       def reset
-        instance_variable_set(proxy_reflection.key, nil)
+        proxy_owner.instance_variable_set(proxy_reflection.instance_variable, nil)
       end
 
       def proxy_target_ids
         proxy_owner.send(proxy_reflection.key)
+      end
+
+      def create(attrs={})
+        instance = proxy_reflection.type.create(attrs)
+        if instance.persisted?
+          push(instance)
+          proxy_owner.save
+          reset
+        end
+        instance
       end
     end
 

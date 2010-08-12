@@ -149,4 +149,58 @@ describe Toy::List do
       @user.game_ids.should == [@game1.id, @game2.id]
     end
   end
+
+  shared_examples_for("list#create") do
+    it "creates instance" do
+      @game.should be_persisted
+    end
+
+    it "adds id to attribute" do
+      @user.game_ids.should == [@game.id]
+    end
+
+    it "adds instance to reader" do
+      @user.games.should == [@game]
+    end
+  end
+
+  describe "list#create" do
+    before do
+      @user = User.create
+      @game = @user.games.create
+    end
+
+    it_should_behave_like "list#create"
+  end
+
+  describe "list#create (with attributes)" do
+    before do
+      Game.attribute(:move_count, Integer)
+      @user = User.create
+      @game = @user.games.create(:move_count => 10)
+    end
+
+    it_should_behave_like "list#create"
+
+    it "sets attributes on instance" do
+      @game.move_count.should == 10
+    end
+  end
+
+  describe "list#create (does not persist)" do
+    before do
+      @user = User.create
+      @user.games.should_not_receive(:push)
+      @user.games.should_not_receive(:reset)
+      @user.should_not_receive(:save)
+      game = Game.new
+      game.should_receive(:persisted?).and_return(false)
+      Game.should_receive(:create).and_return(game)
+      @game = @user.games.create
+    end
+
+    it "returns instance" do
+      @game.should be_instance_of(Game)
+    end
+  end
 end
