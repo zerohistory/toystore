@@ -3,18 +3,6 @@ require 'helper'
 describe Toy::Lists do
   uses_constants('User', 'Game')
 
-  describe "including lists module" do
-    before do
-      @klass = Class.new do
-        include Toy::Lists
-      end
-    end
-
-    it "adds list accessors module" do
-      @klass.const_get('ListAccessors').should be_true
-    end
-  end
-
   it "defaults lists to empty hash" do
     User.lists.should == {}
   end

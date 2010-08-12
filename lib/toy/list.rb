@@ -30,7 +30,7 @@ module Toy
 
     private
       def create_accessors
-        model::ListAccessors.module_eval """
+        model.class_eval """
           def #{name}
             #{instance_variable} ||= #{type}.get_multi(#{key})
           end
