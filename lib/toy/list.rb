@@ -21,6 +21,10 @@ module Toy
       @instance_variable ||= :"@_#{name}"
     end
 
+    def new_proxy(owner)
+      ListProxy.new(self, owner)
+    end
+
     def eql?(other)
       self.class.eql?(other.class) &&
         model == other.model &&
@@ -28,28 +32,62 @@ module Toy
     end
     alias :== :eql?
 
-    module ListProxy
+    class ListProxy
+      include Enumerable
+      extend Forwardable
+      def_delegators :@list, :model, :name, :type, :key
+
+      def initialize(list, owner)
+        @list, @owner = list, owner
+        target
+      end
+
+      def proxy_owner
+        @owner
+      end
+
+      def target
+        @target ||= type.get_multi(target_ids)
+      end
+      alias :to_a :target
+
+      def each
+        target.each { |i| yield(i) }
+      end
+
+      def eql?(other)
+        target == other
+      end
+      alias :== :eql?
+
       def push(instance)
-        value = proxy_target_ids + [instance.id]
-        proxy_owner.send("#{proxy_reflection.key}=", value)
+        self.target_ids = target_ids + [instance.id]
       end
       alias :<< :push
 
       def concat(*instances)
-        value = proxy_target_ids + instances.flatten.map { |i| i.id }
-        proxy_owner.send("#{proxy_reflection.key}=", value)
+        self.target_ids = target_ids + instances.flatten.map { |i| i.id }
       end
 
       def reset
-        proxy_owner.instance_variable_set(proxy_reflection.instance_variable, nil)
+        @target = nil
       end
 
-      def proxy_target_ids
-        proxy_owner.send(proxy_reflection.key)
+      def replace(instances)
+        reset
+        proxy_owner.send("#{key}=", instances.map { |i| i.id })
+      end
+
+      def target_ids
+        proxy_owner.send(key)
+      end
+
+      def target_ids=(value)
+        proxy_owner.send("#{key}=", value)
       end
 
       def create(attrs={})
-        instance = proxy_reflection.type.create(attrs)
+        instance = type.create(attrs)
         if instance.persisted?
           push(instance)
           proxy_owner.save
@@ -57,21 +95,24 @@ module Toy
         end
         instance
       end
+
+      private
+        def method_missing(method, *args, &block)
+          target.send(method, *args, &block)
+        end
     end
 
     private
       def create_accessors
         model.class_eval """
           def #{name}
-            #{instance_variable} ||= #{type}.get_multi(#{key})
+            #{instance_variable} ||= self.class.lists[:#{name}].new_proxy(self)
           end
 
           def #{name}=(instances)
-            #{instance_variable} = nil
-            self.#{key} = instances.map { |instance| instance.id }
+            #{name}.replace(instances)
           end
         """
-        model.proxy(name, :reflection => self, :extend => ListProxy)
       end
   end
 end

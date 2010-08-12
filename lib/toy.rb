@@ -4,7 +4,6 @@ require 'forwardable'
 root_path       = Pathname(__FILE__).dirname.join('..').expand_path
 extensions_path = root_path.join('lib', 'toy', 'extensions')
 
-require 'roxy'
 require 'simple_uuid'
 require 'active_model'
 require 'active_support/json'
