@@ -111,7 +111,7 @@ describe Toy::List do
       @user.game_ids.should == [@game.id]
     end
   end
-  
+
   describe "list#<<" do
     before do
       @game = Game.create
@@ -123,7 +123,7 @@ describe Toy::List do
       @user.game_ids.should == [@game.id]
     end
   end
-  
+
   describe "list#concat" do
     before do
       @game1 = Game.create
@@ -136,7 +136,7 @@ describe Toy::List do
       @user.game_ids.should == [@game1.id, @game2.id]
     end
   end
-  
+
   describe "list#concat (with array)" do
     before do
       @game1 = Game.create
