@@ -22,7 +22,7 @@ module Toy
       def save
         valid? ? super : false
       end
-      
+
       def save!
         save || raise(RecordInvalidError.new(self))
       end

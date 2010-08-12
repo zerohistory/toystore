@@ -15,14 +15,14 @@ module Toy
       def create(attrs={})
         new(attrs).tap { |doc| doc.save }
       end
-      
+
       def delete(*ids)
         ids.each do |id|
           next unless key?(id)
           self[id].delete
         end
       end
-      
+
       def destroy(*ids)
         ids.each do |id|
           next unless key?(id)
@@ -43,7 +43,7 @@ module Toy
       def new_record?
         @_new_record
       end
-      
+
       def destroyed?
         @_destroyed == true
       end
@@ -55,11 +55,11 @@ module Toy
       def save
         create_or_update
       end
-      
+
       def destroy
         delete
       end
-      
+
       def delete
         @_destroyed = true
         store.delete(store_key)
