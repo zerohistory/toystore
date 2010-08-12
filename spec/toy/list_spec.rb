@@ -100,6 +100,21 @@ describe Toy::List do
     end
   end
 
+  describe "list#reset" do
+    before do
+      @game = Game.create
+      @user = User.create(:game_ids => [@game.id])
+    end
+
+    it "unmemoizes the list" do
+      games = [@game]
+      @user.games.should == games
+      @user.games.reset
+      Game.should_receive(:get_multi).and_return(games)
+      @user.games.should == games
+    end
+  end
+
   describe "list#push" do
     before do
       @game = Game.create
