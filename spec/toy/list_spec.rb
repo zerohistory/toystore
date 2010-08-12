@@ -36,4 +36,22 @@ describe Toy::List do
   it "adds reader to model" do
     User.new.should respond_to(:games)
   end
+
+  describe "#eql?" do
+    it "returns true if same class, model, and name" do
+      list.should eql(list)
+    end
+
+    it "returns false if not same class" do
+      list.should_not eql({})
+    end
+
+    it "returns false if not same model" do
+      list.should_not eql(Toy::List.new(Game, :users))
+    end
+
+    it "returns false if not the same name" do
+      list.should_not eql(Toy::List.new(User, :pieces))
+    end
+  end
 end
