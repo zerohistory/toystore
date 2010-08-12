@@ -8,9 +8,24 @@ describe Toy::Querying do
   end
 
   describe ".[]" do
-    it "returns loaded document" do
+    it "returns document" do
       john = User.create(:name => 'John')
       User[john.id].name.should == 'John'
+    end
+  end
+
+  describe ".get" do
+    it "returns document" do
+      john = User.create(:name => 'John')
+      User.get(john.id).name.should == 'John'
+    end
+  end
+
+  describe ".get_multi" do
+    it "returns array of documents" do
+      john  = User.create(:name => 'John')
+      steve = User.create(:name => 'Steve')
+      User.get_multi(john.id, steve.id).should == [john, steve]
     end
   end
 

@@ -3,8 +3,13 @@ module Toy
     extend ActiveSupport::Concern
 
     module ClassMethods
-      def [](id)
+      def get(id)
         load(store[store_key(id)])
+      end
+      alias :[] :get
+
+      def get_multi(*ids)
+        ids.flatten.map { |id| get(id) }
       end
 
       def key?(id)
