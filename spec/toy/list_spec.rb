@@ -112,6 +112,18 @@ describe Toy::List do
     end
   end
   
+  describe "list#<<" do
+    before do
+      @game = Game.create
+      @user = User.create
+      @user.games << @game
+    end
+
+    it "adds id to attribute" do
+      @user.game_ids.should == [@game.id]
+    end
+  end
+  
   describe "list#concat" do
     before do
       @game1 = Game.create

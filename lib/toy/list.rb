@@ -33,6 +33,7 @@ module Toy
         value = proxy_target_ids + [instance.id]
         proxy_owner.send("#{proxy_reflection.key}=", value)
       end
+      alias :<< :push
 
       def concat(*instances)
         value = proxy_target_ids + instances.flatten.map { |i| i.id }
