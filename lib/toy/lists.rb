@@ -3,7 +3,10 @@ module Toy
     extend ActiveSupport::Concern
 
     included do
-      include Module.new.tap { |mod| const_set('ListAccessors', mod) }
+      unless const_defined?('ListAccessors')
+        const_set('ListAccessors', Module.new)
+        include const_get('ListAccessors')
+      end
     end
 
     module ClassMethods
