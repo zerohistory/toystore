@@ -8,9 +8,45 @@ describe Toy::Querying do
   end
 
   describe ".[]" do
-    it "returns loaded document" do
+    it "is aliased to get" do
       john = User.create(:name => 'John')
       User[john.id].name.should == 'John'
+    end
+
+    it "returns nil if not found" do
+      User['1'].should be_nil
+    end
+  end
+
+  describe ".get" do
+    it "returns document if found" do
+      john = User.create(:name => 'John')
+      User.get(john.id).name.should == 'John'
+    end
+
+    it "returns nil if not found" do
+      User.get('1').should be_nil
+    end
+  end
+
+  describe ".get!" do
+    it "returns document if found" do
+      john = User.create(:name => 'John')
+      User.get!(john.id).name.should == 'John'
+    end
+
+    it "raises not found exception if not found" do
+      lambda {
+        User.get!('1')
+      }.should raise_error(Toy::NotFound, 'Could not find document with id: "1"')
+    end
+  end
+
+  describe ".get_multi" do
+    it "returns array of documents" do
+      john  = User.create(:name => 'John')
+      steve = User.create(:name => 'Steve')
+      User.get_multi(john.id, steve.id).should == [john, steve]
     end
   end
 

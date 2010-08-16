@@ -1,10 +1,10 @@
 require 'helper'
 
 describe Toy::List do
-  uses_constants('User', 'Game')
+  uses_constants('User', 'Game', 'Move')
 
   before do
-    @list = Toy::List.new(User, :games)
+    @list = User.list(:games)
   end
 
   let(:list)  { @list }
@@ -25,6 +25,10 @@ describe Toy::List do
     list.key.should == :game_ids
   end
 
+  it "has instance_variable" do
+    list.instance_variable.should == :@_games
+  end
+
   it "adds list to model" do
     User.lists.keys.should include(:games)
   end
@@ -33,8 +37,12 @@ describe Toy::List do
     User.attributes.keys.should include(:game_ids)
   end
 
-  it "adds reader to model" do
+  it "adds reader method" do
     User.new.should respond_to(:games)
+  end
+
+  it "adds writer method" do
+    User.new.should respond_to(:games=)
   end
 
   describe "#eql?" do
@@ -51,7 +59,163 @@ describe Toy::List do
     end
 
     it "returns false if not the same name" do
-      list.should_not eql(Toy::List.new(User, :pieces))
+      list.should_not eql(Toy::List.new(User, :moves))
+    end
+  end
+
+  describe "list reader" do
+    before do
+      @game = Game.create
+      @user = User.create(:game_ids => [@game.id])
+    end
+
+    it "returns instances" do
+      @user.games.should == [@game]
+    end
+
+    it "memoizes result" do
+      @user.games.should == [@game]
+      Game.should_not_receive(:get_multi)
+      Game.should_not_receive(:get)
+      @user.games.should == [@game]
+    end
+  end
+
+  describe "list writer" do
+    before do
+      @game1 = Game.create
+      @game2 = Game.create
+      @user  = User.create(:game_ids => [@game1.id])
+      @user.games = [@game2]
+    end
+
+    it "set attribute" do
+      @user.game_ids.should == [@game2.id]
+    end
+
+    it "unmemoizes reader" do
+      @user.games.should == [@game2]
+      @user.games         = [@game1]
+      @user.games.should == [@game1]
+    end
+  end
+
+  describe "list#reset" do
+    before do
+      @game = Game.create
+      @user = User.create(:game_ids => [@game.id])
+    end
+
+    it "unmemoizes the list" do
+      games = [@game]
+      @user.games.should == games
+      @user.games.reset
+      Game.should_receive(:get_multi).and_return(games)
+      @user.games.should == games
+    end
+  end
+
+  describe "list#push" do
+    before do
+      @game = Game.create
+      @user = User.create
+      @user.games.push(@game)
+    end
+
+    it "adds id to attribute" do
+      @user.game_ids.should == [@game.id]
+    end
+  end
+
+  describe "list#<<" do
+    before do
+      @game = Game.create
+      @user = User.create
+      @user.games << @game
+    end
+
+    it "adds id to attribute" do
+      @user.game_ids.should == [@game.id]
+    end
+  end
+
+  describe "list#concat" do
+    before do
+      @game1 = Game.create
+      @game2 = Game.create
+      @user  = User.create
+      @user.games.concat(@game1, @game2)
+    end
+
+    it "adds id to attribute" do
+      @user.game_ids.should == [@game1.id, @game2.id]
+    end
+  end
+
+  describe "list#concat (with array)" do
+    before do
+      @game1 = Game.create
+      @game2 = Game.create
+      @user  = User.create
+      @user.games.concat([@game1, @game2])
+    end
+
+    it "adds id to attribute" do
+      @user.game_ids.should == [@game1.id, @game2.id]
+    end
+  end
+
+  shared_examples_for("list#create") do
+    it "creates instance" do
+      @game.should be_persisted
+    end
+
+    it "adds id to attribute" do
+      @user.game_ids.should == [@game.id]
+    end
+
+    it "adds instance to reader" do
+      @user.games.should == [@game]
+    end
+  end
+
+  describe "list#create" do
+    before do
+      @user = User.create
+      @game = @user.games.create
+    end
+
+    it_should_behave_like "list#create"
+  end
+
+  describe "list#create (with attributes)" do
+    before do
+      Game.attribute(:move_count, Integer)
+      @user = User.create
+      @game = @user.games.create(:move_count => 10)
+    end
+
+    it_should_behave_like "list#create"
+
+    it "sets attributes on instance" do
+      @game.move_count.should == 10
+    end
+  end
+
+  describe "list#create (does not persist)" do
+    before do
+      @user = User.create
+      @user.games.should_not_receive(:push)
+      @user.games.should_not_receive(:reset)
+      @user.should_not_receive(:save)
+      game = Game.new
+      game.should_receive(:persisted?).and_return(false)
+      Game.should_receive(:create).and_return(game)
+      @game = @user.games.create
+    end
+
+    it "returns instance" do
+      @game.should be_instance_of(Game)
     end
   end
 end
