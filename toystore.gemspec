@@ -6,7 +6,7 @@ require 'toy/version'
  
 Gem::Specification.new do |s|
   s.name        = "toystore"
-  s.version     = Toy::VERSION
+  s.version     = Toy::Version
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Geoffrey Dagley"]
   s.email       = ["gdagley@newtoyinc.com"]
