@@ -79,6 +79,13 @@ describe Toy::List do
       Game.should_not_receive(:get)
       @user.games.should == [@game]
     end
+
+    it "does not query if ids attribute is blank" do
+      user = User.create
+      Game.should_not_receive(:get_multi)
+      Game.should_not_receive(:get)
+      user.games.should == []
+    end
   end
 
   describe "list writer" do

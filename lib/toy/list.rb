@@ -47,6 +47,7 @@ module Toy
       end
 
       def target
+        return [] if target_ids.blank?
         @target ||= type.get_multi(target_ids)
       end
       alias :to_a :target
