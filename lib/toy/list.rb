@@ -75,7 +75,7 @@ module Toy
 
       def replace(instances)
         reset
-        proxy_owner.send("#{key}=", instances.map { |i| i.id })
+        self.target_ids = instances.map { |i| i.id }
       end
 
       def target_ids
