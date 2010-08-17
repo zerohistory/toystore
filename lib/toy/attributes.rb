@@ -58,11 +58,11 @@ module Toy
       end
 
       def method_missing(method, *args, &block)
-        if !self.class.attribute_methods_generated?
+        if self.class.attribute_methods_generated?
+          super
+        else
           self.class.define_attribute_methods
           send(method, *args, &block)
-        else
-          super
         end
       end
 
