@@ -17,6 +17,7 @@ module Toy
       include Timestamps
 
       include Lists
+      include References
     end
   end
 end
