@@ -75,6 +75,18 @@ describe Toy::Attributes do
       record = User.new
       lambda { record.attributes = nil }.should_not raise_error
     end
+
+    it "works with accessors that are not keys" do
+      User.class_eval { attr_accessor :foo }
+      record = User.new(:foo => 'oof')
+      record.foo.should == 'oof'
+    end
+
+    it "ignores keys that are not attributes and do not have accessors defined" do
+      lambda {
+        User.new(:taco => 'bell')
+      }.should_not raise_error
+    end
   end
 
   describe "declaring an attribute" do

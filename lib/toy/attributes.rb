@@ -43,7 +43,13 @@ module Toy
 
       def attributes=(attrs)
         return if attrs.nil?
-        attrs.each { |key, value| write_attribute(key, value) }
+        attrs.each do |key, value|
+          if attribute_method?(key)
+            write_attribute(key, value)
+          elsif respond_to?("#{key}=")
+            send("#{key}=", value)
+          end
+        end
       end
 
       def respond_to?(*args)
@@ -70,9 +76,9 @@ module Toy
           attributes[key] = attribute_definition(key).write(value)
         end
         alias :[]= :write_attribute
-        
+
         def attribute_definition(key)
-          self.class.attributes[key.to_sym]
+          self.class.attributes[key.to_sym] || raise("Attribute '#{key}' is not defined")
         end
 
         def attribute_method?(key)
