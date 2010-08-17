@@ -4,6 +4,13 @@ require 'rake/testtask'
 require 'spec/rake/spectask'
 require File.expand_path('../lib/toy/version', __FILE__)
 
+def gemspec
+  @gemspec ||= begin
+    file = File.expand_path('../toystore.gemspec', __FILE__)
+    eval(File.read(file), binding, file)
+  end
+end
+
 Rake::TestTask.new do |t|
   t.ruby_opts << '-rubygems'
   t.test_files = ['test/lint_test.rb']
@@ -17,8 +24,13 @@ end
 task :default => :spec
 task :default => :test
 
+desc 'Vaildate the gem specification'
+task :gemspec do
+  gemspec.validate
+end
+
 desc 'Builds the gem'
-task :build do
+task :build => :gemspec do
   sh "gem build toy.gemspec"
 end
 

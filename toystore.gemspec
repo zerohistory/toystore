@@ -17,6 +17,8 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = ">= 1.3.6"
   s.rubyforge_project         = "toystore"
  
+  s.add_runtime_dependency "simple_uuid"
+  
   s.add_development_dependency "rspec"
  
   s.files        = Dir.glob("{bin,lib}/**/*") + %w(LICENSE README.md ROADMAP.md CHANGELOG.md)
