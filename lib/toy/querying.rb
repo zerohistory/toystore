@@ -23,7 +23,17 @@ module Toy
 
       def load(json)
         return nil if json.nil?
-        new(Toy.decode(json), true)
+        object = allocate
+        object.initialize_from_database(Toy.decode(json))
+      end
+    end
+
+    module InstanceMethods
+      # Private, should only be called by .load
+      def initialize_from_database(attrs={})
+        @_new_record = false
+        self.attributes = attrs
+        self
       end
     end
   end
