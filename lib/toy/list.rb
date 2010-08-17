@@ -34,7 +34,8 @@ module Toy
 
     class ListProxy
       include Enumerable
-      extend Forwardable
+      extend  Forwardable
+
       def_delegators :@list, :model, :name, :type, :key
 
       def initialize(list, owner)
@@ -61,6 +62,11 @@ module Toy
       end
       alias :== :eql?
 
+      def include?(instance)
+        return false if instance.nil?
+        target_ids.include?(instance.id)
+      end
+
       def push(instance)
         self.target_ids = target_ids + [instance.id]
       end
@@ -79,14 +85,6 @@ module Toy
         self.target_ids = instances.map { |i| i.id }
       end
 
-      def target_ids
-        proxy_owner.send(key)
-      end
-
-      def target_ids=(value)
-        proxy_owner.send("#{key}=", value)
-      end
-
       def create(attrs={})
         instance = type.create(attrs)
         if instance.persisted?
@@ -98,6 +96,14 @@ module Toy
       end
 
       private
+        def target_ids
+          proxy_owner.send(key)
+        end
+
+        def target_ids=(value)
+          proxy_owner.send("#{key}=", value)
+        end
+
         def method_missing(method, *args, &block)
           target.send(method, *args, &block)
         end

@@ -255,4 +255,24 @@ describe Toy::List do
       @user.games.reject { |g| g.moves > 1 }.should == [@game1]
     end
   end
+
+  describe "list#include?" do
+    before do
+      @game1 = Game.create
+      @game2 = Game.create
+      @user = User.create(:game_ids => [@game1.id])
+    end
+
+    it "returns true if instance in association" do
+      @user.games.should include(@game1)
+    end
+
+    it "returns false if instance not in association" do
+      @user.games.should_not include(@game2)
+    end
+
+    it "returns false for nil" do
+      @user.games.should_not include(nil)
+    end
+  end
 end
