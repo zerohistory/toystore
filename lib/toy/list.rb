@@ -40,7 +40,6 @@ module Toy
 
       def initialize(list, owner)
         @list, @owner = list, owner
-        target
       end
 
       def proxy_owner
