@@ -20,6 +20,8 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency "simple_uuid"
   
   s.add_development_dependency "rspec"
+  s.add_development_dependency "log_buddy"
+  s.add_development_dependency "timecop"
  
   s.files        = Dir.glob("{bin,lib}/**/*") + %w(LICENSE README.md ROADMAP.md CHANGELOG.md)
   s.require_path = 'lib'

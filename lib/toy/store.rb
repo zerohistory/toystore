@@ -14,6 +14,7 @@ module Toy
       include Callbacks
       include Validations
       include Serialization
+      include Timestamps
 
       include Lists
     end

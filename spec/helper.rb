@@ -12,6 +12,7 @@ $:.unshift(lib_path, moneta_path)
 
 require 'toy'
 require 'spec'
+require 'timecop'
 require 'log_buddy'
 require 'support/constants'
 
