@@ -132,6 +132,12 @@ describe Toy::List do
     it "adds id to attribute" do
       @user.game_ids.should == [@game.id]
     end
+
+    it "raises error if wrong type assigned" do
+      lambda {
+        @user.games.push(Move.new)
+      }.should raise_error(ArgumentError, "Game expected, but was Move")
+    end
   end
 
   describe "list#<<" do
@@ -143,6 +149,12 @@ describe Toy::List do
 
     it "adds id to attribute" do
       @user.game_ids.should == [@game.id]
+    end
+
+    it "raises error if wrong type assigned" do
+      lambda {
+        @user.games << Move.new
+      }.should raise_error(ArgumentError, "Game expected, but was Move")
     end
   end
 
@@ -157,6 +169,12 @@ describe Toy::List do
     it "adds id to attribute" do
       @user.game_ids.should == [@game1.id, @game2.id]
     end
+
+    it "raises error if wrong type assigned" do
+      lambda {
+        @user.games.concat(Move.new)
+      }.should raise_error(ArgumentError, "Game expected, but was Move")
+    end
   end
 
   describe "list#concat (with array)" do
@@ -169,6 +187,12 @@ describe Toy::List do
 
     it "adds id to attribute" do
       @user.game_ids.should == [@game1.id, @game2.id]
+    end
+
+    it "raises error if wrong type assigned" do
+      lambda {
+        @user.games.concat([Move.new])
+      }.should raise_error(ArgumentError, "Game expected, but was Move")
     end
   end
 

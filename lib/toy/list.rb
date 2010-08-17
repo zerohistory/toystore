@@ -61,40 +61,49 @@ module Toy
       end
       alias :== :eql?
 
-      def include?(instance)
-        return false if instance.nil?
-        target_ids.include?(instance.id)
+      def include?(record)
+        return false if record.nil?
+        target_ids.include?(record.id)
       end
 
-      def push(instance)
-        self.target_ids = target_ids + [instance.id]
+      def push(record)
+        assert_type(record)
+        self.target_ids = target_ids + [record.id]
       end
       alias :<< :push
 
-      def concat(*instances)
-        self.target_ids = target_ids + instances.flatten.map { |i| i.id }
+      def concat(*records)
+        records = records.flatten
+        records.map { |record| assert_type(record) }
+        self.target_ids = target_ids + records.map { |i| i.id }
       end
 
       def reset
         @target = nil
       end
 
-      def replace(instances)
+      def replace(records)
         reset
-        self.target_ids = instances.map { |i| i.id }
+        self.target_ids = records.map { |i| i.id }
       end
 
       def create(attrs={})
-        instance = type.create(attrs)
-        if instance.persisted?
-          push(instance)
-          proxy_owner.save
-          reset
+        type.create(attrs).tap do |record|
+          if record.persisted?
+            push(record)
+            proxy_owner.save
+            reset
+          end
         end
-        instance
       end
 
       private
+        def assert_type(record)
+          unless record.instance_of?(type)
+            raise(ArgumentError, "#{type} expected, but was #{record.class}")
+          end
+        end
+
         def target_ids
           proxy_owner.send(key)
         end
@@ -115,8 +124,8 @@ module Toy
             #{instance_variable} ||= self.class.lists[:#{name}].new_proxy(self)
           end
 
-          def #{name}=(instances)
-            #{name}.replace(instances)
+          def #{name}=(records)
+            #{name}.replace(records)
           end
         """
       end

@@ -84,13 +84,13 @@ module Toy
         end
       end
 
-      def assert_type(record)
-        unless record.instance_of?(type)
-          raise(ArgumentError, "#{type} expected, but was #{record.class}")
-        end
-      end
-
       private
+        def assert_type(record)
+          unless record.instance_of?(type)
+            raise(ArgumentError, "#{type} expected, but was #{record.class}")
+          end
+        end
+
         def target_id
           proxy_owner.send(key)
         end

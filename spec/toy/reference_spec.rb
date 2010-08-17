@@ -104,7 +104,7 @@ describe Toy::Reference do
       @game.user = @user2
       @game.user.should == @user2
     end
-    
+
     it "raises error if wrong type assigned" do
       lambda {
         @game.user = Move.new
