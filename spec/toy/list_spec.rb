@@ -218,4 +218,34 @@ describe Toy::List do
       @game.should be_instance_of(Game)
     end
   end
+
+  describe "list#each" do
+    before do
+      @game1 = Game.create
+      @game2 = Game.create
+      @user = User.create(:game_ids => [@game1.id, @game2.id])
+    end
+
+    it "iterates through each instance" do
+      games = []
+      @user.games.each do |game|
+        games << game
+      end
+      games.should == [@game1, @game2]
+    end
+  end
+
+  describe "enumerating" do
+    before do
+      Game.attribute(:moves, Integer)
+      @game1 = Game.create(:moves => 1)
+      @game2 = Game.create(:moves => 2)
+      @user = User.create(:game_ids => [@game1.id, @game2.id])
+    end
+
+    it "works" do
+      @user.games.select { |g| g.moves > 1 }.should == [@game2]
+      @user.games.reject { |g| g.moves > 1 }.should == [@game1]
+    end
+  end
 end
