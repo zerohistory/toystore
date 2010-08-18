@@ -93,11 +93,13 @@ describe Toy::Attributes do
     before do
       User.attribute :name, String
       User.attribute :age, Integer
+      User.attribute :brother_name, String, :default => 'Daryl'
     end
 
     it "adds attribute to attributes" do
       User.attributes[:name].should == Toy::Attribute.new(User, :name, String)
       User.attributes[:age].should  == Toy::Attribute.new(User, :age, Integer)
+      User.attributes[:brother_name].should  == Toy::Attribute.new(User, :brother_name, String, {:default => 'Daryl'})
     end
 
     it "adds accessors" do
@@ -110,6 +112,11 @@ describe Toy::Attributes do
       record = User.new
       record.age = '12'
       record.age.should == 12
+    end
+    
+    it "has defaults" do
+      record = User.new
+      record.brother_name.should == 'Daryl'
     end
 
     it "adds query-ers" do

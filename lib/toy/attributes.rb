@@ -17,8 +17,8 @@ module Toy
         @attributes ||= {}
       end
 
-      def attribute(key, type)
-        Attribute.new(self, key, type)
+      def attribute(key, type, options = {})
+        Attribute.new(self, key, type, options)
       end
 
       def attribute?(key)
