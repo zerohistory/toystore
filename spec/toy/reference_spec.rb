@@ -73,7 +73,7 @@ describe Toy::Reference do
       reference.type.should be(User)
     end
 
-    it "works" do
+    it "works properly when reading and writing" do
       user = User.create
       game = Game.create
       game.creator = user
