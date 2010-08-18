@@ -121,6 +121,20 @@ describe Toy::Persistence do
     end
   end
   
+  describe "#update_attributes" do
+    before do
+      User.attribute :name, String
+    end
+    
+    it "should change attribute and save" do
+      user = User.create(:name => 'John')
+      User.get(user.id).name.should == 'John'
+
+      user.update_attributes(:name => 'Geoffrey')
+      User.get(user.id).name.should == 'Geoffrey'
+    end
+  end
+  
   describe "#delete" do
     it "should remove the instance from the store" do
       doc = User.create

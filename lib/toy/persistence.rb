@@ -55,6 +55,11 @@ module Toy
       def save
         create_or_update
       end
+      
+      def update_attributes(attrs)
+        self.attributes = attrs
+        save
+      end
 
       def destroy
         delete
