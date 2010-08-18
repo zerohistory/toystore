@@ -2,8 +2,8 @@ module Toy
   class List
     attr_accessor :model, :name
 
-    def initialize(model, name)
-      @model, @name = model, name.to_sym
+    def initialize(model, name, type=nil)
+      @model, @name, @type = model, name.to_sym, type
       model.lists[name] = self
       model.attribute(key, Array)
       create_accessors

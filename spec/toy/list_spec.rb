@@ -63,6 +63,24 @@ describe Toy::List do
     end
   end
 
+  describe "setting list type" do
+    before do
+      @list = User.list(:active_games, Game)
+    end
+    let(:list) { @list }
+
+    it "uses type provided instead of inferring from name" do
+      list.type.should be(Game)
+    end
+
+    it "works properly when reading and writing" do
+      user = User.create
+      game = Game.create
+      user.active_games         = [game]
+      user.active_games.should == [game]
+    end
+  end
+
   describe "list reader" do
     before do
       @game = Game.create
