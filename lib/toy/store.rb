@@ -18,6 +18,7 @@ module Toy
 
       include Lists
       include References
+      include Indices
     end
   end
 end
