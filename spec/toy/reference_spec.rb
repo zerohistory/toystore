@@ -29,7 +29,6 @@ describe Toy::Reference do
     reference.instance_variable.should == :@_user
   end
 
-
   it "adds reference to model" do
     Game.references.keys.should include(:user)
   end
@@ -61,6 +60,24 @@ describe Toy::Reference do
 
     it "returns false if not the same name" do
       reference.should_not eql(Toy::Reference.new(Game, :move))
+    end
+  end
+
+  describe "setting reference type" do
+    before do
+      @reference = Game.reference(:creator, User)
+    end
+    let(:reference) { @reference }
+
+    it "uses type provided instead of inferring from name" do
+      reference.type.should be(User)
+    end
+
+    it "works properly when reading and writing" do
+      user = User.create
+      game = Game.create
+      game.creator = user
+      game.creator.should == user
     end
   end
 

@@ -4,6 +4,7 @@ module Toy
 
     def initialize(model, name, options = {})
       @model, @name = model, name.to_sym
+      @type = options[:type]
       model.lists[name] = self
       model.attribute(key, Array)
       create_accessors(options)

@@ -2,7 +2,7 @@ require 'helper'
 
 describe Toy::Indices do
   uses_constants('User')
-  
+
   it "defaults lists to empty hash" do
     User.indices.should == {}
   end
@@ -21,5 +21,5 @@ describe Toy::Indices do
       @index.should == Toy::Index.new(User, :ssn)
     end
   end
-  
+
 end
