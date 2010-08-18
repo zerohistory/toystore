@@ -44,7 +44,7 @@ describe Toy::List do
   it "adds writer method" do
     User.new.should respond_to(:games=)
   end
-
+  
   describe "#eql?" do
     it "returns true if same class, model, and name" do
       list.should eql(list)
@@ -62,6 +62,27 @@ describe Toy::List do
       list.should_not eql(Toy::List.new(User, :moves))
     end
   end
+
+  describe "dependent" do
+    before do
+      User.list :games, :dependent => true
+      @game = Game.create
+      @user = User.create(:game_ids => [@game.id])
+    end
+    
+    it "should create a method to destroy games" do
+      User.new.should respond_to(:destroy_games)
+    end
+    
+    it "should remove the games" do
+      user_id = @user.id
+      game_id = @game.id
+      @user.destroy
+      User[user_id].should be_nil
+      Game[game_id].should be_nil
+    end
+  end
+  
 
   describe "list reader" do
     before do

@@ -19,5 +19,10 @@ describe Toy::Lists do
     it "returns list" do
       @list.should == Toy::List.new(User, :games)
     end
+    
+    it "should pass options to list" do
+      @list = User.list(:games, {:some => 'option'})
+      @list.should == Toy::List.new(User, :games, {:some => 'option'})
+    end
   end
 end

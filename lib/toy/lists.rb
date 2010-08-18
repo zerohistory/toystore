@@ -7,8 +7,8 @@ module Toy
         @lists ||= {}
       end
 
-      def list(name)
-        List.new(self, name)
+      def list(name, options = {})
+        List.new(self, name, options)
       end
     end
   end
