@@ -1,7 +1,7 @@
 module Toy
   module Indices
     extend ActiveSupport::Concern
-    
+
     module ClassMethods
       def indices
         @indices ||= {}
