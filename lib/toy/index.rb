@@ -30,6 +30,10 @@ module Toy
             id = store[index_key]
             id ? get(id) : nil
           end
+          
+          def self.find_or_create_by_#{name}(value)
+            find_by_#{name}(value) || create(:#{name} => value)
+          end
         """
 
         model.class_eval """

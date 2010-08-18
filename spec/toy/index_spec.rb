@@ -79,7 +79,7 @@ describe Toy::Index do
     end
   end
 
-  describe "finding_by_index" do
+  describe "finding by index" do
     it "should not find values that are not in index" do
       User.find_by_ssn('does-not-exist').should be_nil
     end
@@ -90,4 +90,22 @@ describe Toy::Index do
       User.find_by_ssn('555-00-1234').should == user
     end
   end
+  
+  describe "finding or creating by index" do
+    it "should not find values that are not in index" do
+      User.find_by_ssn('does-not-exist').should be_nil
+
+      user = User.find_or_create_by_ssn('does-not-exist')
+      user.ssn.should == 'does-not-exist'
+      
+      User.find_by_ssn('does-not-exist').should_not be_nil
+    end
+
+    it "should find indexed value" do
+      user = User.create(:ssn => '555-00-1234')
+
+      User.find_or_create_by_ssn('555-00-1234').should == user
+    end
+  end
+  
 end
