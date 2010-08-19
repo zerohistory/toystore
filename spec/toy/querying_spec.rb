@@ -1,7 +1,7 @@
 require 'helper'
 
 describe Toy::Querying do
-  uses_constants('User')
+  uses_constants('User', 'Game')
 
   before do
     User.attribute :name, String
@@ -86,18 +86,37 @@ describe Toy::Querying do
   end
 
   describe "#reload" do
-    before        { @record = User.create(:name => 'John') }
-    let(:record)  { @record }
+    before        { @user = User.create(:name => 'John') }
+    let(:user)  { @user }
 
     it "reloads record from the database" do
-      record.name = 'Steve'
-      record.reload
-      record.name.should == 'John'
+      user.name = 'Steve'
+      user.reload
+      user.name.should == 'John'
     end
 
     it "returns the record" do
-      record.name = 'Steve'
-      record.reload.should equal(record)
+      user.name = 'Steve'
+      user.reload.should equal(user)
+    end
+
+    it "resets lists" do
+      User.list(:games)
+      game = Game.create
+      user.update_attributes(:games => [game])
+      user.games = []
+      user.games.should == []
+      user.reload
+      user.games.should == [game]
+    end
+
+    it "resets references" do
+      Game.reference(:user)
+      game = Game.create(:user => user)
+      game.user = nil
+      game.user.should be_nil
+      game.reload
+      game.user.should == user
     end
   end
 end
