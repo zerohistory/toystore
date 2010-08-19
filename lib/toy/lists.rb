@@ -7,8 +7,13 @@ module Toy
         @lists ||= {}
       end
 
-      def list(name, options = {})
-        List.new(self, name, options)
+      # @examples
+      #   list :games                                   # assumes Game
+      #   list :games, :dependent => true               # assumes Game
+      #   list :active_games, Game                      # uses Game
+      #   list :active_games, Game, :dependent => true  # uses Game
+      def list(name, *args)
+        List.new(self, name, *args)
       end
     end
   end

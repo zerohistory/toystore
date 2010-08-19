@@ -1,13 +1,16 @@
 module Toy
   class List
-    attr_accessor :model, :name
+    attr_accessor :model, :name, :options
 
-    def initialize(model, name, options = {})
-      @model, @name = model, name.to_sym
-      @type = options[:type]
+    def initialize(model, name, *args)
+      @model   = model
+      @name    = name.to_sym
+      @options = args.extract_options!
+      @type    = args.shift
+
       model.lists[name] = self
       model.attribute(key, Array)
-      create_accessors(options)
+      create_accessors
     end
 
     def type
@@ -119,7 +122,7 @@ module Toy
     end
 
     private
-      def create_accessors(options)
+      def create_accessors
         model.class_eval """
           def #{name}
             #{instance_variable} ||= self.class.lists[:#{name}].new_proxy(self)
@@ -129,12 +132,12 @@ module Toy
             #{name}.replace(records)
           end
         """
-        
+
         if options[:dependent]
           model.class_eval """
             after_destroy :destroy_#{name}
           """
-          
+
           model.class_eval """
             def destroy_#{name}
               #{name}.each { |o| o.destroy }
