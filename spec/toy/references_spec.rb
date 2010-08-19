@@ -20,4 +20,49 @@ describe Toy::References do
       @reference.should == Toy::Reference.new(Game, :user)
     end
   end
+
+  describe "declaring a reference with options" do
+    before do
+      @reference = Game.reference(:user, :some_option => true)
+    end
+    let(:reference) { @reference }
+
+    it "sets type" do
+      reference.type.should be(User)
+    end
+
+    it "sets options" do
+      reference.options.should == {:some_option => true}
+    end
+  end
+
+  describe "declaring a reference with type" do
+    before do
+      @reference = Game.reference(:creator, User)
+    end
+    let(:reference) { @reference }
+
+    it "sets type" do
+      reference.type.should be(User)
+    end
+
+    it "sets options" do
+      reference.options.should == {}
+    end
+  end
+
+  describe "declaring a reference with type and options" do
+    before do
+      @reference = Game.reference(:creator, User, :some_option => true)
+    end
+    let(:reference) { @reference }
+
+    it "sets type" do
+      reference.type.should be(User)
+    end
+
+    it "sets options" do
+      reference.options.should == {:some_option => true}
+    end
+  end
 end

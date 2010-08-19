@@ -1,9 +1,13 @@
 module Toy
   class Reference
-    attr_accessor :model, :name
+    attr_accessor :model, :name, :options
 
-    def initialize(model, name, type=nil)
-      @model, @name, @type = model, name.to_sym, type
+    def initialize(model, name, *args)
+      @model   = model
+      @name    = name.to_sym
+      @options = args.extract_options!
+      @type    = args.shift
+      
       model.references[name] = self
       model.attribute(key, String)
       create_accessors

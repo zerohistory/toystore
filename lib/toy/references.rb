@@ -7,8 +7,8 @@ module Toy
         @references ||= {}
       end
 
-      def reference(name, type=nil)
-        Reference.new(self, name, type)
+      def reference(name, *args)
+        Reference.new(self, name, *args)
       end
     end
   end
