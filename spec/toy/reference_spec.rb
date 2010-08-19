@@ -127,6 +127,20 @@ describe Toy::Reference do
         @game.user = Move.new
       }.should raise_error(ArgumentError, "User expected, but was Move")
     end
+
+    describe "with nil value" do
+      before do
+        @game.user = nil
+      end
+
+      it "returns nil for reader" do
+        @game.user.should be_nil
+      end
+
+      it "returns nil for attribute" do
+        @game.user_id.should be_nil
+      end
+    end
   end
 
   describe "reference boolean" do

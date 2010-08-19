@@ -66,9 +66,14 @@ module Toy
       end
 
       def replace(record)
-        assert_type(record)
-        reset
-        self.target_id = record.id
+        if record.nil?
+          reset
+          self.target_id = nil
+        else
+          assert_type(record)
+          reset
+          self.target_id = record.id
+        end
       end
 
       def create(attrs={})
