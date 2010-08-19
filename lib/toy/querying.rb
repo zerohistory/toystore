@@ -35,6 +35,13 @@ module Toy
         self.attributes = attrs
         self
       end
+
+      def reload
+        if attrs = store[store_key]
+          self.attributes = Toy.decode(attrs)
+        end
+        self
+      end
     end
   end
 end

@@ -84,4 +84,20 @@ describe Toy::Querying do
       User[doc.id].name.should == 'John'
     end
   end
+
+  describe "#reload" do
+    before        { @record = User.create(:name => 'John') }
+    let(:record)  { @record }
+
+    it "reloads record from the database" do
+      record.name = 'Steve'
+      record.reload
+      record.name.should == 'John'
+    end
+
+    it "returns the record" do
+      record.name = 'Steve'
+      record.reload.should equal(record)
+    end
+  end
 end
