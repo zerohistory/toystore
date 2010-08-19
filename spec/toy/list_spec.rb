@@ -1,7 +1,7 @@
 require 'helper'
 
 describe Toy::List do
-  uses_constants('User', 'Game', 'Move')
+  uses_constants('User', 'Game', 'Move', 'Chat')
 
   before do
     @list = User.list(:games)
@@ -270,7 +270,7 @@ describe Toy::List do
       @game.move_count.should == 10
     end
   end
-
+  
   describe "list#create (does not persist)" do
     before do
       @user = User.create
@@ -285,6 +285,20 @@ describe Toy::List do
 
     it "returns instance" do
       @game.should be_instance_of(Game)
+    end
+  end
+  
+  describe "list#create (with :inverse_of)" do
+    before do
+      Chat.reference(:game, Game)
+      Game.list(:chats, Chat, :inverse_of => :game)
+      @game = Game.create
+      @chat = @game.chats.create
+    end
+
+    it "sets the inverse association" do
+      # @game.chats.should include(@chat)
+      @chat.game.should == @game
     end
   end
 

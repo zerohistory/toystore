@@ -46,7 +46,7 @@ module Toy
       include Enumerable
       extend  Forwardable
 
-      def_delegators :@list, :model, :name, :type, :key
+      def_delegators :@list, :model, :name, :type, :key, :options
 
       def initialize(list, owner)
         @list, @owner = list, owner
@@ -99,6 +99,7 @@ module Toy
       end
 
       def create(attrs={})
+        attrs.merge!("#{options[:inverse_of]}_id" => proxy_owner.id) if options[:inverse_of]
         type.create(attrs).tap do |record|
           if record.persisted?
             push(record)
