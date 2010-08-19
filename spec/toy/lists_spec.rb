@@ -36,8 +36,8 @@ describe Toy::Lists do
       list.type.should be(Game)
     end
 
-    it "sets options to empty hash" do
-      list.options.should == {}
+    it "sets options to hash" do
+      list.options.should be_instance_of(Hash)
     end
   end
 
@@ -51,8 +51,9 @@ describe Toy::Lists do
       list.type.should be(Game)
     end
 
-    it "sets options to empty hash" do
-      list.options.should == {:dependent => true}
+    it "sets options" do
+      list.options.should have_key(:dependent)
+      list.options[:dependent].should be_true
     end
   end
 
@@ -66,8 +67,9 @@ describe Toy::Lists do
       list.type.should be(Game)
     end
 
-    it "sets options to empty hash" do
-      list.options.should == {:dependent => true}
+    it "sets options" do
+      list.options.should have_key(:dependent)
+      list.options[:dependent].should be_true
     end
   end
 end

@@ -12,8 +12,8 @@ module Toy
       #   list :games, :dependent => true               # assumes Game
       #   list :active_games, Game                      # uses Game
       #   list :active_games, Game, :dependent => true  # uses Game
-      def list(name, *args)
-        List.new(self, name, *args)
+      def list(name, *args, &block)
+        List.new(self, name, *args, &block)
       end
     end
   end

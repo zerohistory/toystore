@@ -2,7 +2,7 @@ module Toy
   class List
     attr_accessor :model, :name, :options
 
-    def initialize(model, name, *args)
+    def initialize(model, name, *args, &block)
       @model   = model
       @name    = name.to_sym
       @options = args.extract_options!
@@ -11,6 +11,8 @@ module Toy
       model.lists[name] = self
       model.attribute(key, Array)
       create_accessors
+
+      options[:extensions] = modularized_extensions(block, options[:extensions])
     end
 
     def type
@@ -23,6 +25,10 @@ module Toy
 
     def instance_variable
       @instance_variable ||= :"@_#{name}"
+    end
+
+    def extensions
+      options[:extensions]
     end
 
     def new_proxy(owner)
@@ -44,6 +50,7 @@ module Toy
 
       def initialize(list, owner)
         @list, @owner = list, owner
+        list.extensions.each { |extension| extend(extension) }
       end
 
       def proxy_owner
@@ -143,6 +150,12 @@ module Toy
               #{name}.each { |o| o.destroy }
             end
           """
+        end
+      end
+
+      def modularized_extensions(*extensions)
+        extensions.flatten.compact.map do |extension|
+          Proc === extension ? Module.new(&extension) : extension
         end
       end
   end

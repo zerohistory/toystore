@@ -337,4 +337,57 @@ describe Toy::List do
       @user.games.should_not include(nil)
     end
   end
+
+  describe "list with block" do
+    before do
+      Move.attribute(:old, Boolean)
+      User.list(:moves) do
+        def old
+          target.select { |m| m.old? }
+        end
+      end
+
+      @move_new = Move.create(:old => false)
+      @move_old = Move.create(:old => true)
+      @user     = User.create(:moves => [@move_new, @move_old])
+    end
+
+    it "extends block methods onto proxy" do
+      @user.moves.should respond_to(:old)
+      @user.moves.old.should == [@move_old]
+    end
+  end
+
+  describe "list extension with :extensions option" do
+    before do
+      old_module = Module.new do
+        def old
+          target.select { |m| m.old? }
+        end
+      end
+
+      recent_proc = Proc.new do
+        def recent
+          target.select { |m| !m.old? }
+        end
+      end
+
+      Move.attribute(:old, Boolean)
+      User.list(:moves, :extensions => [old_module, recent_proc])
+
+      @move_new = Move.create(:old => false)
+      @move_old = Move.create(:old => true)
+      @user     = User.create(:moves => [@move_new, @move_old])
+    end
+
+    it "extends modules" do
+      @user.moves.should respond_to(:old)
+      @user.moves.old.should    == [@move_old]
+    end
+
+    it "extends procs" do
+      @user.moves.should respond_to(:recent)
+      @user.moves.recent.should == [@move_new]
+    end
+  end
 end
