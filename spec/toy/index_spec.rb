@@ -62,7 +62,7 @@ describe Toy::Index do
     end
 
     it "adds instance id to index array" do
-      User.store['User:ssn:555-00-1234'].should == Toy.encode([user.id])
+      User.get_index(:ssn, '555-00-1234').should == [user.id]
     end
   end
 
@@ -73,7 +73,7 @@ describe Toy::Index do
     end
 
     it "adds both instances to index" do
-      User.store['User:ssn:555-00-1234'].should == Toy.encode([@user1.id, @user2.id])
+      User.get_index(:ssn, '555-00-1234').should == [@user1.id, @user2.id]
     end
   end
 
@@ -84,7 +84,7 @@ describe Toy::Index do
     end
 
     it "removes id from index" do
-      User.store['User:ssn:555-00-1234'].should == Toy.encode([])
+      User.get_index(:ssn, '555-00-1234').should == []
     end
   end
 
@@ -95,11 +95,11 @@ describe Toy::Index do
     end
 
     it "removes from old index" do
-      User.store['User:ssn:555-00-1234'].should == Toy.encode([])
+      User.get_index(:ssn, '555-00-1234').should == []
     end
 
     it "adds to new index" do
-      User.store['User:ssn:555-00-4321'].should == Toy.encode([@user.id])
+      User.get_index(:ssn, '555-00-4321').should == [@user.id]
     end
   end
 
@@ -110,7 +110,7 @@ describe Toy::Index do
     end
 
     it "leaves index alone" do
-      User.store['User:ssn:555-00-1234'].should == Toy.encode([@user.id])
+      User.get_index(:ssn, '555-00-1234').should == [@user.id]
     end
   end
 
