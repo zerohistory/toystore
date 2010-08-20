@@ -114,33 +114,40 @@ describe Toy::Index do
     end
   end
 
-  describe "finding by index" do
-    xit "should not find values that are not in index" do
-      User.find_by_ssn('does-not-exist').should be_nil
+  describe "first by index" do
+    it "should not find values that are not in index" do
+      User.first_by_ssn('does-not-exist').should be_nil
     end
 
-    xit "should find indexed value" do
+    it "should find indexed value" do
       user = User.create(:ssn => '555-00-1234')
-
-      User.find_by_ssn('555-00-1234').should == user
+      User.first_by_ssn('555-00-1234').should == user
     end
   end
 
-  describe "finding or creating by index" do
-    xit "should not find values that are not in index" do
-      User.find_by_ssn('does-not-exist').should be_nil
-
-      user = User.find_or_create_by_ssn('does-not-exist')
+  describe "first or new by index" do
+    it "initializes if not existing" do
+      user = User.first_or_new_by_ssn('does-not-exist')
       user.ssn.should == 'does-not-exist'
-
-      User.find_by_ssn('does-not-exist').should_not be_nil
+      user.should_not be_persisted
     end
 
-    xit "should find indexed value" do
+    it "returns if existing" do
       user = User.create(:ssn => '555-00-1234')
-
-      User.find_or_create_by_ssn('555-00-1234').should == user
+      User.first_or_new_by_ssn('555-00-1234').should == user
     end
   end
 
+  describe "first or create by index" do
+    it "creates if not existing" do
+      user = User.first_or_create_by_ssn('does-not-exist')
+      user.ssn.should == 'does-not-exist'
+      user.should be_persisted
+    end
+
+    it "returns if existing" do
+      user = User.create(:ssn => '555-00-1234')
+      User.first_or_create_by_ssn('555-00-1234').should == user
+    end
+  end
 end

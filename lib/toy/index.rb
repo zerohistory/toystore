@@ -8,6 +8,7 @@ module Toy
 
       model.indices[name] = self
       model.send(:include, IndexCallbacks)
+      create_finders
     end
 
     def eql?(other)
@@ -51,5 +52,22 @@ module Toy
         end
       end
     end
+
+    private
+      def create_finders
+        model.class_eval """
+          def self.first_by_#{name}(value)
+            get(User.get_index(:#{name}, value)[0])
+          end
+
+          def self.first_or_new_by_#{name}(value)
+            first_by_#{name}(value) || new(:#{name} => value)
+          end
+
+          def self.first_or_create_by_#{name}(value)
+            first_by_#{name}(value) || create(:#{name} => value)
+          end
+        """
+      end
   end
 end
