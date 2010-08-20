@@ -1,7 +1,7 @@
 require 'helper'
 
 describe Toy::Attributes do
-  uses_constants('User')
+  uses_constants('User', 'Game')
 
   describe "including" do
     it "adds id attribute" do
@@ -113,7 +113,7 @@ describe Toy::Attributes do
       record.age = '12'
       record.age.should == 12
     end
-    
+
     it "has defaults" do
       record = User.new
       record.brother_name.should == 'Daryl'
@@ -147,6 +147,44 @@ describe Toy::Attributes do
       record = User.new
       record[:name] = 'John'
       record.name.should == 'John'
+    end
+  end
+
+  describe "#reload" do
+    before do
+      User.attribute(:name, String)
+      @user = User.create(:name => 'John')
+    end
+    let(:user) { @user }
+
+    it "reloads record from the database" do
+      user.name = 'Steve'
+      user.reload
+      user.name.should == 'John'
+    end
+
+    it "returns the record" do
+      user.name = 'Steve'
+      user.reload.should equal(user)
+    end
+
+    it "resets lists" do
+      User.list(:games)
+      game = Game.create
+      user.update_attributes(:games => [game])
+      user.games = []
+      user.games.should == []
+      user.reload
+      user.games.should == [game]
+    end
+
+    it "resets references" do
+      Game.reference(:user)
+      game = Game.create(:user => user)
+      game.user = nil
+      game.user.should be_nil
+      game.reload
+      game.user.should == user
     end
   end
 end

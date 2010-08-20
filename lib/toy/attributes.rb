@@ -4,15 +4,11 @@ module Toy
     include ActiveModel::AttributeMethods
 
     included do
+      attribute_method_suffix('', '=', '?')
       attribute :id, String
     end
 
     module ClassMethods
-      def define_attribute_methods
-        attribute_method_suffix "", "=", "?"
-        super(attributes.keys)
-      end
-
       def attributes
         @attributes ||= {}
       end
@@ -31,6 +27,20 @@ module Toy
         @_new_record = true
         write_attribute :id, SimpleUUID::UUID.new.to_guid
         self.attributes = attrs
+      end
+
+      # Private, use load instead of you need to create objects from hash
+      def initialize_from_database(attrs={})
+        @_new_record = false
+        self.attributes = attrs
+        self
+      end
+
+      def reload
+        if attrs = store[store_key]
+          self.attributes = Toy.decode(attrs)
+        end
+        self
       end
 
       def id
@@ -52,30 +62,22 @@ module Toy
         end
       end
 
-      def respond_to?(*args)
-        self.class.define_attribute_methods
-        super
+      def [](key)
+        read_attribute(key)
       end
 
-      def method_missing(method, *args, &block)
-        if self.class.attribute_methods_generated?
-          super
-        else
-          self.class.define_attribute_methods
-          send(method, *args, &block)
-        end
+      def []=(key, value)
+        write_attribute(key, value)
       end
 
       private
         def read_attribute(key)
           attribute_definition(key).read(attributes[key])
         end
-        alias :[] :read_attribute
 
         def write_attribute(key, value)
           attributes[key] = attribute_definition(key).write(value)
         end
-        alias :[]= :write_attribute
 
         def attribute_definition(key)
           self.class.attributes[key.to_sym] || raise("Attribute '#{key}' is not defined")

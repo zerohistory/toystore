@@ -27,21 +27,5 @@ module Toy
         object.initialize_from_database(Toy.decode(json))
       end
     end
-
-    module InstanceMethods
-      # Private, should only be called by .load
-      def initialize_from_database(attrs={})
-        @_new_record = false
-        self.attributes = attrs
-        self
-      end
-
-      def reload
-        if attrs = store[store_key]
-          self.attributes = Toy.decode(attrs)
-        end
-        self
-      end
-    end
   end
 end

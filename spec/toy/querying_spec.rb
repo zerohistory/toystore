@@ -84,39 +84,4 @@ describe Toy::Querying do
       User[doc.id].name.should == 'John'
     end
   end
-
-  describe "#reload" do
-    before        { @user = User.create(:name => 'John') }
-    let(:user)  { @user }
-
-    it "reloads record from the database" do
-      user.name = 'Steve'
-      user.reload
-      user.name.should == 'John'
-    end
-
-    it "returns the record" do
-      user.name = 'Steve'
-      user.reload.should equal(user)
-    end
-
-    it "resets lists" do
-      User.list(:games)
-      game = Game.create
-      user.update_attributes(:games => [game])
-      user.games = []
-      user.games.should == []
-      user.reload
-      user.games.should == [game]
-    end
-
-    it "resets references" do
-      Game.reference(:user)
-      game = Game.create(:user => user)
-      game.user = nil
-      game.user.should be_nil
-      game.reload
-      game.user.should == user
-    end
-  end
 end

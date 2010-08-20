@@ -6,8 +6,7 @@ module Support
 
     module ClassMethods
       def uses_constants(*constants)
-        before  { create_constants(*constants) }
-        after   { remove_constants(*constants) }
+        before { create_constants(*constants) }
       end
     end
 
@@ -20,25 +19,23 @@ module Support
     end
 
     def create_constant(constant)
-      Object.send(:const_set, constant, Model(constant))
+      remove_constant(constant)
+      Kernel.const_set(constant, Model(constant))
     end
 
     def remove_constant(constant)
-      Object.send(:remove_const, constant)
+      Kernel.send(:remove_const, constant) if Kernel.const_defined?(constant)
     end
 
-    def Model(name=nil, &block)
-      klass = Class.new do
-        include Toy::Store
-        store RedisStore
-
-        if name
-          class_eval "def self.name; '#{name}' end"
-          class_eval "def self.to_s; '#{name}' end"
-        end
+    def Model(name=nil)
+      Class.new.tap do |model|
+        model.class_eval """
+          def self.name; '#{name}' end
+          def self.to_s; '#{name}' end
+        """ if name
+        model.send(:include, Toy::Store)
+        model.store(RedisStore)
       end
-      klass.class_eval(&block) if block_given?
-      klass
     end
   end
 end

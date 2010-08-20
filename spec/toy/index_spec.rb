@@ -4,10 +4,9 @@ describe Toy::Index do
   uses_constants('User', 'Student')
 
   before do
-    User.attribute :ssn, String
-    @index = User.index :ssn
+    User.attribute(:ssn, String)
+    @index = User.index(:ssn)
   end
-
   let(:index) { @index }
 
   it "has a model" do
@@ -24,24 +23,12 @@ describe Toy::Index do
     }.should raise_error(ArgumentError, "No attribute student_id for index")
   end
 
-  it "has a store key for a value" do
-    index.store_key('some_value').should == 'User:ssn:some_value'
+  it "has a key for a value" do
+    index.key('some_value').should == 'User:ssn:some_value'
   end
 
   it "adds index to model" do
     User.indices.keys.should include(:ssn)
-  end
-
-  it "adds finder to model" do
-    User.should respond_to(:find_by_ssn)
-  end
-
-  it "adds index writer" do
-    User.new.should respond_to(:add_to_ssn_index)
-  end
-
-  it "adds index remover" do
-    User.new.should respond_to(:remove_from_ssn_index)
   end
 
   describe "#eql?" do
@@ -64,48 +51,96 @@ describe Toy::Index do
     end
   end
 
-  describe "writing and removing to index" do
-    it "should write the id to the store" do
-      user = User.create(:ssn => '555-00-1234')
-      User.store[index.store_key(user.ssn)].should == user.id
+  describe "creating with index" do
+    before do
+      @user = User.create(:ssn => '555-00-1234')
+    end
+    let(:user) { @user }
+
+    it "creates key for indexed value" do
+      User.store.should have_key("User:ssn:555-00-1234")
     end
 
-    it "should write the id to the store" do
-      user = User.create(:ssn => '555-00-1234')
-      User.store[index.store_key(user.ssn)].should == user.id
+    it "adds instance id to index array" do
+      User.store['User:ssn:555-00-1234'].should == Toy.encode([user.id])
+    end
+  end
 
-      user.destroy
-      User.store[index.store_key(user.ssn)].should be_nil
+  describe "creating second record for same index value" do
+    before do
+      @user1 = User.create(:ssn => '555-00-1234')
+      @user2 = User.create(:ssn => '555-00-1234')
+    end
+
+    it "adds both instances to index" do
+      User.store['User:ssn:555-00-1234'].should == Toy.encode([@user1.id, @user2.id])
+    end
+  end
+
+  describe "destroying with index" do
+    before do
+      @user = User.create(:ssn => '555-00-1234')
+      @user.destroy
+    end
+
+    it "removes id from index" do
+      User.store['User:ssn:555-00-1234'].should == Toy.encode([])
+    end
+  end
+
+  describe "updating record and changing indexed value" do
+    before do
+      @user = User.create(:ssn => '555-00-1234')
+      @user.update_attributes(:ssn => '555-00-4321')
+    end
+
+    it "removes from old index" do
+      User.store['User:ssn:555-00-1234'].should == Toy.encode([])
+    end
+
+    it "adds to new index" do
+      User.store['User:ssn:555-00-4321'].should == Toy.encode([@user.id])
+    end
+  end
+
+  describe "updating record without changing indexed value" do
+    before do
+      @user = User.create(:ssn => '555-00-1234')
+      @user.update_attributes(:ssn => '555-00-1234')
+    end
+
+    it "leaves index alone" do
+      User.store['User:ssn:555-00-1234'].should == Toy.encode([@user.id])
     end
   end
 
   describe "finding by index" do
-    it "should not find values that are not in index" do
+    xit "should not find values that are not in index" do
       User.find_by_ssn('does-not-exist').should be_nil
     end
 
-    it "should find indexed value" do
+    xit "should find indexed value" do
       user = User.create(:ssn => '555-00-1234')
 
       User.find_by_ssn('555-00-1234').should == user
     end
   end
-  
+
   describe "finding or creating by index" do
-    it "should not find values that are not in index" do
+    xit "should not find values that are not in index" do
       User.find_by_ssn('does-not-exist').should be_nil
 
       user = User.find_or_create_by_ssn('does-not-exist')
       user.ssn.should == 'does-not-exist'
-      
+
       User.find_by_ssn('does-not-exist').should_not be_nil
     end
 
-    it "should find indexed value" do
+    xit "should find indexed value" do
       user = User.create(:ssn => '555-00-1234')
 
       User.find_or_create_by_ssn('555-00-1234').should == user
     end
   end
-  
+
 end

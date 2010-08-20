@@ -7,7 +7,7 @@ module Toy
       raise(ArgumentError, "No attribute #{name} for index") unless model.attribute?(name)
 
       model.indices[name] = self
-      create_accessors
+      model.send(:include, IndexCallbacks)
     end
 
     def eql?(other)
@@ -17,43 +17,39 @@ module Toy
     end
     alias :== :eql?
 
-    def store_key(value)
+    def key(value)
       [model.name, name, value].join(':')
     end
 
-    private
-      def create_accessors
-        model.instance_eval """
-          def find_by_#{name}(value)
-            index = indices[:#{name}]
-            index_key = index.store_key(value)
-            id = store[index_key]
-            id ? get(id) : nil
-          end
-          
-          def self.find_or_create_by_#{name}(value)
-            find_by_#{name}(value) || create(:#{name} => value)
-          end
-        """
+    module IndexCallbacks
+      extend ActiveSupport::Concern
 
-        model.class_eval """
-          def add_to_#{name}_index
-            index = self.class.indices[:#{name}]
-            index_key = index.store_key(send(:#{name}))
-            self.class.store[index_key] = self.id
-          end
-
-          after_save :add_to_#{name}_index
-
-          def remove_from_#{name}_index
-            index = self.class.indices[:#{name}]
-            index_key = index.store_key(send(:#{name}))
-            self.class.store.delete(index_key)
-          end
-
-          before_destroy :remove_from_#{name}_index
-        """
+      included do
+        after_create  :index_create
+        after_update  :index_update
+        after_destroy :index_destroy
       end
 
+      def index_create
+        indices.each_key do |name|
+          create_index(name, send(name), id)
+        end
+      end
+
+      def index_update
+        indices.each_key do |name|
+          if send(:"#{name}_changed?")
+            destroy_index(name, send(:"#{name}_was"), id)
+            create_index(name, send(name), id)
+          end
+        end
+      end
+
+      def index_destroy
+        indices.each_key do |name|
+          destroy_index(name, send(name), id)
+        end
+      end
+    end
   end
 end
