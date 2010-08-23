@@ -108,6 +108,13 @@ module Toy
           end
         end
       end
+      
+      def destroy(*args, &block)
+        ids = block ? target.select(&block).map(&:id) : args.flatten
+        self.target_ids = target_ids - ids
+        proxy_owner.save
+        reset
+      end
 
       private
         def assert_type(record)

@@ -301,6 +301,37 @@ describe Toy::List do
       @chat.game.should == @game
     end
   end
+  
+  describe "list#destroy" do
+    before do
+      @user = User.create
+      @game1 = @user.games.create
+      @game2 = @user.games.create
+      User.get(@user.id).games.should == [@game1, @game2]
+    end
+    
+    it "should take multiple ids" do
+      @user.games.destroy(@game1.id, @game2.id)
+
+      User.get(@user.id).games.should be_empty
+    end
+    
+    it "should take an array of ids" do
+      @user.games.destroy([@game1.id, @game2.id])
+
+      User.get(@user.id).games.should be_empty
+    end
+    
+    it "should take a block to filter on" do
+      Game.attribute :active, Boolean
+      @game1.update_attributes(:active => true)
+      @game2.update_attributes(:active => false)
+      
+      @user.games.destroy { |g| g.active == true }
+
+      User.get(@user.id).games.should == [@game2]
+    end
+  end
 
   describe "list#each" do
     before do
