@@ -3,7 +3,7 @@ module Toy
     extend ActiveSupport::Concern
     
     included do
-      key :uuid
+      key Toy.key_factory
     end
     
     module ClassMethods

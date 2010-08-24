@@ -36,7 +36,19 @@ describe Toy::Connection do
             
       Toy.logger = nil
       Toy.logger.should == RAILS_DEFAULT_LOGGER
+    end    
+  end
+  
+  describe "key_factory" do
+    it "should set the default key_factory" do
+      key_factory = stub
+      Toy.key_factory = key_factory
+      Toy.key_factory.should == key_factory
     end
     
+    it "should default to the UUIDKeyFactory" do
+      Toy.key_factory = nil
+      Toy.key_factory.should be_instance_of(Toy::Identity::UUIDKeyFactory)
+    end
   end
 end

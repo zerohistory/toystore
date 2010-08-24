@@ -12,6 +12,19 @@ describe Toy::Identity do
       factory = Toy::Identity::UUIDKeyFactory
       User.key(factory).should == factory
     end
+    
+    it "should use Toy.key_factory by default" do
+      key_factory = mock
+      Toy.key_factory = key_factory
+      
+      remove_constants("LeaderBoard")
+      class LeaderBoard
+        include Toy::Store
+      end
+      
+      key_factory.should_receive(:next_key).and_return('some_key')
+      LeaderBoard.next_key
+    end
   end
   
   describe ".next_key" do

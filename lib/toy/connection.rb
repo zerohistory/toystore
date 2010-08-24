@@ -17,6 +17,14 @@ module Toy
       @@logger = logger
     end
     
+    def key_factory=(key_factory)
+      @@key_factory = key_factory
+    end
+    
+    def key_factory
+      @@key_factory ||= Toy::Identity::UUIDKeyFactory.new
+    end
+    
     def init_default_logger
       if Object.const_defined?("RAILS_DEFAULT_LOGGER")
         @@logger = Object.const_get("RAILS_DEFAULT_LOGGER")
