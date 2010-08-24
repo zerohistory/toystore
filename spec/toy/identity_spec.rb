@@ -42,4 +42,26 @@ describe Toy::Identity do
       lambda { User.next_key }.should raise_error
     end
   end
+  
+  describe "initializing the id" do
+    it "should pass use pass the new object" do
+      remove_constants("NameAndNumberKeyFactory", "Piece")
+      
+      class NameAndNumberKeyFactory < Toy::Identity::AbstractKeyFactory
+        def next_key(object)
+          "#{object.name}-#{object.number}" unless object.name.nil? || object.number.nil?
+        end
+      end
+      
+      class Piece
+        include Toy::Store
+        attribute :name, String
+        attribute :number, Integer
+        key NameAndNumberKeyFactory.new
+      end
+      
+      Piece.new(:name => 'Rook', :number => 1).id.should == 'Rook-1'
+    end
+    
+  end
 end

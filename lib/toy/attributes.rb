@@ -25,8 +25,8 @@ module Toy
     module InstanceMethods
       def initialize(attrs={})
         @_new_record = true
-        write_attribute :id, self.class.next_key
         self.attributes = attrs
+        write_attribute :id, self.class.next_key(self) unless self.id
       end
 
       # Private, use load instead of you need to create objects from hash
