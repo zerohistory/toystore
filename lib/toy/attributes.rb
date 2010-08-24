@@ -25,7 +25,7 @@ module Toy
     module InstanceMethods
       def initialize(attrs={})
         @_new_record = true
-        write_attribute :id, SimpleUUID::UUID.new.to_guid
+        write_attribute :id, self.class.next_key
         self.attributes = attrs
       end
 
