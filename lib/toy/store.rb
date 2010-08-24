@@ -20,6 +20,9 @@ module Toy
       include Lists
       include References
       include Indices
+      include Logger
     end
   end
+  
+  extend Connection
 end

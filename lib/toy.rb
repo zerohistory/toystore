@@ -23,6 +23,7 @@ module Toy
 end
 
 require 'toy/exceptions'
+require 'toy/connection'
 require 'toy/attribute'
 require 'toy/attributes'
 require 'toy/callbacks'
@@ -44,3 +45,4 @@ require 'toy/version'
 require 'toy/identity/abstract_key_factory'
 require 'toy/identity/uuid_key_factory'
 require 'toy/identity'
+require 'toy/logger'

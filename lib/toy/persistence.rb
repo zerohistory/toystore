@@ -5,6 +5,7 @@ module Toy
     module ClassMethods
       def store(new_store=nil)
         @store = new_store unless new_store.nil?
+        @store = Toy.store if @store.nil?
         @store
       end
 
