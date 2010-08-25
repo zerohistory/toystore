@@ -24,6 +24,8 @@ describe Toy::Identity do
       
       key_factory.should_receive(:next_key).and_return('some_key')
       LeaderBoard.next_key
+      
+      Toy.key_factory = nil
     end
   end
   
