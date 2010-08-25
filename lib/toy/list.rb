@@ -110,7 +110,7 @@ module Toy
       end
       
       def destroy(*args, &block)
-        ids = block ? target.select(&block).map(&:id) : args.flatten
+        ids = block_given? ? target.select(&block).map(&:id) : args.flatten
         self.target_ids = target_ids - ids
         proxy_owner.save
         reset
