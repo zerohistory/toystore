@@ -102,6 +102,7 @@ module Toy
         attrs.merge!("#{options[:inverse_of]}_id" => proxy_owner.id) if options[:inverse_of]
         type.create(attrs).tap do |record|
           if record.persisted?
+            @owner = @owner.reload
             push(record)
             proxy_owner.save
             reset

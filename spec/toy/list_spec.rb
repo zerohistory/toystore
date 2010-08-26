@@ -302,6 +302,31 @@ describe Toy::List do
     end
   end
   
+  describe "list#create (with callbacks)" do
+    before do
+      User.attribute :chat_count, Integer, :default => 0
+      User.list :chats, :inverse_of => :user
+      
+      class Chat
+        reference :user
+        after_create :update_user_chat_count
+        
+        def update_user_chat_count
+          self.user.update_attributes(:chat_count => 1)
+        end
+      end
+      @user = User.create
+    end
+    
+    it "should not overwrite changes made in callbacks" do
+      @user.chat_count.should == 0
+      chat = @user.chats.create
+      chat.user.should == @user
+      @user.chats.count.should == 1
+      @user.chat_count.should == 1
+    end
+  end
+  
   describe "list#destroy" do
     before do
       @user = User.create
