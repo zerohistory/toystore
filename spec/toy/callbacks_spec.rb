@@ -4,7 +4,7 @@ describe Toy::Callbacks do
   uses_constants('Foo')
 
   before do
-    class Foo
+    Foo.class_eval do
       [ :before_create,  :after_create,
         :before_update,  :after_update,
         :before_save,    :after_save,
