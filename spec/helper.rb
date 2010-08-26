@@ -28,6 +28,8 @@ FileStore  = Moneta::File.new(:path => 'testing')
 MongoStore = Moneta::MongoDB.new
 RedisStore = Moneta::Redis.new
 
+Toy.store = RedisStore
+
 Spec::Runner.configure do |config|
   config.include(Support::Constants)
 
