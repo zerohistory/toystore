@@ -303,22 +303,20 @@ describe Toy::List do
   end
   
   describe "list#create (with callbacks)" do
-    before do
+    it "should not overwrite changes made in callbacks of list item" do
       User.attribute :chat_count, Integer, :default => 0
       User.list :chats, :inverse_of => :user
       
       class Chat
         reference :user
-        after_create :update_user_chat_count
+        after_create :increment_user_chat_count
         
-        def update_user_chat_count
+        def increment_user_chat_count
           self.user.update_attributes(:chat_count => 1)
         end
       end
+
       @user = User.create
-    end
-    
-    it "should not overwrite changes made in callbacks" do
       @user.chat_count.should == 0
       chat = @user.chats.create
       chat.user.should == @user
@@ -326,7 +324,7 @@ describe Toy::List do
       @user.chat_count.should == 1
     end
     
-    it "should " do
+    it "should be able to create list item in a callback" do
       remove_constants('Contact')
       class Contact
         include Toy::Store
@@ -359,12 +357,16 @@ describe Toy::List do
       @user.games.destroy(@game1.id, @game2.id)
 
       User.get(@user.id).games.should be_empty
+      Game.get(@game1.id).should be_nil
+      Game.get(@game2.id).should be_nil
     end
     
     it "should take an array of ids" do
       @user.games.destroy([@game1.id, @game2.id])
 
       User.get(@user.id).games.should be_empty
+      Game.get(@game1.id).should be_nil
+      Game.get(@game2.id).should be_nil
     end
     
     it "should take a block to filter on" do
@@ -375,9 +377,29 @@ describe Toy::List do
       @user.games.destroy { |g| g.active == true }
 
       User.get(@user.id).games.should == [@game2]
+      Game.get(@game1.id).should be_nil
+    end
+    
+    it "should not override changes make in callbacks" do
+      User.attribute :chat_count, Integer, :default => 1
+      User.list :chats, :inverse_of => :user
+      
+      class Chat
+        reference :user
+        after_destroy :decrement_user_chat_count
+        def decrement_user_chat_count
+          user.update_attributes(:chat_count => 0)
+        end
+      end
+      
+      user = User.create
+      user.chat_count.should == 1
+      chat = user.chats.create
+      user.chats.destroy(chat.id)
+      user.chat_count.should == 0      
     end
   end
-
+  
   describe "list#each" do
     before do
       @game1 = Game.create
