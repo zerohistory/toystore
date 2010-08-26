@@ -15,6 +15,7 @@ require 'spec'
 require 'timecop'
 require 'log_buddy'
 require 'support/constants'
+require 'support/name_and_number_key_factory'
 
 require 'moneta/file'
 require 'moneta/redis'

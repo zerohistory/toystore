@@ -4,7 +4,7 @@ describe Toy::Validations do
   uses_constants('User')
 
   before do
-    class User
+    User.class_eval do
       attribute :name, String
       validates_presence_of :name
 
@@ -28,7 +28,7 @@ describe Toy::Validations do
 
   describe "validate callback" do
     before do
-      class User
+      User.class_eval do
         attribute :name, String
         validate :name_not_john
 

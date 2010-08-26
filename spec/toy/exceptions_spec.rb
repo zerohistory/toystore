@@ -4,12 +4,10 @@ describe Toy::RecordInvalidError do
   uses_constants('User')
 
   before do
-    class User
-      attribute :name, String
-      attribute :age, Integer
-      validates_presence_of :name
-      validates_presence_of :age
-    end
+    User.attribute(:name, String)
+    User.attribute(:age, Integer)
+    User.validates_presence_of(:name)
+    User.validates_presence_of(:age)
   end
   
   it "should include a message of the errors" do
