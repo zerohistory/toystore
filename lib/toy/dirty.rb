@@ -13,21 +13,21 @@ module Toy
       def initialize_from_database(*)
         super.tap do
           @previously_changed = {}
-          @changed_attributes.clear
+          @changed_attributes.clear if @changed_attributes
         end
       end
 
       def reload(*)
         super.tap do
-          @previously_changed.clear
-          @changed_attributes.clear
+          @previously_changed.clear if @previously_changed
+          @changed_attributes.clear if @changed_attributes
         end
       end
 
       def save
         super.tap do
           @previously_changed = changes
-          @changed_attributes.clear
+          @changed_attributes.clear if @changed_attributes
         end
       end
 

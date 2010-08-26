@@ -325,6 +325,26 @@ describe Toy::List do
       @user.chats.count.should == 1
       @user.chat_count.should == 1
     end
+    
+    it "should " do
+      remove_constants('Contact')
+      class Contact
+        include Toy::Store
+        reference :user
+      end
+      
+      class User
+        list :contacts, :inverse_of => :user
+        after_create :create_initial_contact
+        
+        def create_initial_contact
+          contacts.create
+        end
+      end
+      
+      user = User.create
+      user.contacts.count.should == 1
+    end
   end
   
   describe "list#destroy" do
