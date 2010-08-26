@@ -1,7 +1,7 @@
 require 'helper'
 
 describe Toy::List do
-  uses_constants('User', 'Game', 'Move', 'Chat')
+  uses_constants('User', 'Game', 'Move', 'Chat', 'Contact')
 
   before do
     @list = User.list(:games)
@@ -270,7 +270,7 @@ describe Toy::List do
       @game.move_count.should == 10
     end
   end
-  
+
   describe "list#create (does not persist)" do
     before do
       @user = User.create
@@ -287,7 +287,7 @@ describe Toy::List do
       @game.should be_instance_of(Game)
     end
   end
-  
+
   describe "list#create (with :inverse_of)" do
     before do
       Chat.reference(:game, Game)
@@ -301,50 +301,44 @@ describe Toy::List do
       @chat.game.should == @game
     end
   end
-  
+
   describe "list#create (with callbacks)" do
     it "should not overwrite changes made in callbacks of list item" do
       User.attribute :chat_count, Integer, :default => 0
       User.list :chats, :inverse_of => :user
-      
-      class Chat
-        reference :user
+      Chat.reference(:user)
+      Chat.class_eval do
         after_create :increment_user_chat_count
-        
         def increment_user_chat_count
           self.user.update_attributes(:chat_count => 1)
         end
       end
 
       @user = User.create
-      @user.chat_count.should == 0
+      @user.chat_count.should   == 0
+
       chat = @user.chats.create
-      chat.user.should == @user
-      @user.chats.count.should == 1
-      @user.chat_count.should == 1
+
+      chat.user.should          == @user
+      @user.chats.count.should  == 1
+      @user.chat_count.should   == 1
     end
-    
+
     it "should be able to create list item in a callback" do
-      remove_constants('Contact')
-      class Contact
-        include Toy::Store
-        reference :user
-      end
-      
-      class User
-        list :contacts, :inverse_of => :user
+      Contact.reference(:user)
+      User.list(:contacts, :inverse_of => :user)
+      User.class_eval do
         after_create :create_initial_contact
-        
         def create_initial_contact
           contacts.create
         end
       end
-      
+
       user = User.create
       user.contacts.count.should == 1
     end
   end
-  
+
   describe "list#destroy" do
     before do
       @user = User.create
@@ -352,7 +346,7 @@ describe Toy::List do
       @game2 = @user.games.create
       User.get(@user.id).games.should == [@game1, @game2]
     end
-    
+
     it "should take multiple ids" do
       @user.games.destroy(@game1.id, @game2.id)
 
@@ -360,7 +354,7 @@ describe Toy::List do
       Game.get(@game1.id).should be_nil
       Game.get(@game2.id).should be_nil
     end
-    
+
     it "should take an array of ids" do
       @user.games.destroy([@game1.id, @game2.id])
 
@@ -368,22 +362,22 @@ describe Toy::List do
       Game.get(@game1.id).should be_nil
       Game.get(@game2.id).should be_nil
     end
-    
+
     it "should take a block to filter on" do
       Game.attribute :active, Boolean
       @game1.update_attributes(:active => true)
       @game2.update_attributes(:active => false)
-      
+
       @user.games.destroy { |g| g.active == true }
 
       User.get(@user.id).games.should == [@game2]
       Game.get(@game1.id).should be_nil
     end
-    
+
     it "should not override changes make in callbacks" do
       User.attribute :chat_count, Integer, :default => 1
       User.list :chats, :inverse_of => :user
-      
+
       class Chat
         reference :user
         after_destroy :decrement_user_chat_count
@@ -391,15 +385,15 @@ describe Toy::List do
           user.update_attributes(:chat_count => 0)
         end
       end
-      
+
       user = User.create
       user.chat_count.should == 1
       chat = user.chats.create
       user.chats.destroy(chat.id)
-      user.chat_count.should == 0      
+      user.chat_count.should == 0
     end
   end
-  
+
   describe "list#each" do
     before do
       @game1 = Game.create
