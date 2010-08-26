@@ -112,7 +112,7 @@ module Toy
       
       def destroy(*args, &block)
         ids = block_given? ? target.select(&block).map(&:id) : args.flatten
-        ids.each { |id| type.destroy(id) }
+        type.destroy(*ids)
         @owner = @owner.reload
         self.target_ids = target_ids - ids
         proxy_owner.save
