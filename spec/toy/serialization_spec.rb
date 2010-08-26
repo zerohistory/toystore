@@ -24,27 +24,45 @@ describe Toy::Serialization do
 </user>
 EOF
   end
-  
+
   describe "serializing relationships" do
     before do
       User.list :games, :inverse_of => :user
       Game.reference :user
     end
-    
+
     it "should include references" do
       user = User.create(:name => 'John', :age => 28)
       game = user.games.create
-      
-      game.to_json(:include => [:user]).should == %Q({"game":{"id":"#{game.id}","user_id":"#{user.id}","user":{"name":"John","game_ids":["#{game.id}"],"id":"#{user.id}","age":28}}})
+
+      Toy.decode(game.to_json(:include => [:user])).should == {
+        'game' => {
+          'id'      => game.id,
+          'user_id' => user.id,
+          'user'    => {
+            'name'     => 'John',
+            'game_ids' => [game.id],
+            'id'       => user.id,
+            'age'      => 28,
+          }
+        }
+      }
     end
-    
+
     it "should include lists" do
       user = User.create(:name => 'John', :age => 28)
       game = user.games.create
-      
-      user.to_json(:include => [:games]).should == %Q({"user":{"name":"John","game_ids":["#{game.id}"],"id":"#{user.id}","age":28,"games":[{"id":"#{game.id}","user_id":"#{user.id}"}]}})
+      Toy.decode(user.to_json(:include => [:games])).should == {
+        'user' => {
+          'name'     => 'John',
+          'game_ids' => [game.id],
+          'id'       => user.id,
+          'age'      => 28,
+          'games'    => [{'id' => game.id, 'user_id' => user.id}],
+        }
+      }
     end
-    
+
   end
-  
+
 end
