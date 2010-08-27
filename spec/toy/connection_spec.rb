@@ -1,6 +1,19 @@
 require 'helper'
 
 describe Toy::Connection do
+  uses_constants('User')
+
+  before do
+    @debug = Toy.debug
+    @logger = Toy.logger
+  end
+
+  after do
+    Toy.debug = @debug
+    Toy.logger = @logger
+  end
+  
+
   describe "store" do
     it "should set the default store" do
       Toy.store = RedisStore
@@ -32,6 +45,24 @@ describe Toy::Connection do
 
       Toy.logger = nil
       Toy.logger.should == RAILS_DEFAULT_LOGGER
+    end
+  end
+
+  describe "debug" do
+    it "should set debug flag" do
+      Toy.debug = true
+      Toy.debug.should be_true
+    end
+
+    it "should log when creating or updating" do
+      logger = stub
+      Toy.logger = logger
+      Toy.debug = true
+      
+      logger.should_receive(:debug).twice
+      user = User.create
+      user.save
+      Toy.logger = nil
     end
   end
 

@@ -72,6 +72,7 @@ module Toy
 
       private
         def create_or_update
+          logger.debug("Storing #{self.store_key}\n#{self.attributes.inspect}") if Toy.debug
           new_record? ? create : update
         end
 
