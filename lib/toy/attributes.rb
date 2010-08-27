@@ -40,6 +40,12 @@ module Toy
         if attrs = store[store_key]
           self.attributes = Toy.decode(attrs)
         end
+        self.class.lists.each_key do |name|
+          send(name).reset
+        end
+        self.class.references.each_key do |name|
+          send(name).reset
+        end
         self
       end
 

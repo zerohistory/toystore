@@ -158,6 +158,14 @@ describe Toy::List do
       Game.should_receive(:get_multi).and_return(games)
       @user.games.should == games
     end
+
+    it "should be reset when owner is reloaded" do
+      games = [@game]
+      @user.games.should == games
+      @user.reload
+      Game.should_receive(:get_multi).and_return(games)
+      @user.games.should == games
+    end
   end
 
   describe "list#push" do
