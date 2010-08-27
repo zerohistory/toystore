@@ -25,9 +25,17 @@ Log = Logger.new(log_path.join('test.log'))
 
 LogBuddy.init :logger => Log
 
-FileStore  = Moneta::Adapters::File.new(:path => 'testing')
-MongoStore = Moneta::Adapters::MongoDB.new
-RedisStore = Moneta::Adapters::Redis.new
+FileStore = Moneta::Builder.new do
+  run Moneta::Adapters::File, :path => 'testing'
+end
+
+MongoStore = Moneta::Builder.new do
+  run Moneta::Adapters::MongoDB
+end
+
+RedisStore = Moneta::Builder.new do
+  run Moneta::Adapters::Redis
+end
 
 Toy.store = RedisStore
 

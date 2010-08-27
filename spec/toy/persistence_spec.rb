@@ -5,13 +5,13 @@ describe Toy::Persistence do
 
   describe ".store" do
     it "returns store if no argument" do
-      User.store MongoStore
-      User.store.should be_instance_of(Moneta::Adapters::MongoDB)
+      User.store(MongoStore)
+      User.store.should be(MongoStore)
     end
 
     it "sets store if argument" do
-      User.store FileStore
-      User.store.should be_instance_of(Moneta::Adapters::File)
+      User.store(FileStore)
+      User.store.should be(FileStore)
     end
   end
 
