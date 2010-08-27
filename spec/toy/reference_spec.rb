@@ -220,6 +220,12 @@ describe Toy::Reference do
       User.should_receive(:get).and_return(@user)
       @game.user.should == @user
     end
+
+    it "should be reset when owner is reloaded" do
+      @game.reload
+      User.should_receive(:get).and_return(@user)
+      @game.user.should == @user
+    end
   end
 
   shared_examples_for 'reference#create' do
