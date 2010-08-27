@@ -58,7 +58,7 @@ describe Toy::Index do
     let(:user) { @user }
 
     it "creates key for indexed value" do
-      User.store.should have_key("User:ssn:555-00-1234")
+      User.store.key?("User:ssn:555-00-1234").should be_true
     end
 
     it "adds instance id to index array" do

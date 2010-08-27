@@ -11,7 +11,7 @@ require 'moneta/redis'
 
 class User
   include Toy::Store
-  store Moneta::Redis.new
+  store Moneta::Adapters::Redis.new
   attribute :name, String
 end
 

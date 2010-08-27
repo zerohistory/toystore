@@ -17,17 +17,17 @@ require 'log_buddy'
 require 'support/constants'
 require 'support/name_and_number_key_factory'
 
-require 'moneta/file'
-require 'moneta/redis'
-require 'moneta/mongodb'
+require 'moneta/adapters/file'
+require 'moneta/adapters/redis'
+require 'moneta/adapters/mongodb'
 
 Log = Logger.new(log_path.join('test.log'))
 
 LogBuddy.init :logger => Log
 
-FileStore  = Moneta::File.new(:path => 'testing')
-MongoStore = Moneta::MongoDB.new
-RedisStore = Moneta::Redis.new
+FileStore  = Moneta::Adapters::File.new(:path => 'testing')
+MongoStore = Moneta::Adapters::MongoDB.new
+RedisStore = Moneta::Adapters::Redis.new
 
 Toy.store = RedisStore
 
