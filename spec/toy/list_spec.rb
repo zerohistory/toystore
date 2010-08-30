@@ -279,20 +279,26 @@ describe Toy::List do
     end
   end
 
-  describe "list#create (does not persist)" do
+  describe "list#create (invalid)" do
     before do
       @user = User.create
       @user.games.should_not_receive(:push)
       @user.games.should_not_receive(:reset)
+      @user.should_not_receive(:reload)
       @user.should_not_receive(:save)
-      game = Game.new
-      game.should_receive(:persisted?).and_return(false)
-      Game.should_receive(:create).and_return(game)
+
+      Game.attribute(:move_count, Integer)
+      Game.validates_presence_of(:move_count)
+
       @game = @user.games.create
     end
 
     it "returns instance" do
       @game.should be_instance_of(Game)
+    end
+
+    it "is not persisted" do
+      @game.should_not be_persisted
     end
   end
 

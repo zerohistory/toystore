@@ -1,35 +1,35 @@
 require 'helper'
 
 describe Toy::Lists do
-  uses_constants('User', 'Game', 'Move')
+  uses_constants('Game', 'Move')
 
   it "defaults lists to empty hash" do
-    User.lists.should == {}
+    Game.embedded_lists.should == {}
   end
 
-  describe "declaring a list" do
+  describe "declaring an embedded list" do
     describe "using conventions" do
       before do
-        @list = User.list(:games)
+        @list = Game.embedded_list(:moves)
       end
 
       it "knows about its lists" do
-        User.lists[:games].should == Toy::List.new(User, :games)
+        Game.embedded_lists[:moves].should == Toy::EmbeddedList.new(Game, :moves)
       end
 
       it "returns list" do
-        @list.should == Toy::List.new(User, :games)
+        @list.should == Toy::EmbeddedList.new(Game, :moves)
       end
     end
 
     describe "with type" do
       before do
-        @list = User.list(:active_games, Game)
+        @list = Game.embedded_list(:recent_moves, Move)
       end
       let(:list) { @list }
 
       it "sets type" do
-        list.type.should be(Game)
+        list.type.should be(Move)
       end
 
       it "sets options to hash" do
@@ -39,33 +39,33 @@ describe Toy::Lists do
 
     describe "with options" do
       before do
-        @list = User.list(:games, :dependent => true)
+        @list = Game.embedded_list(:moves, :some_option => true)
       end
       let(:list) { @list }
 
       it "sets type" do
-        list.type.should be(Game)
+        list.type.should be(Move)
       end
 
       it "sets options" do
-        list.options.should have_key(:dependent)
-        list.options[:dependent].should be_true
+        list.options.should have_key(:some_option)
+        list.options[:some_option].should be_true
       end
     end
 
     describe "with type and options" do
       before do
-        @list = User.list(:active_games, Game, :dependent => true)
+        @list = Game.embedded_list(:recent_moves, Move, :some_option => true)
       end
       let(:list) { @list }
 
       it "sets type" do
-        list.type.should be(Game)
+        list.type.should be(Move)
       end
 
       it "sets options" do
-        list.options.should have_key(:dependent)
-        list.options[:dependent].should be_true
+        list.options.should have_key(:some_option)
+        list.options[:some_option].should be_true
       end
     end
   end

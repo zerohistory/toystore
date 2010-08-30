@@ -72,8 +72,8 @@ describe Toy::Querying do
     end
   end
 
-  describe ".load" do
-    before    { @doc = User.create(:name => 'John') }
+  describe ".load (with json)" do
+    before    { @doc = User.load({:id => '1', :name => 'John'}.to_json) }
     let(:doc) { @doc }
 
     it "marks object as persisted" do
@@ -81,7 +81,20 @@ describe Toy::Querying do
     end
 
     it "decodes the object" do
-      User[doc.id].name.should == 'John'
+      doc.name.should == 'John'
+    end
+  end
+
+  describe ".load (with hash)" do
+    before    { @doc = User.load(:id => '1', :name => 'John') }
+    let(:doc) { @doc }
+
+    it "marks object as persisted" do
+      doc.should be_persisted
+    end
+
+    it "decodes the object" do
+      doc.name.should == 'John'
     end
   end
 end

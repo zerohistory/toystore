@@ -21,10 +21,11 @@ module Toy
       end
       alias :has_key? :key?
 
-      def load(json)
-        return nil if json.nil?
+      def load(attrs)
+        return nil if attrs.nil?
+        attrs = Toy.decode(attrs) if attrs.is_a?(String)
         object = allocate
-        object.initialize_from_database(Toy.decode(json))
+        object.initialize_from_database(attrs)
       end
     end
   end

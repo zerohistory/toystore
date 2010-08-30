@@ -1,5 +1,5 @@
 module Toy
-  class List
+  class EmbeddedList
     attr_accessor :model, :name, :options
 
     def initialize(model, name, *args, &block)
@@ -8,7 +8,7 @@ module Toy
       @options = args.extract_options!
       @type    = args.shift
 
-      model.lists[name] = self
+      model.embedded_lists[name] = self
       model.attribute(key, Array)
       create_accessors
 
@@ -20,7 +20,7 @@ module Toy
     end
 
     def key
-      @key ||= :"#{name.to_s.singularize}_ids"
+      @key ||= :"#{name.to_s.singularize}_attributes"
     end
 
     def instance_variable
@@ -32,7 +32,7 @@ module Toy
     end
 
     def new_proxy(owner)
-      ListProxy.new(self, owner)
+      EmbeddedListProxy.new(self, owner)
     end
 
     def eql?(other)
@@ -42,7 +42,7 @@ module Toy
     end
     alias :== :eql?
 
-    class ListProxy
+    class EmbeddedListProxy
       include Enumerable
       extend  Forwardable
 
@@ -58,8 +58,7 @@ module Toy
       end
 
       def target
-        return [] if target_ids.blank?
-        @target ||= type.get_multi(target_ids)
+        @target ||= target_attrs.map { |attrs| type.load(attrs) }
       end
       alias :to_a :target
 
@@ -74,19 +73,19 @@ module Toy
 
       def include?(record)
         return false if record.nil?
-        target_ids.include?(record.id)
+        target.include?(record)
       end
 
       def push(record)
         assert_type(record)
-        self.target_ids = target_ids + [record.id]
+        self.target_attrs = target_attrs + [record.attributes]
       end
       alias :<< :push
 
       def concat(*records)
         records = records.flatten
         records.map { |record| assert_type(record) }
-        self.target_ids = target_ids + records.map { |i| i.id }
+        self.target_attrs = target_attrs + records.map { |record| record.attributes }
       end
 
       def reset
@@ -95,26 +94,23 @@ module Toy
 
       def replace(records)
         reset
-        self.target_ids = records.map { |i| i.id }
+        self.target_attrs = records.map { |r| r.attributes }
       end
 
       def create(attrs={})
-        attrs.merge!("#{options[:inverse_of]}_id" => proxy_owner.id) if options[:inverse_of]
-        type.create(attrs).tap do |record|
-          if record.persisted?
-            proxy_owner.reload
-            push(record)
-            proxy_owner.save
-            reset
-          end
+        record = type.new(attrs)
+        if record.valid?
+          record.initialize_from_database
+          push(record)
+          proxy_owner.save
+          reset
         end
+        record
       end
 
       def destroy(*args, &block)
         ids = block_given? ? target.select(&block).map(&:id) : args.flatten
-        type.destroy(*ids)
-        proxy_owner.reload
-        self.target_ids = target_ids - ids
+        target_attrs.delete_if { |attrs| ids.include?(attrs['id']) }
         proxy_owner.save
         reset
       end
@@ -126,12 +122,12 @@ module Toy
           end
         end
 
-        def target_ids
+        def target_attrs
           proxy_owner.send(key)
         end
 
-        def target_ids=(value)
-          proxy_owner.send("#{key}=", value)
+        def target_attrs=(value)
+          proxy_owner.send(:"#{key}=", value)
         end
 
         def method_missing(method, *args, &block)
@@ -143,25 +139,13 @@ module Toy
       def create_accessors
         model.class_eval """
           def #{name}
-            #{instance_variable} ||= self.class.lists[:#{name}].new_proxy(self)
+            #{instance_variable} ||= self.class.embedded_lists[:#{name}].new_proxy(self)
           end
 
           def #{name}=(records)
             #{name}.replace(records)
           end
         """
-
-        if options[:dependent]
-          model.class_eval """
-            after_destroy :destroy_#{name}
-          """
-
-          model.class_eval """
-            def destroy_#{name}
-              #{name}.each { |o| o.destroy }
-            end
-          """
-        end
       end
 
       def modularized_extensions(*extensions)
