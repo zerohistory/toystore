@@ -92,7 +92,7 @@ describe Toy::List do
     end
   end
 
-  describe "list writer" do
+  describe "list writer (with instances)" do
     before do
       @move1 = Move.new
       @move2 = Move.new
@@ -106,6 +106,24 @@ describe Toy::List do
     it "unmemoizes reader" do
       @game.moves.should == [@move2]
       @game.moves         = [@move1]
+      @game.moves.should == [@move1]
+    end
+  end
+
+  describe "list writer (with hashes)" do
+    before do
+      @move1 = Move.new
+      @move2 = Move.new
+      @game  = Game.create(:moves => [@move2.attributes])
+    end
+
+    it "set attribute" do
+      @game.move_attributes.should == [@move2.attributes]
+    end
+
+    it "unmemoizes reader" do
+      @game.moves.should == [@move2]
+      @game.moves         = [@move1.attributes]
       @game.moves.should == [@move1]
     end
   end
@@ -147,6 +165,13 @@ describe Toy::List do
         @game.moves.push(Game.new)
       }.should raise_error(ArgumentError, "Move expected, but was Game")
     end
+
+    it "works with hashes" do
+      @game.moves = []
+      move = Move.new
+      @game.moves.push(move.attributes)
+      @game.moves.should == [move]
+    end
   end
 
   describe "list#<<" do
@@ -164,6 +189,13 @@ describe Toy::List do
       lambda {
         @game.moves << Game.new
       }.should raise_error(ArgumentError, "Move expected, but was Game")
+    end
+
+    it "works with hashes" do
+      @game.moves = []
+      move = Move.new
+      @game.moves << move.attributes
+      @game.moves.should == [move]
     end
   end
 
@@ -183,6 +215,13 @@ describe Toy::List do
       lambda {
         @game.moves.concat(Game.new, Move.new)
       }.should raise_error(ArgumentError, "Move expected, but was Game")
+    end
+
+    it "works with hashes" do
+      @game.moves = []
+      move = Move.new
+      @game.moves.concat(move.attributes)
+      @game.moves.should == [move]
     end
   end
 
