@@ -16,14 +16,6 @@ module Toy
       @@logger = logger
     end
 
-    def debug
-      @@debug ||= false
-    end
-
-    def debug=(debug)
-      @@debug = debug
-    end
-
     def key_factory=(key_factory)
       @@key_factory = key_factory
     end

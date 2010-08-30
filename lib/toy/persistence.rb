@@ -55,7 +55,7 @@ module Toy
       def save
         create_or_update
       end
-      
+
       def update_attributes(attrs)
         self.attributes = attrs
         save
@@ -72,17 +72,18 @@ module Toy
 
       private
         def create_or_update
-          logger.debug("Storing #{self.store_key}\n#{self.attributes.inspect}") if Toy.debug
           new_record? ? create : update
         end
 
         def create
+          logger.debug("ToyStore SET [#{store_key.inspect}] #{attributes.inspect}")
           store[store_key] = Toy.encode(attributes)
           @_new_record = false
           true
         end
 
         def update
+          logger.debug("ToyStore SET [#{store_key.inspect}] #{attributes.inspect}")
           store[store_key] = Toy.encode(attributes)
           true
         end
