@@ -3,10 +3,6 @@ require 'forwardable'
 
 root_path       = Pathname(__FILE__).dirname.join('..').expand_path
 extensions_path = root_path.join('lib', 'toy', 'extensions')
-moneta_path     = root_path.join('vendor', 'moneta', 'lib')
-
-$:.unshift(moneta_path)
-require 'moneta'
 
 require 'simple_uuid'
 require 'active_model'

@@ -17,6 +17,7 @@ require 'log_buddy'
 require 'support/constants'
 require 'support/name_and_number_key_factory'
 
+require 'moneta'
 require 'moneta/adapters/file'
 require 'moneta/adapters/redis'
 require 'moneta/adapters/mongodb'
