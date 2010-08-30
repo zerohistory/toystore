@@ -28,7 +28,7 @@ def run_spec(path)
   path.gsub!('_spec', '')
   file_name = File.basename(path, '.rb')
   path.gsub!(file_name, file_name + "_spec")
-  run %Q(spec #{path})
+  run %Q(spec #{path}) if File.exists?(path)
 end
 
 watch('test/lint_test.rb') {     system('clear'); run 'rake test' }
