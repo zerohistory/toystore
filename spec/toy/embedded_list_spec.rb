@@ -193,6 +193,13 @@ describe Toy::List do
       @move.parent_reference.should == @game
     end
 
+    it "marks instances as persisted when parent saved" do
+      @game.save
+      @game.moves.each do |move|
+        move.should be_persisted
+      end
+    end
+
     it "works with hashes" do
       @game.moves = []
       move = Move.new
@@ -225,6 +232,13 @@ describe Toy::List do
         move.parent_reference.should == @game
       end
       @move.parent_reference.should == @game
+    end
+
+    it "marks instances as persisted when parent saved" do
+      @game.save
+      @game.moves.each do |move|
+        move.should be_persisted
+      end
     end
 
     it "works with hashes" do
@@ -263,6 +277,13 @@ describe Toy::List do
       @move2.parent_reference.should == @game
     end
 
+    it "marks instances as persisted when parent saved" do
+      @game.save
+      @game.moves.each do |move|
+        move.should be_persisted
+      end
+    end
+
     it "works with hashes" do
       @game.moves = []
       move = Move.new
@@ -298,6 +319,13 @@ describe Toy::List do
       @move1.parent_reference.should == @game
       @move2.parent_reference.should == @game
     end
+
+    it "marks instances as persisted when parent saved" do
+      @game.save
+      @game.moves.each do |move|
+        move.should be_persisted
+      end
+    end
   end
 
   shared_examples_for("embedded_list#create") do
@@ -319,6 +347,10 @@ describe Toy::List do
 
     it "adds instance to reader" do
       @game.moves.should == [@move]
+    end
+
+    it "marks instance as persisted" do
+      @move.should be_persisted
     end
   end
 
