@@ -12,32 +12,35 @@ module Toy
         target.include?(record)
       end
 
-      def push(record)
-        assert_type(record)
-        self.target_attrs = target_attrs + [record]
+      def push(instance)
+        assert_type(instance)
+        assign_reference(instance)
+        self.target_attrs = target_attrs + [instance]
       end
       alias :<< :push
 
-      def concat(*records)
-        records = records.flatten
-        records.map { |record| assert_type(record) }
-        self.target_attrs = target_attrs + records
+      def concat(*instances)
+        instances = instances.flatten
+        instances.map do |instance|
+          assert_type(instance)
+          assign_reference(instance)
+        end
+        self.target_attrs = target_attrs + instances
       end
 
-      def replace(records)
-        reset
-        self.target_attrs = records
+      def replace(instances)
+        self.target_attrs = instances
       end
 
       def create(attrs={})
-        record = type.new(attrs)
-        if record.valid?
-          record.initialize_from_database
-          push(record)
-          proxy_owner.save
-          reset
+        type.new(attrs).tap do |instance|
+          if instance.valid?
+            instance.initialize_from_database
+            push(instance)
+            proxy_owner.save
+            reset
+          end
         end
-        record
       end
 
       def destroy(*args, &block)
@@ -49,7 +52,18 @@ module Toy
 
       private
         def find_target
-          target_attrs.map { |attrs| type.load(attrs) }
+          target_attrs.map do |attrs|
+            assign_reference(type.load(attrs))
+          end
+        end
+
+        def assign_reference(instance)
+          if instance.is_a?(Hash)
+            instance.update(:parent_document => proxy_owner)
+          else
+            instance.parent_document = proxy_owner
+          end
+          instance
         end
 
         def target_attrs
@@ -61,10 +75,16 @@ module Toy
             item.respond_to?(:attributes) ? item.attributes : item
           end
           proxy_owner.send(:"#{key}=", attrs)
+          reset
         end
     end
 
     private
+      def create_accessors
+        super
+        type.class_eval { attr_accessor :parent_document }
+      end
+
       def proxy_class
         EmbeddedListProxy
       end

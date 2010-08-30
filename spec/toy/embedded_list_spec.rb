@@ -90,6 +90,12 @@ describe Toy::List do
     it "returns instances" do
       @game.moves.should == [@move]
     end
+
+    it "sets reference to parent for each instance" do
+      @game.moves.each do |move|
+        move.parent_document.should == @game
+      end
+    end
   end
 
   describe "list writer (with instances)" do
@@ -108,6 +114,12 @@ describe Toy::List do
       @game.moves         = [@move1]
       @game.moves.should == [@move1]
     end
+
+    it "sets reference to parent for each instance" do
+      @game.moves.each do |move|
+        move.parent_document.should == @game
+      end
+    end
   end
 
   describe "list writer (with hashes)" do
@@ -125,6 +137,12 @@ describe Toy::List do
       @game.moves.should == [@move2]
       @game.moves         = [@move1.attributes]
       @game.moves.should == [@move1]
+    end
+
+    it "sets reference to parent for each instance" do
+      @game.moves.each do |move|
+        move.parent_document.should == @game
+      end
     end
   end
 
@@ -166,6 +184,15 @@ describe Toy::List do
       }.should raise_error(ArgumentError, "Move expected, but was Game")
     end
 
+    it "sets reference to parent" do
+      # right now pushing a move adds a different instance to the proxy
+      # so i'm checking that it adds reference to both
+      @game.moves.each do |move|
+        move.parent_document.should == @game
+      end
+      @move.parent_document.should == @game
+    end
+
     it "works with hashes" do
       @game.moves = []
       move = Move.new
@@ -189,6 +216,15 @@ describe Toy::List do
       lambda {
         @game.moves << Game.new
       }.should raise_error(ArgumentError, "Move expected, but was Game")
+    end
+
+    it "sets reference to parent" do
+      # right now pushing a move adds a different instance to the proxy
+      # so i'm checking that it adds reference to both
+      @game.moves.each do |move|
+        move.parent_document.should == @game
+      end
+      @move.parent_document.should == @game
     end
 
     it "works with hashes" do
@@ -217,6 +253,16 @@ describe Toy::List do
       }.should raise_error(ArgumentError, "Move expected, but was Game")
     end
 
+    it "sets reference to parent" do
+      # right now pushing a move adds a different instance to the proxy
+      # so i'm checking that it adds reference to both
+      @game.moves.each do |move|
+        move.parent_document.should == @game
+      end
+      @move1.parent_document.should == @game
+      @move2.parent_document.should == @game
+    end
+
     it "works with hashes" do
       @game.moves = []
       move = Move.new
@@ -242,11 +288,25 @@ describe Toy::List do
         @game.moves.concat([Game.new, Move.new])
       }.should raise_error(ArgumentError, "Move expected, but was Game")
     end
+
+    it "sets reference to parent" do
+      # right now pushing a move adds a different instance to the proxy
+      # so i'm checking that it adds reference to both
+      @game.moves.each do |move|
+        move.parent_document.should == @game
+      end
+      @move1.parent_document.should == @game
+      @move2.parent_document.should == @game
+    end
   end
 
   shared_examples_for("embedded_list#create") do
     it "creates instance" do
       @move.should be_persisted
+    end
+
+    it "assigns reference to parent document" do
+      @move.parent_document.should == @game
     end
 
     it "assigns id" do
