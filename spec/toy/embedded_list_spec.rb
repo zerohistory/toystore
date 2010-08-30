@@ -205,7 +205,7 @@ describe Toy::List do
     end
   end
 
-  shared_examples_for("list#create") do
+  shared_examples_for("embedded_list#create") do
     it "creates instance" do
       @move.should be_persisted
     end
@@ -229,7 +229,7 @@ describe Toy::List do
       @move = @game.moves.create
     end
 
-    it_should_behave_like "list#create"
+    it_should_behave_like "embedded_list#create"
   end
 
   describe "list#create (with attributes)" do
@@ -239,7 +239,7 @@ describe Toy::List do
       @move = @game.moves.create(:move_index => 0)
     end
 
-    it_should_behave_like "list#create"
+    it_should_behave_like "embedded_list#create"
 
     it "sets attributes on instance" do
       @move.move_index.should == 0
