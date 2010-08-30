@@ -38,7 +38,6 @@ module Toy
             instance.initialize_from_database
             push(instance)
             proxy_owner.save
-            reset
           end
         end
       end
