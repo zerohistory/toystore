@@ -37,7 +37,8 @@ RedisStore = Moneta::Builder.new do
   run Moneta::Adapters::Redis
 end
 
-Toy.store = RedisStore
+Toy.logger = Log
+Toy.store  = RedisStore
 
 Spec::Runner.configure do |config|
   config.include(Support::Constants)
