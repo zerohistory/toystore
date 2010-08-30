@@ -34,6 +34,7 @@ module Toy
 
       def create(attrs={})
         type.new(attrs).tap do |instance|
+          assign_reference(instance)
           if instance.valid?
             instance.initialize_from_database
             push(instance)

@@ -305,7 +305,7 @@ describe Toy::List do
       @move.should be_persisted
     end
 
-    it "assigns reference to parent document" do
+    it "assigns reference to parent" do
       @move.parent_reference.should == @game
     end
 
@@ -365,6 +365,10 @@ describe Toy::List do
 
     it "is not persisted" do
       @move.should_not be_persisted
+    end
+
+    it "assigns reference to parent" do
+      @move.parent_reference.should == @game
     end
   end
 
