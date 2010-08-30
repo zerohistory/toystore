@@ -21,10 +21,6 @@ require 'moneta/adapters/file'
 require 'moneta/adapters/redis'
 require 'moneta/adapters/mongodb'
 
-Log = Logger.new(log_path.join('test.log'))
-
-LogBuddy.init :logger => Log
-
 FileStore = Moneta::Builder.new do
   run Moneta::Adapters::File, :path => 'testing'
 end
@@ -37,7 +33,11 @@ RedisStore = Moneta::Builder.new do
   run Moneta::Adapters::Redis
 end
 
-Toy.logger = Log
+Logger.new(log_path.join('test.log')).tap do |log|
+  LogBuddy.init(:logger => log)
+  Toy.logger = log
+end
+
 Toy.store  = RedisStore
 
 Spec::Runner.configure do |config|
