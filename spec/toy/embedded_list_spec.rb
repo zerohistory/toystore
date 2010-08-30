@@ -93,7 +93,7 @@ describe Toy::List do
 
     it "sets reference to parent for each instance" do
       @game.moves.each do |move|
-        move.parent_document.should == @game
+        move.parent_reference.should == @game
       end
     end
   end
@@ -117,7 +117,7 @@ describe Toy::List do
 
     it "sets reference to parent for each instance" do
       @game.moves.each do |move|
-        move.parent_document.should == @game
+        move.parent_reference.should == @game
       end
     end
   end
@@ -141,7 +141,7 @@ describe Toy::List do
 
     it "sets reference to parent for each instance" do
       @game.moves.each do |move|
-        move.parent_document.should == @game
+        move.parent_reference.should == @game
       end
     end
   end
@@ -188,9 +188,9 @@ describe Toy::List do
       # right now pushing a move adds a different instance to the proxy
       # so i'm checking that it adds reference to both
       @game.moves.each do |move|
-        move.parent_document.should == @game
+        move.parent_reference.should == @game
       end
-      @move.parent_document.should == @game
+      @move.parent_reference.should == @game
     end
 
     it "works with hashes" do
@@ -222,9 +222,9 @@ describe Toy::List do
       # right now pushing a move adds a different instance to the proxy
       # so i'm checking that it adds reference to both
       @game.moves.each do |move|
-        move.parent_document.should == @game
+        move.parent_reference.should == @game
       end
-      @move.parent_document.should == @game
+      @move.parent_reference.should == @game
     end
 
     it "works with hashes" do
@@ -257,10 +257,10 @@ describe Toy::List do
       # right now pushing a move adds a different instance to the proxy
       # so i'm checking that it adds reference to both
       @game.moves.each do |move|
-        move.parent_document.should == @game
+        move.parent_reference.should == @game
       end
-      @move1.parent_document.should == @game
-      @move2.parent_document.should == @game
+      @move1.parent_reference.should == @game
+      @move2.parent_reference.should == @game
     end
 
     it "works with hashes" do
@@ -293,10 +293,10 @@ describe Toy::List do
       # right now pushing a move adds a different instance to the proxy
       # so i'm checking that it adds reference to both
       @game.moves.each do |move|
-        move.parent_document.should == @game
+        move.parent_reference.should == @game
       end
-      @move1.parent_document.should == @game
-      @move2.parent_document.should == @game
+      @move1.parent_reference.should == @game
+      @move2.parent_reference.should == @game
     end
   end
 
@@ -306,7 +306,7 @@ describe Toy::List do
     end
 
     it "assigns reference to parent document" do
-      @move.parent_document.should == @game
+      @move.parent_reference.should == @game
     end
 
     it "assigns id" do

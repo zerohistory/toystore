@@ -59,9 +59,9 @@ module Toy
 
         def assign_reference(instance)
           if instance.is_a?(Hash)
-            instance.update(:parent_document => proxy_owner)
+            instance.update(:parent_reference => proxy_owner)
           else
-            instance.parent_document = proxy_owner
+            instance.parent_reference = proxy_owner
           end
           instance
         end
@@ -82,7 +82,7 @@ module Toy
     private
       def create_accessors
         super
-        type.class_eval { attr_accessor :parent_document }
+        type.class_eval { attr_accessor :parent_reference }
       end
 
       def proxy_class
