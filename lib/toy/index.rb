@@ -19,7 +19,8 @@ module Toy
     alias :== :eql?
 
     def key(value)
-      [model.name, name, value].join(':')
+      value = Array.wrap(value).sort
+      [model.name, name, *value].join(':')
     end
 
     module IndexCallbacks
@@ -57,7 +58,7 @@ module Toy
       def create_finders
         model.class_eval """
           def self.first_by_#{name}(value)
-            get(User.get_index(:#{name}, value)[0])
+            get(get_index(:#{name}, value)[0])
           end
 
           def self.first_or_new_by_#{name}(value)

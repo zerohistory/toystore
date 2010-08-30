@@ -1,7 +1,7 @@
 require 'helper'
 
 describe Toy::Index do
-  uses_constants('User', 'Student')
+  uses_constants('User', 'Student', 'Friendship')
 
   before do
     User.attribute(:ssn, String)
@@ -51,103 +51,180 @@ describe Toy::Index do
     end
   end
 
-  describe "creating with index" do
-    before do
-      @user = User.create(:ssn => '555-00-1234')
-    end
-    let(:user) { @user }
+  describe "single key" do
+    describe "creating with index" do
+      before do
+        @user = User.create(:ssn => '555-00-1234')
+      end
+      let(:user) { @user }
 
-    it "creates key for indexed value" do
-      User.store.key?("User:ssn:555-00-1234").should be_true
+      it "creates key for indexed value" do
+        User.store.key?("User:ssn:555-00-1234").should be_true
+      end
+
+      it "adds instance id to index array" do
+        User.get_index(:ssn, '555-00-1234').should == [user.id]
+      end
     end
 
-    it "adds instance id to index array" do
-      User.get_index(:ssn, '555-00-1234').should == [user.id]
+    describe "creating second record for same index value" do
+      before do
+        @user1 = User.create(:ssn => '555-00-1234')
+        @user2 = User.create(:ssn => '555-00-1234')
+      end
+
+      it "adds both instances to index" do
+        User.get_index(:ssn, '555-00-1234').should == [@user1.id, @user2.id]
+      end
+    end
+
+    describe "destroying with index" do
+      before do
+        @user = User.create(:ssn => '555-00-1234')
+        @user.destroy
+      end
+
+      it "removes id from index" do
+        User.get_index(:ssn, '555-00-1234').should == []
+      end
+    end
+
+    describe "updating record and changing indexed value" do
+      before do
+        @user = User.create(:ssn => '555-00-1234')
+        @user.update_attributes(:ssn => '555-00-4321')
+      end
+
+      it "removes from old index" do
+        User.get_index(:ssn, '555-00-1234').should == []
+      end
+
+      it "adds to new index" do
+        User.get_index(:ssn, '555-00-4321').should == [@user.id]
+      end
+    end
+
+    describe "updating record without changing indexed value" do
+      before do
+        @user = User.create(:ssn => '555-00-1234')
+        @user.update_attributes(:ssn => '555-00-1234')
+      end
+
+      it "leaves index alone" do
+        User.get_index(:ssn, '555-00-1234').should == [@user.id]
+      end
+    end
+
+    describe "first by index" do
+      it "should not find values that are not in index" do
+        User.first_by_ssn('does-not-exist').should be_nil
+      end
+
+      it "should find indexed value" do
+        user = User.create(:ssn => '555-00-1234')
+        User.first_by_ssn('555-00-1234').should == user
+      end
+    end
+
+    describe "first or new by index" do
+      it "initializes if not existing" do
+        user = User.first_or_new_by_ssn('does-not-exist')
+        user.ssn.should == 'does-not-exist'
+        user.should_not be_persisted
+      end
+
+      it "returns if existing" do
+        user = User.create(:ssn => '555-00-1234')
+        User.first_or_new_by_ssn('555-00-1234').should == user
+      end
+    end
+
+    describe "first or create by index" do
+      it "creates if not existing" do
+        user = User.first_or_create_by_ssn('does-not-exist')
+        user.ssn.should == 'does-not-exist'
+        user.should be_persisted
+      end
+
+      it "returns if existing" do
+        user = User.create(:ssn => '555-00-1234')
+        User.first_or_create_by_ssn('555-00-1234').should == user
+      end
     end
   end
 
-  describe "creating second record for same index value" do
+  describe "array key" do
     before do
+      User.list :friendships
+      Friendship.list :users
+      Friendship.index :user_ids
       @user1 = User.create(:ssn => '555-00-1234')
-      @user2 = User.create(:ssn => '555-00-1234')
+      @user2 = User.create(:ssn => '555-00-9876')
+      @friendship = Friendship.create(:user_ids => [@user1.id, @user2.id])
+    end
+    let(:user1) { @user1 }
+    let(:user2) { @user2 }
+    let(:friendship) { @friendship }
+
+    describe "creating with index" do
+      it "creates key for indexed values sorted" do
+        ids = [user1.id, user2.id].sort.join(':')
+        Friendship.store.key?("Friendship:user_ids:#{ids}").should be_true
+      end
+
+      it "adds instance id to index array" do
+        Friendship.get_index(:user_ids, [user1.id, user2.id]).should == [friendship.id]
+        Friendship.get_index(:user_ids, [user2.id, user1.id]).should == [friendship.id]
+      end
     end
 
-    it "adds both instances to index" do
-      User.get_index(:ssn, '555-00-1234').should == [@user1.id, @user2.id]
-    end
-  end
+    describe "destroying with index" do
+      before do
+        friendship.destroy
+      end
 
-  describe "destroying with index" do
-    before do
-      @user = User.create(:ssn => '555-00-1234')
-      @user.destroy
-    end
-
-    it "removes id from index" do
-      User.get_index(:ssn, '555-00-1234').should == []
-    end
-  end
-
-  describe "updating record and changing indexed value" do
-    before do
-      @user = User.create(:ssn => '555-00-1234')
-      @user.update_attributes(:ssn => '555-00-4321')
+      it "removes id from index" do
+        Friendship.get_index(:user_ids, [user2.id, user1.id]).should == []
+      end
     end
 
-    it "removes from old index" do
-      User.get_index(:ssn, '555-00-1234').should == []
+    describe "first by index" do
+      it "should not find values that are not in index" do
+        Friendship.first_by_user_ids([user1.id, 'does-not-exist']).should be_nil
+      end
+
+      it "should find indexed value" do
+        Friendship.first_by_user_ids([user1.id, user2.id]).should == friendship
+        Friendship.first_by_user_ids([user2.id, user1.id]).should == friendship
+      end
     end
 
-    it "adds to new index" do
-      User.get_index(:ssn, '555-00-4321').should == [@user.id]
-    end
-  end
+    describe "first or new by index" do
+      it "initializes if not existing" do
+        new_friend = User.create(:ssn => '555-00-1928')
+        new_friendship = Friendship.first_or_new_by_user_ids([user1.id, new_friend.id])
+        new_friendship.user_ids.sort.should == [user1.id, new_friend.id].sort
+        new_friendship.should_not be_persisted
+      end
 
-  describe "updating record without changing indexed value" do
-    before do
-      @user = User.create(:ssn => '555-00-1234')
-      @user.update_attributes(:ssn => '555-00-1234')
-    end
-
-    it "leaves index alone" do
-      User.get_index(:ssn, '555-00-1234').should == [@user.id]
-    end
-  end
-
-  describe "first by index" do
-    it "should not find values that are not in index" do
-      User.first_by_ssn('does-not-exist').should be_nil
+      it "returns if existing" do
+        Friendship.first_or_new_by_user_ids([user1.id, user2.id]).should == friendship
+        Friendship.first_or_new_by_user_ids([user2.id, user1.id]).should == friendship
+      end
     end
 
-    it "should find indexed value" do
-      user = User.create(:ssn => '555-00-1234')
-      User.first_by_ssn('555-00-1234').should == user
-    end
-  end
+    describe "first or create by index" do
+      it "creates if not existing" do
+        new_friend = User.create(:ssn => '555-00-1928')
+        new_friendship = Friendship.first_or_create_by_user_ids([user1.id, new_friend.id])
+        new_friendship.user_ids.sort.should == [user1.id, new_friend.id].sort
+        new_friendship.should be_persisted
+      end
 
-  describe "first or new by index" do
-    it "initializes if not existing" do
-      user = User.first_or_new_by_ssn('does-not-exist')
-      user.ssn.should == 'does-not-exist'
-      user.should_not be_persisted
-    end
-
-    it "returns if existing" do
-      user = User.create(:ssn => '555-00-1234')
-      User.first_or_new_by_ssn('555-00-1234').should == user
-    end
-  end
-
-  describe "first or create by index" do
-    it "creates if not existing" do
-      user = User.first_or_create_by_ssn('does-not-exist')
-      user.ssn.should == 'does-not-exist'
-      user.should be_persisted
-    end
-
-    it "returns if existing" do
-      user = User.create(:ssn => '555-00-1234')
-      User.first_or_create_by_ssn('555-00-1234').should == user
+      it "returns if existing" do
+        Friendship.first_or_create_by_user_ids([user1.id, user2.id]).should == friendship
+        Friendship.first_or_create_by_user_ids([user2.id, user1.id]).should == friendship
+      end
     end
   end
 end
