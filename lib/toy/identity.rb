@@ -17,7 +17,7 @@ module Toy
       end
     
       def next_key(object = nil)
-        returning(@key_factory.next_key(object)) do |key|
+        @key_factory.next_key(object).tap do |key|
           raise "Keys may not be nil" if key.nil?
         end
       end
