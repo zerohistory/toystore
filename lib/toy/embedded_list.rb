@@ -14,19 +14,19 @@ module Toy
 
       def push(record)
         assert_type(record)
-        self.target_attrs = target_attrs + [record.attributes]
+        self.target_attrs = target_attrs + [record]
       end
       alias :<< :push
 
       def concat(*records)
         records = records.flatten
         records.map { |record| assert_type(record) }
-        self.target_attrs = target_attrs + records.map { |record| record.attributes }
+        self.target_attrs = target_attrs + records
       end
 
       def replace(records)
         reset
-        self.target_attrs = records.map { |r| r.attributes }
+        self.target_attrs = records
       end
 
       def create(attrs={})
@@ -57,7 +57,10 @@ module Toy
         end
 
         def target_attrs=(value)
-          proxy_owner.send(:"#{key}=", value)
+          attrs = value.map do |item|
+            item.respond_to?(:attributes) ? item.attributes : item
+          end
+          proxy_owner.send(:"#{key}=", attrs)
         end
     end
 

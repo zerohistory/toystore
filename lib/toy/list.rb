@@ -14,19 +14,19 @@ module Toy
 
       def push(record)
         assert_type(record)
-        self.target_ids = target_ids + [record.id]
+        self.target_ids = target_ids + [record]
       end
       alias :<< :push
 
       def concat(*records)
         records = records.flatten
         records.map { |record| assert_type(record) }
-        self.target_ids = target_ids + records.map { |i| i.id }
+        self.target_ids = target_ids + records
       end
 
       def replace(records)
         reset
-        self.target_ids = records.map { |i| i.id }
+        self.target_ids = records
       end
 
       def create(attrs={})
@@ -61,7 +61,16 @@ module Toy
         end
 
         def target_ids=(value)
-          proxy_owner.send("#{key}=", value)
+          ids = value.map do |item|
+            if item.is_a?(type)
+              item.id
+            elsif item.is_a?(Hash)
+              item['id']
+            else
+              item
+            end
+          end
+          proxy_owner.send(:"#{key}=", ids)
         end
     end
 

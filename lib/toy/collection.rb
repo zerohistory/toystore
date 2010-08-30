@@ -76,7 +76,7 @@ module Toy
       end
 
       def assert_type(record)
-        unless record.instance_of?(type)
+        if !(record.is_a?(type) || record.is_a?(Hash))
           raise(ArgumentError, "#{type} expected, but was #{record.class}")
         end
       end
