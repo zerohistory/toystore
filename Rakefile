@@ -6,7 +6,7 @@ require File.expand_path('../lib/toy/version', __FILE__)
 
 def gemspec
   @gemspec ||= begin
-    file = File.expand_path('../toystore.gemspec', __FILE__)
+    file = File.expand_path('../toy.gemspec', __FILE__)
     eval(File.read(file), binding, file)
   end
 end
