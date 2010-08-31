@@ -102,6 +102,21 @@ EOF
         }
       }] 
     end
+    
+    it "should not cause circular reference JSON errors for lists when called indirectly" do
+      user = User.create(:name => 'John', :age => 28)
+      game = user.games.create
+
+      Toy.decode(ActiveSupport::JSON.encode({:games => user.games})).should ==  {
+        'games' => [{ 
+          'game' => {
+            'id'      => game.id,
+            'user_id' => user.id
+          }
+        }] 
+      }
+    end
+    
   end
 
 end
