@@ -429,8 +429,8 @@ describe Toy::List do
       User.attribute :chat_count, Integer, :default => 1
       User.list :chats, :inverse_of => :user
 
-      class Chat
-        reference :user
+      Chat.reference :user
+      Chat.class_eval do
         after_destroy :decrement_user_chat_count
         def decrement_user_chat_count
           user.update_attributes(:chat_count => 0)
