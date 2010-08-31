@@ -41,7 +41,7 @@ module Toy
 
       def_delegators :@reference, :model, :name, :type, :key
 
-      def_delegators :target, :nil?, :present?, :blank?, :to_json
+      def_delegators :target, :nil?, :present?, :blank?
 
       def initialize(reference, owner)
         @reference, @owner = reference, owner
