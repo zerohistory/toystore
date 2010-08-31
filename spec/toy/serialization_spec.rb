@@ -62,7 +62,32 @@ EOF
         }
       }
     end
+    
+    it "should not cause circular reference JSON errors for references" do
+      user = User.create(:name => 'John', :age => 28)
+      game = user.games.create
+      
+      Toy.decode(game.user.to_json).should == {
+        'user' => {
+          'name'     => 'John',
+          'game_ids' => [game.id],
+          'id'       => user.id,
+          'age'      => 28
+        }
+      }
+    end
 
+    it "should not cause circular reference JSON errors for lists" do
+      user = User.create(:name => 'John', :age => 28)
+      game = user.games.create
+
+      Toy.decode(user.games.to_json).should ==  [{ 
+        'game' => {
+          'id'      => game.id,
+          'user_id' => user.id
+        }
+      }] 
+    end
   end
 
 end
