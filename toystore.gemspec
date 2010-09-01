@@ -2,8 +2,8 @@
 require File.expand_path('../lib/toy/version', __FILE__)
 
 Gem::Specification.new do |s|
-  s.name               = 'toy'
-  s.homepage           = 'http://github.com/jnunemaker/toy'
+  s.name               = 'toystore'
+  s.homepage           = 'http://github.com/newtoy/toystore'
   s.summary            = 'Object mapper for anything'
   s.require_path       = 'lib'
   s.authors            = ['Geoffrey Dagley', 'John Nunemaker']
