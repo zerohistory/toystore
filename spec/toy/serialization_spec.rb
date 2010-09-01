@@ -63,7 +63,7 @@ EOF
       }
     end
     
-    xit "should not cause circular reference JSON errors for references" do
+    it "should not cause circular reference JSON errors for references" do
       user = User.create(:name => 'John', :age => 28)
       game = user.games.create
       
@@ -77,7 +77,7 @@ EOF
       }
     end
 
-    xit "should not cause circular reference JSON errors for references when called indirectly" do
+    it "should not cause circular reference JSON errors for references when called indirectly" do
       user = User.create(:name => 'John', :age => 28)
       game = user.games.create
       
