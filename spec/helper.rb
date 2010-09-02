@@ -39,7 +39,7 @@ Logger.new(log_path.join('test.log')).tap do |log|
   Toy.logger = log
 end
 
-Toy.store  = RedisStore
+Toy.store = RedisStore
 
 Spec::Runner.configure do |config|
   config.include(Support::Constants)
