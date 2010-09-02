@@ -3,8 +3,16 @@ module Toy
     extend ActiveSupport::Concern
 
     module ClassMethods
-      def store(new_store=nil)
-        @store = new_store unless new_store.nil?
+      def store(new_store=nil, *args)
+        unless new_store.nil?
+          if new_store.is_a?(Moneta::Builder)
+            @store = new_store
+          else
+            @store = Moneta::Builder.new do
+              run Moneta::Adapters.const_get(new_store.to_s.capitalize), *args
+            end
+          end
+        end
         @store || Toy.store
       end
 

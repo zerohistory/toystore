@@ -13,6 +13,34 @@ describe Toy::Persistence do
       User.store(FileStore)
       User.store.should be(FileStore)
     end
+
+    describe "with symbol" do
+      before do
+        User.store(:file, :path => 'testing')
+      end
+
+      it "constantizes and sets up moneta builder correctly" do
+        # Moneta does not expose anything and Moneta::Builder has no
+        # equality knowledge so we have to dig in unfortunately.
+        adapter = User.store.instance_variable_get("@adapter")
+        adapter.should be_instance_of(Moneta::Adapters::File)
+        adapter.instance_variable_get("@directory").should == 'testing'
+      end
+    end
+
+    describe "with string" do
+      before do
+        User.store('file', :path => 'testing')
+      end
+
+      it "constantizes and sets up moneta builder correctly" do
+        # Moneta does not expose anything and Moneta::Builder has no
+        # equality knowledge so we have to dig in unfortunately.
+        adapter = User.store.instance_variable_get("@adapter")
+        adapter.should be_instance_of(Moneta::Adapters::File)
+        adapter.instance_variable_get("@directory").should == 'testing'
+      end
+    end
   end
 
   describe ".store_key" do
@@ -75,7 +103,7 @@ describe Toy::Persistence do
     it "returns false if not persisted" do
       User.new.should_not be_persisted
     end
-    
+
     it "returns false if deleted" do
       doc = User.create
       doc.delete
@@ -120,12 +148,12 @@ describe Toy::Persistence do
       end
     end
   end
-  
+
   describe "#update_attributes" do
     before do
       User.attribute :name, String
     end
-    
+
     it "should change attribute and save" do
       user = User.create(:name => 'John')
       User.get(user.id).name.should == 'John'
@@ -134,89 +162,89 @@ describe Toy::Persistence do
       User.get(user.id).name.should == 'Geoffrey'
     end
   end
-  
+
   describe "#delete" do
     it "should remove the instance from the store" do
       doc = User.create
       doc.delete
-      
+
       User.key?(doc.id).should be_false
     end
   end
-  
+
   describe "#destroy" do
     it "should remove the instance from the store" do
       doc = User.create
       doc.destroy
-      
+
       User.key?(doc.id).should be_false
     end
   end
-  
+
   describe "#destroyed?" do
     it "should be false if not deleted" do
       doc = User.create
       doc.should_not be_destroyed
     end
-    
+
     it "should be true if deleted" do
       doc = User.create
       doc.delete
-      
+
       doc.should be_destroyed
     end
   end
-  
+
   describe ".delete(*ids)" do
     it "should delete a single record" do
       doc = User.create
 
       User.delete(doc.id)
-      
+
       User.key?(doc.id).should be_false
     end
-    
+
     it "should delete multiple records" do
       doc1 = User.create
       doc2 = User.create
-      
+
       User.delete(doc1.id, doc2.id)
-      
+
       User.key?(doc1.id).should be_false
       User.key?(doc2.id).should be_false
     end
-    
+
     it "should not complain when records do not exist" do
       doc = User.create
 
       User.delete("taco:bell:tacos")
-    end    
+    end
   end
-  
+
   describe ".destroy(*ids)" do
     it "should destroy a single record" do
       doc = User.create
 
       User.destroy(doc.id)
-      
+
       User.key?(doc.id).should be_false
     end
-    
+
     it "should destroy multiple records" do
       doc1 = User.create
       doc2 = User.create
-      
+
       User.destroy(doc1.id, doc2.id)
-      
+
       User.key?(doc1.id).should be_false
       User.key?(doc2.id).should be_false
     end
-    
+
     it "should not complain when records do not exist" do
       doc = User.create
 
       User.destroy("taco:bell:tacos")
     end
   end
-  
+
 end
