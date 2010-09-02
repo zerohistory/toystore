@@ -50,6 +50,19 @@ describe Toy::Querying do
     end
   end
 
+  describe ".get_or_new" do
+    it "returns found" do
+      user = User.create
+      User.get_or_new(user.id).should == user
+    end
+
+    it "creates new with id set if not found" do
+      user = User.get_or_new('foo')
+      user.should be_instance_of(User)
+      user.id.should == 'foo'
+    end
+  end
+
   describe ".key?" do
     it "returns true if key exists" do
       doc = User.create(:name => 'John')
