@@ -2,7 +2,9 @@ module Toy
   class Attribute
     attr_reader :model, :name, :type
 
-    def initialize(model, name, type, options = {})
+    def initialize(model, name, type, options={})
+      options.assert_valid_keys(:default)
+
       @model, @name, @type = model, name.to_sym, type
       @default = options[:default]
       model.attributes[name] = self
