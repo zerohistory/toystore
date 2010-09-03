@@ -103,5 +103,10 @@ describe Toy::IdentityMap do
         skill.should be_in_identity_map
       end
     end
+
+    xit "reinstantiates same objects on reset of association" do
+      # @user.skills.reset
+      @user.skills.first.should equal(@skill)
+    end
   end
 end
