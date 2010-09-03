@@ -46,7 +46,7 @@ module Toy
       include Enumerable
       extend  Forwardable
 
-      def_delegators :@list, :model, :name, :type, :key, :options
+      def_delegators :@list, :type, :key, :options
 
       def initialize(list, owner)
         @list, @owner = list, owner
