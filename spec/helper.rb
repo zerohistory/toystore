@@ -16,6 +16,7 @@ require 'timecop'
 require 'log_buddy'
 require 'support/constants'
 require 'support/name_and_number_key_factory'
+require 'support/identity_map_matcher'
 
 require 'moneta'
 require 'moneta/adapters/file'
@@ -43,6 +44,7 @@ Toy.store = RedisStore
 
 Spec::Runner.configure do |config|
   config.include(Support::Constants)
+  config.include(IdentityMapMatcher)
 
   config.before(:each) do
     [FileStore, MongoStore, RedisStore].each(&:clear)

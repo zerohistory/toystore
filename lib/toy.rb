@@ -35,6 +35,7 @@ require 'toy/serialization'
 require 'toy/timestamps'
 require 'toy/validations'
 require 'toy/querying'
+require 'toy/identity_map'
 
 require 'toy/collection'
 require 'toy/embedded_list'
