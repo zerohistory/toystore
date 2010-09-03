@@ -547,19 +547,29 @@ describe Toy::List do
       @user.moves.recent.should == [@move_new]
     end
   end
-  
+
   describe "list#get" do
     before do
       @user = User.create
       @game = @user.games.create
     end
-    
+
     it "should not find items that don't exist" do
       @user.games.get('does-not-exist').should be_nil
     end
-    
+
+    it "should not find items that exist but are not in list" do
+      user = User.create
+      user.games.get(@game.id).should be_nil
+    end
+
     it "should find items that are in list" do
       @user.games.get(@game.id).should == @game
+    end
+
+    it "should only perform one get to find the item if present" do
+      Game.should_receive(:get).once
+      @user.games.get(@game.id)
     end
   end
 end

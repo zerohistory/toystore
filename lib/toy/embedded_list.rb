@@ -7,6 +7,10 @@ module Toy
     end
 
     class EmbeddedListProxy < Proxy
+      def get(id)
+        target.detect { |record| record.id == id }
+      end
+
       def include?(record)
         return false if record.nil?
         target.include?(record)

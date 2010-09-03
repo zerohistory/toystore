@@ -7,6 +7,12 @@ module Toy
     end
 
     class ListProxy < Proxy
+      def get(id)
+        if target_ids.include?(id)
+          type.get(id)
+        end
+      end
+
       def include?(record)
         return false if record.nil?
         target_ids.include?(record.id)

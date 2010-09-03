@@ -536,20 +536,19 @@ describe Toy::List do
       @game.moves.recent.should == [@move_new]
     end
   end
-  
+
   describe "list#get" do
     before do
       @game = Game.create
       @move = @game.moves.create
     end
-    
+
     it "should not find items that don't exist" do
       @game.moves.get('does-not-exist').should be_nil
     end
-    
+
     it "should find items that are in list" do
       @game.moves.get(@move.id).should == @move
     end
   end
-  
 end

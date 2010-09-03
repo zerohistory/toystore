@@ -74,10 +74,6 @@ module Toy
       def reset
         @target = nil
       end
-      
-      def get(id)
-        target.select { |record| record.id == id }.first
-      end
 
       def assert_type(record)
         if !(record.is_a?(type) || record.is_a?(Hash))
