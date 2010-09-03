@@ -17,12 +17,6 @@ describe Toy::IdentityMap do
     end
   end
 
-  describe ".identity_map_key" do
-    it "returns single model name and id" do
-      User.identity_map_key('foo').should == 'user:foo'
-    end
-  end
-
   it "adds to map on save" do
     user = User.new
     user.save!

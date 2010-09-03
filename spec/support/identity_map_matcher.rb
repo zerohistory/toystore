@@ -2,7 +2,7 @@ module IdentityMapMatcher
   class BeInIdentityMap
     def matches?(obj)
       @obj = obj
-      @obj.identity_map[@obj.identity_map_key] == @obj
+      @obj.identity_map[@obj.store_key] == @obj
     end
 
     def failure_message

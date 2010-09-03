@@ -11,28 +11,20 @@ module Toy
         Toy.identity_map
       end
 
-      def identity_map_key(id)
-        "#{model_name.singular}:#{id}"
-      end
-
       def get(id)
-        identity_map[identity_map_key(id)] || super
+        identity_map[store_key(id)] || super
       end
 
       def load(attrs)
         return nil if attrs.nil?
         attrs = Toy.decode(attrs) if attrs.is_a?(String)
 
-        if instance = identity_map[identity_map_key(attrs['id'])]
+        if instance = identity_map[store_key(attrs['id'])]
           instance
         else
           super.tap { |doc| doc.add_to_identity_map }
         end
       end
-    end
-
-    def identity_map_key
-      self.class.identity_map_key(id)
     end
 
     def identity_map
@@ -50,12 +42,12 @@ module Toy
     end
 
     def add_to_identity_map
-      identity_map[identity_map_key] = self
+      identity_map[store_key] = self
       embedded_objects.each { |o| o.add_to_identity_map }
     end
 
     def remove_from_identity_map
-      identity_map.delete(identity_map_key)
+      identity_map.delete(store_key)
       embedded_objects.each { |o| o.remove_from_identity_map }
     end
 
