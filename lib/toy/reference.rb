@@ -39,7 +39,8 @@ module Toy
     class ReferenceProxy
       extend Forwardable
 
-      def_delegators :@reference, :model, :name, :type, :key
+      def_delegator :@reference, :type, :proxy_class
+      def_delegator :@reference, :key, :proxy_key
 
       def_delegators :target, :nil?, :present?, :blank?, :as_json
 
@@ -53,7 +54,7 @@ module Toy
 
       def target
         return nil if target_id.blank?
-        @target ||= type.get(target_id)
+        @target ||= proxy_class.get(target_id)
       end
 
       def eql?(other)
@@ -77,7 +78,7 @@ module Toy
       end
 
       def create(attrs={})
-        type.create(attrs).tap do |record|
+        proxy_class.create(attrs).tap do |record|
           if record.persisted?
             self.target_id = record.id
             proxy_owner.save
@@ -87,7 +88,7 @@ module Toy
       end
 
       def build(attrs={})
-        type.new(attrs).tap do |record|
+        proxy_class.new(attrs).tap do |record|
           self.target_id = record.id
           reset
         end
@@ -95,17 +96,17 @@ module Toy
 
       private
         def assert_type(record)
-          unless record.instance_of?(type)
-            raise(ArgumentError, "#{type} expected, but was #{record.class}")
+          unless record.instance_of?(proxy_class)
+            raise(ArgumentError, "#{proxy_class} expected, but was #{record.class}")
           end
         end
 
         def target_id
-          proxy_owner.send(key)
+          proxy_owner.send(proxy_key)
         end
 
         def target_id=(value)
-          proxy_owner.send("#{key}=", value)
+          proxy_owner.send("#{proxy_key}=", value)
         end
 
         def method_missing(method, *args, &block)
