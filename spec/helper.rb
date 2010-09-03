@@ -47,6 +47,7 @@ Spec::Runner.configure do |config|
   config.include(IdentityMapMatcher)
 
   config.before(:each) do
+    Toy.identity_map.clear
     [FileStore, MongoStore, RedisStore].each(&:clear)
   end
 end
