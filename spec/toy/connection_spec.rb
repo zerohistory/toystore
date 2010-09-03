@@ -13,14 +13,14 @@ describe Toy::Connection do
 
   describe "store" do
     it "should set the default store" do
-      Toy.store = RedisStore
-      Toy.store.should == RedisStore
+      Toy.store = MemoryStore
+      Toy.store.should == MemoryStore
     end
 
     it "including Toy::Store should use the default store, if present" do
-      Toy.store = MongoStore
+      Toy.store = MemoryStore
       klass = Class.new { include Toy::Store }
-      klass.store.should == MongoStore
+      klass.store.should == MemoryStore
     end
   end
 

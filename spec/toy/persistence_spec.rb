@@ -4,14 +4,9 @@ describe Toy::Persistence do
   uses_constants('User')
 
   describe ".store" do
-    it "returns store if no argument" do
-      User.store(MongoStore)
-      User.store.should be(MongoStore)
-    end
-
-    it "sets store if argument" do
-      User.store(FileStore)
-      User.store.should be(FileStore)
+    it "sets store if argument and reads store if not" do
+      User.store(MemoryStore)
+      User.store.should be(MemoryStore)
     end
 
     describe "with symbol" do

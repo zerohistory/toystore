@@ -20,19 +20,12 @@ require 'support/identity_map_matcher'
 
 require 'moneta'
 require 'moneta/adapters/file'
+require 'moneta/adapters/memory'
 require 'moneta/adapters/redis'
 require 'moneta/adapters/mongodb'
 
-FileStore = Moneta::Builder.new do
-  run Moneta::Adapters::File, :path => 'testing'
-end
-
-MongoStore = Moneta::Builder.new do
-  run Moneta::Adapters::MongoDB
-end
-
-RedisStore = Moneta::Builder.new do
-  run Moneta::Adapters::Redis
+MemoryStore = Moneta::Builder.new do
+  run Moneta::Adapters::Memory
 end
 
 Logger.new(log_path.join('test.log')).tap do |log|
@@ -40,14 +33,13 @@ Logger.new(log_path.join('test.log')).tap do |log|
   Toy.logger = log
 end
 
-Toy.store = RedisStore
-
 Spec::Runner.configure do |config|
   config.include(Support::Constants)
   config.include(IdentityMapMatcher)
 
   config.before(:each) do
+    Toy.store = MemoryStore
+    Toy.store.clear
     Toy.identity_map.clear
-    [FileStore, MongoStore, RedisStore].each(&:clear)
   end
 end
