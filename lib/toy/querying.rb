@@ -19,6 +19,10 @@ module Toy
         get(id) || new(:id => id)
       end
 
+      def get_or_create(id)
+        get(id) || create(:id => id)
+      end
+
       def key?(id)
         store.key?(store_key(id))
       end
