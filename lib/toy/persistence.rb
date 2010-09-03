@@ -18,15 +18,17 @@ module Toy
 
       def delete(*ids)
         ids.each do |id|
-          next unless key?(id)
-          self[id].delete
+          if doc = get(id)
+            doc.delete
+          end
         end
       end
 
       def destroy(*ids)
         ids.each do |id|
-          next unless key?(id)
-          self[id].destroy
+          if doc = get(id)
+            doc.destroy
+          end
         end
       end
 

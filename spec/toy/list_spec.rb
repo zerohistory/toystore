@@ -78,8 +78,8 @@ describe Toy::List do
       user_id = @user.id
       game_id = @game.id
       @user.destroy
-      User[user_id].should be_nil
-      Game[game_id].should be_nil
+      User.get(user_id).should be_nil
+      Game.get(game_id).should be_nil
     end
   end
 

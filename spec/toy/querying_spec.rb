@@ -7,17 +7,6 @@ describe Toy::Querying do
     User.attribute :name, String
   end
 
-  describe ".[]" do
-    it "is aliased to get" do
-      john = User.create(:name => 'John')
-      User[john.id].name.should == 'John'
-    end
-
-    it "returns nil if not found" do
-      User['1'].should be_nil
-    end
-  end
-
   describe ".get" do
     it "returns document if found" do
       john = User.create(:name => 'John')

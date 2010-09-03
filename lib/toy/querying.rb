@@ -6,7 +6,6 @@ module Toy
       def get(id)
         load(store[store_key(id)])
       end
-      alias :[] :get
 
       def get!(id)
         get(id) || raise(Toy::NotFound.new(id))
