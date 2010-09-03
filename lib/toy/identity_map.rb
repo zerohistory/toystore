@@ -51,10 +51,19 @@ module Toy
 
     def add_to_identity_map
       identity_map[identity_map_key] = self
+      embedded_objects.each { |o| o.add_to_identity_map }
     end
 
     def remove_from_identity_map
       identity_map.delete(identity_map_key)
+      embedded_objects.each { |o| o.remove_from_identity_map }
     end
+
+    private
+      def embedded_objects
+        self.class.embedded_lists.keys.inject([]) do |objects, name|
+          objects.concat(send(name).to_a.compact)
+        end
+      end
   end
 end

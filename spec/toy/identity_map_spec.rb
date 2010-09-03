@@ -1,7 +1,7 @@
 require 'helper'
 
 describe Toy::IdentityMap do
-  uses_constants('User')
+  uses_constants('User', 'Skill')
 
   before do
     Toy.identity_map.clear
@@ -77,6 +77,31 @@ describe Toy::IdentityMap do
       user.should be_in_identity_map
       User.store.should_receive(:[]).with("users:#{user.id}")
       user.reload
+    end
+  end
+
+  describe "embedded objects" do
+    before do
+      User.embedded_list(:skills)
+      @skill = Skill.new
+      @user = User.create(:skills => [@skill])
+    end
+
+    it "adds to map on save" do
+      @skill.should be_in_identity_map
+    end
+
+    it "removes from map on delete" do
+      @user.destroy
+      @skill.should_not be_in_identity_map
+    end
+
+    it "adds to map on load" do
+      @user = User.load('id' => '1', 'skill_attributes' => [{'id' => '2'}])
+      @user.should be_in_identity_map
+      @user.skills.each do |skill|
+        skill.should be_in_identity_map
+      end
     end
   end
 end
