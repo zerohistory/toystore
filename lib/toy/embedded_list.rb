@@ -37,7 +37,7 @@ module Toy
       end
 
       def create(attrs={})
-        type.new(attrs).tap do |instance|
+        proxy_class.new(attrs).tap do |instance|
           assign_reference(instance)
           if instance.valid?
             instance.initialize_from_database
@@ -57,7 +57,7 @@ module Toy
       private
         def find_target
           target_attrs.map do |attrs|
-            assign_reference(type.load(attrs))
+            assign_reference(proxy_class.load(attrs))
           end
         end
 
@@ -71,14 +71,14 @@ module Toy
         end
 
         def target_attrs
-          proxy_owner.send(key)
+          proxy_owner.send(proxy_key)
         end
 
         def target_attrs=(value)
           attrs = value.map do |item|
             item.respond_to?(:attributes) ? item.attributes : item
           end
-          proxy_owner.send(:"#{key}=", attrs)
+          proxy_owner.send(:"#{proxy_key}=", attrs)
           reset
         end
     end

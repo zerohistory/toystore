@@ -46,7 +46,9 @@ module Toy
       include Enumerable
       extend  Forwardable
 
-      def_delegators :@list, :type, :key, :options
+      def_delegator :@list, :type,    :proxy_class
+      def_delegator :@list, :key,     :proxy_key
+      def_delegator :@list, :options, :proxy_options
 
       def initialize(list, owner)
         @list, @owner = list, owner
@@ -76,8 +78,8 @@ module Toy
       end
 
       def assert_type(record)
-        if !(record.is_a?(type) || record.is_a?(Hash))
-          raise(ArgumentError, "#{type} expected, but was #{record.class}")
+        if !(record.is_a?(proxy_class) || record.is_a?(Hash))
+          raise(ArgumentError, "#{proxy_class} expected, but was #{record.class}")
         end
       end
 

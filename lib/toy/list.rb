@@ -9,7 +9,7 @@ module Toy
     class ListProxy < Proxy
       def get(id)
         if target_ids.include?(id)
-          type.get(id)
+          proxy_class.get(id)
         end
       end
 
@@ -36,8 +36,10 @@ module Toy
       end
 
       def create(attrs={})
-        attrs.merge!(:"#{options[:inverse_of]}_id" => proxy_owner.id) if options[:inverse_of]
-        type.create(attrs).tap do |record|
+        if proxy_options[:inverse_of]
+          attrs.update(:"#{proxy_options[:inverse_of]}_id" => proxy_owner.id)
+        end
+        proxy_class.create(attrs).tap do |record|
           if record.persisted?
             proxy_owner.reload
             push(record)
@@ -49,7 +51,7 @@ module Toy
 
       def destroy(*args, &block)
         ids = block_given? ? target.select(&block).map(&:id) : args.flatten
-        type.destroy(*ids)
+        proxy_class.destroy(*ids)
         proxy_owner.reload
         self.target_ids = target_ids - ids
         proxy_owner.save
@@ -59,16 +61,16 @@ module Toy
       private
         def find_target
           return [] if target_ids.blank?
-          type.get_multi(target_ids)
+          proxy_class.get_multi(target_ids)
         end
 
         def target_ids
-          proxy_owner.send(key)
+          proxy_owner.send(proxy_key)
         end
 
         def target_ids=(value)
           ids = value.map do |item|
-            if item.is_a?(type)
+            if item.is_a?(proxy_class)
               item.id
             elsif item.is_a?(Hash)
               item['id']
@@ -76,7 +78,7 @@ module Toy
               item
             end
           end
-          proxy_owner.send(:"#{key}=", ids)
+          proxy_owner.send(:"#{proxy_key}=", ids)
         end
     end
 
