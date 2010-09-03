@@ -22,6 +22,7 @@ module Toy
       include References
       include Indices
       include Logger
+      include IdentityMap
     end
   end
   

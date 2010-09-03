@@ -4,7 +4,6 @@ describe Toy::IdentityMap do
   uses_constants('User')
 
   before do
-    User.class_eval { include Toy::IdentityMap }
     Toy.identity_map.clear
   end
 
