@@ -17,19 +17,11 @@ module Toy
       end
 
       def delete(*ids)
-        ids.each do |id|
-          if doc = get(id)
-            doc.delete
-          end
-        end
+        ids.each { |id| get(id).try(:delete) }
       end
 
       def destroy(*ids)
-        ids.each do |id|
-          if doc = get(id)
-            doc.destroy
-          end
-        end
+        ids.each { |id| get(id).try(:destroy) }
       end
 
       private
