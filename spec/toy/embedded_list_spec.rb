@@ -122,30 +122,6 @@ describe Toy::List do
     end
   end
 
-  describe "list writer (with hashes)" do
-    before do
-      @move1 = Move.new
-      @move2 = Move.new
-      @game  = Game.create(:moves => [@move2.attributes])
-    end
-
-    it "set attribute" do
-      @game.move_attributes.should == [@move2.attributes]
-    end
-
-    it "unmemoizes reader" do
-      @game.moves.should == [@move2]
-      @game.moves         = [@move1.attributes]
-      @game.moves.should == [@move1]
-    end
-
-    it "sets reference to parent for each instance" do
-      @game.moves.each do |move|
-        move.parent_reference.should == @game
-      end
-    end
-  end
-
   describe "list#reset" do
     before do
       @move = Move.new
@@ -199,13 +175,6 @@ describe Toy::List do
         move.should be_persisted
       end
     end
-
-    it "works with hashes" do
-      @game.moves = []
-      move = Move.new
-      @game.moves.push(move.attributes)
-      @game.moves.should == [move]
-    end
   end
 
   describe "list#<<" do
@@ -239,13 +208,6 @@ describe Toy::List do
       @game.moves.each do |move|
         move.should be_persisted
       end
-    end
-
-    it "works with hashes" do
-      @game.moves = []
-      move = Move.new
-      @game.moves << move.attributes
-      @game.moves.should == [move]
     end
   end
 
@@ -282,13 +244,6 @@ describe Toy::List do
       @game.moves.each do |move|
         move.should be_persisted
       end
-    end
-
-    it "works with hashes" do
-      @game.moves = []
-      move = Move.new
-      @game.moves.concat(move.attributes)
-      @game.moves.should == [move]
     end
   end
 

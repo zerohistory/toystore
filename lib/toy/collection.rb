@@ -78,7 +78,7 @@ module Toy
       end
 
       def assert_type(record)
-        if !(record.is_a?(proxy_class) || record.is_a?(Hash))
+        unless record.is_a?(proxy_class)
           raise(ArgumentError, "#{proxy_class} expected, but was #{record.class}")
         end
       end
