@@ -228,45 +228,88 @@ describe Toy::Reference do
     end
   end
 
-  describe "reference#is_a?" do
-    before do
-      @user = User.create
-      @game = Game.create(:user => @user)
+  context "delegating" do
+    describe "when target is nil" do
+      before do
+        @game = Game.create
+      end
+
+      it "returns nil if nil" do
+        @game.user.inspect.should == 'nil'
+      end
+
+      it "delegates #kind_of?" do
+        @game.user.kind_of?(NilClass).should be_true
+        @game.user.kind_of?(User).should be_false
+      end
+
+      it "delegates #instance_of?" do
+        @game.user.instance_of?(NilClass).should be_true
+        @game.user.instance_of?(User).should be_false
+      end
+
+      it "delegates #is_a?" do
+        @game.user.is_a?(NilClass).should be_true
+        @game.user.is_a?(User).should be_false
+      end
+
+      it "delegates #eql?" do
+        @game.user.should eql(nil)
+        @game.user.should_not eql(User.create)
+        @game.user.should_not eql(@game)
+      end
+
+      it "delegates #equal?" do
+        @game.user.should equal(nil)
+        @game.user.should_not equal(User.create)
+        @game.user.should_not equal(@game)
+      end
     end
 
-    it "delegates to target" do
-      @game.user.is_a?(User).should be_true
-      @game.user.is_a?(Game).should be_false
-    end
-  end
+    describe "when target is not nil" do
+      before do
+        @user = User.create
+        @game = Game.create(:user => @user)
+      end
 
-  describe "reference#kind_of?" do
-    before do
-      @user = User.create
-      @game = Game.create(:user => @user)
-    end
+      it "delegates #inspect" do
+        @game.user = @user
+        @game.user.inspect.should == %Q(#<User:#{@user.object_id} id: "#{@user.id}">)
+      end
 
-    it "delegates to target" do
-      @game.user.kind_of?(User).should be_true
-      @game.user.kind_of?(Game).should be_false
-      @game.user.instance_of?(User).should be_true
-      @game.user.instance_of?(Game).should be_false
-    end
-  end
+      it "delegates #==" do
+        (@game.user == @user).should be_true
+        (@user == @game.user).should be_true
+      end
 
-  describe "reference#inspect" do
-    before do
-      @user = User.create
-      @game = Game.create
-    end
+      it "delegates #is_a?" do
+        @game.user.is_a?(User).should be_true
+        @game.user.is_a?(Game).should be_false
+      end
 
-    it "returns nil if nil" do
-      @game.user.inspect.should == 'nil'
-    end
+      it "delegates #kind_of?" do
+        @game.user.kind_of?(User).should be_true
+        @game.user.kind_of?(Game).should be_false
+      end
 
-    it "delegates to target if present" do
-      @game.user = @user
-      @game.user.inspect.should == %Q(#<User:#{@user.object_id} id: "#{@user.id}">)
+      it "delegates #instance_of?" do
+        @game.user.instance_of?(User).should be_true
+        @game.user.instance_of?(Game).should be_false
+      end
+
+      it "delegates #eql?" do
+        @game.user.should eql(@user)
+        @game.user.should_not eql(User.create)
+        @game.user.should_not eql(@game)
+      end
+
+      it "delegates #equal?" do
+        @game.user.should equal(@user)
+        @user.should equal(@game.user)
+        @game.user.should equal(User.get(@user.id)) # identity map
+        @game.user.should_not equal(User.create)
+        @game.user.should_not equal(@game)
+      end
     end
   end
 
