@@ -23,4 +23,24 @@ describe Toy::Dirty do
       user.should eql(game.user)
     end
   end
+
+  describe "equal?" do
+    it "returns true if same object" do
+      user = User.create(:id => 1)
+      user.should equal(user)
+    end
+
+    it "returns true if same object through proxy" do
+      Game.reference(:user)
+      user = User.create
+      game = Game.create(:user => user)
+
+      user.should equal(game.user)
+      game.user.should equal(user)
+    end
+
+    it "returns false if not same object" do
+
+    end
+  end
 end
