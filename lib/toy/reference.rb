@@ -7,7 +7,7 @@ module Toy
       @name    = name.to_sym
       @options = args.extract_options!
       @type    = args.shift
-      
+
       model.references[name] = self
       model.attribute(key, String)
       create_accessors
@@ -42,7 +42,7 @@ module Toy
       def_delegator :@reference, :type, :proxy_class
       def_delegator :@reference, :key, :proxy_key
 
-      def_delegators :target, :nil?, :present?, :blank?, :as_json, :inspect
+      def_delegators :target, :nil?, :present?, :blank?, :as_json, :inspect, :is_a?, :kind_of?
 
       def initialize(reference, owner)
         @reference, @owner = reference, owner

@@ -228,6 +228,32 @@ describe Toy::Reference do
     end
   end
 
+  describe "reference#is_a?" do
+    before do
+      @user = User.create
+      @game = Game.create(:user => @user)
+    end
+
+    it "delegates to target" do
+      @game.user.is_a?(User).should be_true
+      @game.user.is_a?(Game).should be_false
+    end
+  end
+
+  describe "reference#kind_of?" do
+    before do
+      @user = User.create
+      @game = Game.create(:user => @user)
+    end
+
+    it "delegates to target" do
+      @game.user.kind_of?(User).should be_true
+      @game.user.kind_of?(Game).should be_false
+      @game.user.instance_of?(User).should be_false
+      @game.user.instance_of?(Game).should be_false
+    end
+  end
+
   describe "reference#inspect" do
     before do
       @user = User.create
