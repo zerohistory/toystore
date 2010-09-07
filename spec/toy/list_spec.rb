@@ -179,6 +179,10 @@ describe Toy::List do
       @user.game_ids.should == [@game.id]
     end
 
+    it "resets association" do
+      @user.games.should == [@game]
+    end
+
     it "raises error if wrong type assigned" do
       lambda {
         @user.games.push(Move.new)

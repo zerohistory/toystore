@@ -79,6 +79,7 @@ module Toy
             end
           end
           proxy_owner.send(:"#{proxy_key}=", ids)
+          reset
         end
     end
 
