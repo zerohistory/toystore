@@ -62,11 +62,7 @@ module Toy
         end
 
         def assign_reference(instance)
-          if instance.is_a?(Hash)
-            instance.update(:parent_reference => proxy_owner)
-          else
-            instance.parent_reference = proxy_owner
-          end
+          instance.parent_reference = proxy_owner
           instance
         end
 
