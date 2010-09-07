@@ -13,6 +13,10 @@ module Toy
         end
       end
 
+      def get!(id)
+        get(id) || raise(Toy::NotFound.new(id))
+      end
+
       def include?(record)
         return false if record.nil?
         target_ids.include?(record.id)

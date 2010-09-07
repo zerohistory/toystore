@@ -26,6 +26,10 @@ module Toy
         target.detect { |record| record.id == id }
       end
 
+      def get!(id)
+        get(id) || raise(Toy::NotFound.new(id))
+      end
+
       def include?(record)
         return false if record.nil?
         target.include?(record)

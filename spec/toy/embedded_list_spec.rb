@@ -521,4 +521,21 @@ describe Toy::List do
       @game.moves.get(@move.id).should == @move
     end
   end
+  
+  describe "list#get!" do
+    before do
+      @game = Game.create
+      @move = @game.moves.create
+    end
+
+    it "should not find items that don't exist" do
+      lambda {
+        @game.moves.get!('does-not-exist')
+      }.should raise_error(Toy::NotFound, 'Could not find document with id: "does-not-exist"')
+    end
+
+    it "should find items that are in list" do
+      @game.moves.get!(@move.id).should == @move
+    end
+  end
 end

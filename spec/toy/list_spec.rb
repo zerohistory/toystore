@@ -539,4 +539,21 @@ describe Toy::List do
       @user.games.get(@game.id)
     end
   end
+
+  describe "list#get!" do
+    before do
+      @user = User.create
+      @game = @user.games.create
+    end
+
+    it "returns game if found" do
+      lambda {
+        @user.games.get!('does-not-exist')
+      }.should raise_error(Toy::NotFound, 'Could not find document with id: "does-not-exist"')
+    end
+
+    it "raises exception if not found" do
+      @user.games.get!(@game.id).should == @game
+    end
+  end
 end
