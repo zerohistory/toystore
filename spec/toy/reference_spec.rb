@@ -249,7 +249,7 @@ describe Toy::Reference do
     it "delegates to target" do
       @game.user.kind_of?(User).should be_true
       @game.user.kind_of?(Game).should be_false
-      @game.user.instance_of?(User).should be_false
+      @game.user.instance_of?(User).should be_true
       @game.user.instance_of?(Game).should be_false
     end
   end

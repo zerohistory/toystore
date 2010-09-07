@@ -41,8 +41,8 @@ module Toy
 
       def_delegator :@reference, :type, :proxy_class
       def_delegator :@reference, :key, :proxy_key
-
-      def_delegators :target, :nil?, :present?, :blank?, :as_json, :inspect, :is_a?, :kind_of?
+      alias_method :proxy_respond_to?, :respond_to?
+      instance_methods.each { |m| undef_method m unless m.to_s =~ /^(?:nil\?|send|object_id|to_a)$|^__|proxy_/ }
 
       def initialize(reference, owner)
         @reference, @owner = reference, owner
@@ -56,11 +56,6 @@ module Toy
         return nil if target_id.blank?
         @target ||= proxy_class.get(target_id)
       end
-
-      def eql?(other)
-        target == other
-      end
-      alias :== :eql?
 
       def reset
         @target = nil
@@ -92,6 +87,11 @@ module Toy
           self.target_id = record.id
           reset
         end
+      end
+
+      # Does the proxy or its \target respond to +symbol+?
+      def respond_to?(*args)
+        proxy_respond_to?(*args) || target.respond_to?(*args)
       end
 
       private
