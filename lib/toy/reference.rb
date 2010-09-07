@@ -42,7 +42,7 @@ module Toy
       def_delegator :@reference, :type, :proxy_class
       def_delegator :@reference, :key, :proxy_key
 
-      def_delegators :target, :nil?, :present?, :blank?, :as_json
+      def_delegators :target, :nil?, :present?, :blank?, :as_json, :inspect
 
       def initialize(reference, owner)
         @reference, @owner = reference, owner

@@ -228,6 +228,22 @@ describe Toy::Reference do
     end
   end
 
+  describe "reference#inspect" do
+    before do
+      @user = User.create
+      @game = Game.create
+    end
+
+    it "returns nil if nil" do
+      @game.user.inspect.should == 'nil'
+    end
+
+    it "delegates to target if present" do
+      @game.user = @user
+      @game.user.inspect.should == %Q(#<User:#{@user.object_id} id: "#{@user.id}">)
+    end
+  end
+
   shared_examples_for 'reference#create' do
     it "returns instance" do
       @user.should be_instance_of(User)

@@ -10,6 +10,7 @@ module Toy
       include Persistence
       include Dirty
       include Equality
+      include Inspect
       include Querying
 
       include Callbacks
