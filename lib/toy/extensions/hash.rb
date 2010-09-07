@@ -1,7 +1,7 @@
 module Toy
   module Extensions
     module Hash
-      def from_store(value)
+      def from_store(value, *)
         HashWithIndifferentAccess.new(value || {})
       end
     end

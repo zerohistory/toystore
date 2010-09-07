@@ -23,7 +23,7 @@ module Toy
         nil     => nil
       }
 
-      def to_store(value)
+      def to_store(value, *)
         if value.is_a?(Boolean)
           value
         else
@@ -31,7 +31,7 @@ module Toy
         end
       end
 
-      def from_store(value)
+      def from_store(value, *)
         value.nil? ? nil : !!value
       end
     end

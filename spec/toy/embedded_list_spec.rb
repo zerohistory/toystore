@@ -122,6 +122,21 @@ describe Toy::List do
     end
   end
 
+  describe "list attribute writer" do
+    before do
+      Move.attribute(:index, Integer)
+      @game = Game.new('move_attributes' => [
+        {'id' => '1', 'index' => '1'}
+      ])
+    end
+
+    it "typecasts hash values correctly" do
+      @game.move_attributes.should == [
+        {'id' => '1', 'index' => 1}
+      ]
+    end
+  end
+
   describe "list#reset" do
     before do
       @move = Move.new

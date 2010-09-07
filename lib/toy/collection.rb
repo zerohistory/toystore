@@ -13,7 +13,7 @@ module Toy
       @type    = args.shift
 
       model.send(list_method)[name] = self
-      model.attribute(key, Array)
+      define_attribute
       create_accessors
 
       options[:extensions] = modularized_extensions(block, options[:extensions])
@@ -94,6 +94,10 @@ module Toy
     end
 
     private
+      def define_attribute
+        model.attribute(key, Array)
+      end
+
       def proxy_class
         raise('Not Implemented')
       end

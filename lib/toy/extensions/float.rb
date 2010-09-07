@@ -1,7 +1,7 @@
 module Toy
   module Extensions
     module Float
-      def to_store(value)
+      def to_store(value, *)
         value.nil? ? nil : value.to_f
       end
     end

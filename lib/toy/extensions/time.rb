@@ -1,7 +1,7 @@
 module Toy
   module Extensions
     module Time
-      def to_store(value)
+      def to_store(value, *)
         if value.nil? || value == ''
           nil
         else
@@ -12,7 +12,7 @@ module Toy
         end
       end
 
-      def from_store(value)
+      def from_store(value, *)
         if ::Time.try(:zone).present? && value.present?
           value.in_time_zone(::Time.zone)
         else

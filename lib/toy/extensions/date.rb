@@ -1,7 +1,7 @@
 module Toy
   module Extensions
     module Date
-      def to_store(value)
+      def to_store(value, *)
         if value.nil? || value == ''
           nil
         else
@@ -12,7 +12,7 @@ module Toy
         nil
       end
 
-      def from_store(value)
+      def from_store(value, *)
         value.to_date if value.present?
       end
     end

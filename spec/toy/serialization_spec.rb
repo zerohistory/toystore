@@ -28,39 +28,45 @@ EOF
   describe "serializing with embedded documents" do
     before do
       Game.reference(:creator, User)
-      Game.embedded_list(:moves)
 
-      Move.embedded_list(:tiles)
-      Move.attribute(:index, Integer)
+      Move.attribute(:index,  Integer)
       Move.attribute(:points, Integer)
-      Move.attribute(:words, Array)
+      Move.attribute(:words,  Array)
 
-      Tile.attribute(:coordinates, Hash)
-      Tile.attribute(:index, Integer)
+      Tile.attribute(:row,    Integer)
+      Tile.attribute(:column, Integer)
+      Tile.attribute(:index,  Integer)
+
+      Game.embedded_list(:moves)
+      Move.embedded_list(:tiles)
 
       @user = User.create
-      @game = Game.new(:creator => @user)
-      @move = Move.new(:index => 0, :points => 15, :tiles => [
-        {:coordinates => {:x => 7, :y => 7}, :index => 23},
-        {:coordinates => {:x => 8, :y => 7}, :index => 24},
+      @game = Game.create!(:creator => @user, :move_attributes => [
+        :index            => 0,
+        :points           => 15,
+        :tile_attributes => [
+          {:column => 7, :row => 7, :index => 23},
+          {:column => 8, :row => 7, :index => 24},
+        ],
       ])
-      @game.moves.push(@move)
-      @game.save!
     end
 
     it "includes all embedded attributes by default" do
-      Toy.decode(@game.to_json(:include => [{:moves => :tiles}])).should == {
+      move = @game.moves.first
+      tile1 = move.tiles[0]
+      tile2 = move.tiles[1]
+      Toy.decode(@game.to_json).should == {
         'game' => {
           'id'              => @game.id,
           'creator_id'      => @user.id,
           'move_attributes' => [
             {
-              'id'      => @game.moves.first.id,
+              'id'      => move.id,
               'index'   => 0,
               'points'  => 15,
               'tile_attributes' => [
-                {'coordinates' => {'x' => 7, 'y' => 7}, 'index' => 23},
-                {'coordinates' => {'x' => 8, 'y' => 7}, 'index' => 24},
+                {'id' => tile1.id, 'column' => 7, 'row' => 7, 'index' => 23},
+                {'id' => tile2.id, 'column' => 8, 'row' => 7, 'index' => 24},
               ]
             },
           ],

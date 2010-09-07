@@ -2,11 +2,11 @@ module Toy
   module Extensions
     module Object
       module ClassMethods
-        def to_store(value)
+        def to_store(value, *)
           value
         end
 
-        def from_store(value)
+        def from_store(value, *)
           value
         end
       end

@@ -2,6 +2,21 @@ module Toy
   class EmbeddedList
     include Toy::Collection
 
+    def self.to_store(value, attribute)
+      Array.to_store(value).map do |item|
+        if item.respond_to?(:attributes)
+          item.attributes
+        else
+          # Ensures that using foo_attributes correctly typecasts values
+          attribute.embedded_list.type.new(item).attributes
+        end
+      end
+    end
+
+    def self.from_store(value, attribute)
+      Array.from_store(value, attribute)
+    end
+
     def key
       @key ||= :"#{name.to_s.singularize}_attributes"
     end
@@ -71,15 +86,16 @@ module Toy
         end
 
         def target_attrs=(value)
-          attrs = value.map do |item|
-            item.respond_to?(:attributes) ? item.attributes : item
-          end
-          proxy_owner.send(:"#{proxy_key}=", attrs)
+          proxy_owner.send(:"#{proxy_key}=", value)
           reset
         end
     end
 
     private
+      def define_attribute
+        model.attribute(key, EmbeddedList, :embedded_list => self)
+      end
+      
       def create_accessors
         super
         type.class_eval { attr_accessor :parent_reference }
