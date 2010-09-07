@@ -1,7 +1,7 @@
 require 'helper'
 
 describe Toy::Serialization do
-  uses_constants('User', 'Game')
+  uses_constants('User', 'Game', 'Move', 'Tile')
 
   before do
     User.attribute :name, String
@@ -23,6 +23,50 @@ describe Toy::Serialization do
   <age type="integer">28</age>
 </user>
 EOF
+  end
+
+  describe "serializing with embedded documents" do
+    before do
+      Game.reference(:creator, User)
+      Game.embedded_list(:moves)
+
+      Move.embedded_list(:tiles)
+      Move.attribute(:index, Integer)
+      Move.attribute(:points, Integer)
+      Move.attribute(:words, Array)
+
+      Tile.attribute(:coordinates, Hash)
+      Tile.attribute(:index, Integer)
+
+      @user = User.create
+      @game = Game.new(:creator => @user)
+      @move = Move.new(:index => 0, :points => 15, :tiles => [
+        {:coordinates => {:x => 7, :y => 7}, :index => 23},
+        {:coordinates => {:x => 8, :y => 7}, :index => 24},
+      ])
+      @game.moves.push(@move)
+      @game.save!
+    end
+
+    it "includes all embedded attributes by default" do
+      Toy.decode(@game.to_json(:include => [{:moves => :tiles}])).should == {
+        'game' => {
+          'id'              => @game.id,
+          'creator_id'      => @user.id,
+          'move_attributes' => [
+            {
+              'id'      => @game.moves.first.id,
+              'index'   => 0,
+              'points'  => 15,
+              'tile_attributes' => [
+                {'coordinates' => {'x' => 7, 'y' => 7}, 'index' => 23},
+                {'coordinates' => {'x' => 8, 'y' => 7}, 'index' => 24},
+              ]
+            },
+          ],
+        }
+      }
+    end
   end
 
   describe "serializing relationships" do
@@ -62,11 +106,11 @@ EOF
         }
       }
     end
-    
+
     it "should not cause circular reference JSON errors for references" do
       user = User.create(:name => 'John', :age => 28)
       game = user.games.create
-      
+
       Toy.decode(ActiveSupport::JSON.encode(game.user)).should == {
         'user' => {
           'name'     => 'John',
@@ -80,7 +124,7 @@ EOF
     it "should not cause circular reference JSON errors for references when called indirectly" do
       user = User.create(:name => 'John', :age => 28)
       game = user.games.create
-      
+
       Toy.decode(ActiveSupport::JSON.encode([game.user])).should == [
         'user' => {
           'name'     => 'John',
@@ -95,28 +139,26 @@ EOF
       user = User.create(:name => 'John', :age => 28)
       game = user.games.create
 
-      Toy.decode(ActiveSupport::JSON.encode(user.games)).should ==  [{ 
+      Toy.decode(ActiveSupport::JSON.encode(user.games)).should ==  [{
         'game' => {
           'id'      => game.id,
           'user_id' => user.id
         }
-      }] 
+      }]
     end
-    
+
     it "should not cause circular reference JSON errors for lists when called indirectly" do
       user = User.create(:name => 'John', :age => 28)
       game = user.games.create
 
       Toy.decode(ActiveSupport::JSON.encode({:games => user.games})).should ==  {
-        'games' => [{ 
+        'games' => [{
           'game' => {
             'id'      => game.id,
             'user_id' => user.id
           }
-        }] 
+        }]
       }
     end
-    
   end
-
 end
