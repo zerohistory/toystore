@@ -6,12 +6,10 @@ module Toy
     module InstanceMethods
       def initialize(*)
         super
-        # never register initial id assignment as a change
-        @changed_attributes.delete('id')
-      end
-
-      def initialize_from_database(*)
-        super.tap do
+        if new_record?
+          # never register initial id assignment as a change
+          @changed_attributes.delete('id')
+        else
           @previously_changed = {}
           @changed_attributes.clear if @changed_attributes
         end

@@ -91,6 +91,10 @@ describe Toy::Querying do
     before    { @doc = User.load({:id => '1', :name => 'John'}.to_json) }
     let(:doc) { @doc }
 
+    it "returns instance" do
+      doc.should be_instance_of(User)
+    end
+
     it "marks object as persisted" do
       doc.should be_persisted
     end
@@ -103,6 +107,10 @@ describe Toy::Querying do
   describe ".load (with hash)" do
     before    { @doc = User.load(:id => '1', :name => 'John') }
     let(:doc) { @doc }
+
+    it "returns instance" do
+      doc.should be_instance_of(User)
+    end
 
     it "marks object as persisted" do
       doc.should be_persisted

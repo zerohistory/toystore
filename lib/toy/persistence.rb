@@ -42,7 +42,7 @@ module Toy
       end
 
       def new_record?
-        @_new_record
+        @_new_record == true
       end
 
       def destroyed?
@@ -80,6 +80,7 @@ module Toy
           logger.debug("ToyStore SET [#{store_key.inspect}] #{attributes.inspect}")
           store[store_key] = Toy.encode(attributes)
           @_new_record = false
+          each_embedded_object { |obj| obj.instance_variable_set("@_new_record", false) }
           true
         end
 

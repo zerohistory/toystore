@@ -59,7 +59,7 @@ module Toy
         proxy_class.new(attrs).tap do |instance|
           assign_reference(instance)
           if instance.valid?
-            instance.initialize_from_database
+            instance.instance_variable_set("@_new_record", false)
             push(instance)
             proxy_owner.save
           end

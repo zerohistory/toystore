@@ -24,15 +24,14 @@ module Toy
 
     module InstanceMethods
       def initialize(attrs={})
-        @_new_record = true
+        @_new_record = true unless defined?(@_new_record)
         self.attributes = attrs
-        write_attribute :id, self.class.next_key(self) unless self.id
+        write_attribute :id, self.class.next_key(self) if new_record? && !id?
       end
 
-      # Private, use load instead of you need to create objects from hash
-      def initialize_from_database(attrs={})
+      def instantiate_from_database(attrs={})
         @_new_record = false
-        self.attributes = attrs
+        send(:initialize, attrs)
         self
       end
 
