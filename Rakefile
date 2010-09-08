@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'rake'
 require 'rake/testtask'
+require 'bundler/setup'
 require 'spec/rake/spectask'
 require File.expand_path('../lib/toy/version', __FILE__)
 
