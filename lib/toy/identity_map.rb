@@ -43,12 +43,12 @@ module Toy
 
     def add_to_identity_map
       identity_map[store_key] = self
-      embedded_objects.each { |o| o.add_to_identity_map } if has_embedded_objects?
+      each_embedded_object { |object| object.add_to_identity_map }
     end
 
     def remove_from_identity_map
       identity_map.delete(store_key)
-      embedded_objects.each { |o| o.remove_from_identity_map } if has_embedded_objects?
+      each_embedded_object { |object| object.remove_from_identity_map }
     end
 
     private
@@ -56,9 +56,11 @@ module Toy
         self.class.embedded_lists.any?
       end
 
-      def embedded_objects
-        self.class.embedded_lists.keys.inject([]) do |objects, name|
-          objects.concat(send(name).to_a.compact)
+      def each_embedded_object(&block)
+        if has_embedded_objects?
+          self.class.embedded_lists.keys.inject([]) do |objects, name|
+            objects.concat(send(name).to_a.compact)
+          end.each { |object| block.call(object) }
         end
       end
   end
