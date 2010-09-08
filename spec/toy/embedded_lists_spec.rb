@@ -7,6 +7,11 @@ describe Toy::Lists do
     Game.embedded_lists.should == {}
   end
 
+  it "does not share with regular lists" do
+    Game.list(:moves)
+    Game.embedded_lists.should == {}
+  end
+
   describe ".parent_reference" do
     before do
       Game.embedded_list(:moves)

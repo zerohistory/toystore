@@ -4,7 +4,7 @@ module Toy
 
     module ClassMethods
       def embedded_lists
-        @lists ||= {}
+        @embedded_lists ||= {}
       end
 
       def parent_reference_module
