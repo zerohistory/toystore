@@ -45,7 +45,7 @@ describe Toy::Attribute do
     }.should raise_error(ArgumentError)
   end
 
-  describe "options" do
+  describe "attribute with default" do
     before do
       @attribute = Toy::Attribute.new(User, :brother_name, String, :default => 'Daryl')
     end

@@ -13,6 +13,10 @@ module Toy
         @attributes ||= {}
       end
 
+      def attributes_with_default
+        attributes.values.select { |attribute| attribute.default? }
+      end
+
       def attribute(key, type, options = {})
         Attribute.new(self, key, type, options)
       end
@@ -49,7 +53,11 @@ module Toy
       end
 
       def attributes
-        @attributes ||= {}.with_indifferent_access
+        @attributes ||= {}.with_indifferent_access.tap do |attrs|
+          self.class.attributes_with_default.each do |attribute|
+            attrs[attribute.name] = attribute.default
+          end
+        end
       end
 
       def attributes=(attrs)

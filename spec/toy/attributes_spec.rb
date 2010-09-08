@@ -61,6 +61,16 @@ describe Toy::Attributes do
       attrs = Model().new.attributes
       attrs.keys.should == ['id']
     end
+
+    it "includes all attributes that are not nil" do
+      User.attribute(:name, String)
+      User.attribute(:active, Boolean, :default => true)
+      user = User.new
+      user.attributes.should == {
+        'id'     => user.id,
+        'active' => true,
+      }
+    end
   end
 
   describe "#attributes=" do
@@ -93,13 +103,11 @@ describe Toy::Attributes do
     before do
       User.attribute :name, String
       User.attribute :age, Integer
-      User.attribute :brother_name, String, :default => 'Daryl'
     end
 
     it "adds attribute to attributes" do
       User.attributes[:name].should == Toy::Attribute.new(User, :name, String)
       User.attributes[:age].should  == Toy::Attribute.new(User, :age, Integer)
-      User.attributes[:brother_name].should  == Toy::Attribute.new(User, :brother_name, String, {:default => 'Daryl'})
     end
 
     it "adds accessors" do
@@ -112,11 +120,6 @@ describe Toy::Attributes do
       record = User.new
       record.age = '12'
       record.age.should == 12
-    end
-
-    it "has defaults" do
-      record = User.new
-      record.brother_name.should == 'Daryl'
     end
 
     it "adds query-ers" do
@@ -147,6 +150,25 @@ describe Toy::Attributes do
       record = User.new
       record[:name] = 'John'
       record.name.should == 'John'
+    end
+  end
+
+  describe "declaring an attribute with a default" do
+    before do
+      User.attribute :active, Boolean, :default => true
+    end
+
+    it "adds attribute to attributes" do
+      attribute = Toy::Attribute.new(User, :active, Boolean, {:default => true})
+      User.attributes[:active].should == attribute
+    end
+
+    it "defaults value when initialized" do
+      User.new.active.should be(true)
+    end
+
+    it "overrides default if present" do
+      User.new(:active => false).active.should be(false)
     end
   end
 

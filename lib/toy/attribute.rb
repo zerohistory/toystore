@@ -9,15 +9,21 @@ module Toy
     end
 
     def read(value)
-      type.from_store(value || default, self)
+      value = default if default? && value.nil?
+      type.from_store(value, self)
     end
 
     def write(value)
-      type.to_store(value || default, self)
+      value = default if default? && value.nil?
+      type.to_store(value, self)
     end
 
     def default
       options[:default]
+    end
+
+    def default?
+      default.present?
     end
 
     # Stores reference to related embedded list
