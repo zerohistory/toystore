@@ -74,6 +74,22 @@ describe Toy::IdentityMap do
     end
   end
 
+  describe "#remove_from_identity_map" do
+    it "does not iterate embedded objects if there are none" do
+      user = User.create
+      user.should_not_receive(:embedded_objects)
+      user.remove_from_identity_map
+    end
+  end
+
+  describe "#add_to_identity_map" do
+    it "does not iterate embedded objects if there are none" do
+      user = User.create
+      user.should_not_receive(:embedded_objects)
+      user.add_to_identity_map
+    end
+  end
+
   context "embedded objects" do
     before do
       User.embedded_list(:skills)

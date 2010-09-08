@@ -16,8 +16,8 @@ module Toy
       end
 
       def load(attrs)
+        attrs = normalize_load_attributes(attrs)
         return nil if attrs.nil?
-        attrs = Toy.decode(attrs) if attrs.is_a?(String)
 
         if instance = identity_map[store_key(attrs['id'])]
           instance
