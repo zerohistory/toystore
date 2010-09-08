@@ -112,7 +112,7 @@ describe Toy::Persistence do
       User.attribute :age, Integer
     end
 
-    describe "with new record" do
+    context "with new record" do
       it "saves to key" do
         doc = User.new(:name => 'John')
         doc.save
@@ -120,7 +120,7 @@ describe Toy::Persistence do
       end
     end
 
-    describe "with existing record" do
+    context "with existing record" do
       before do
         @doc      = User.create(:name => 'John')
         @key      = @doc.store_key

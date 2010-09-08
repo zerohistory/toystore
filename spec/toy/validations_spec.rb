@@ -52,7 +52,7 @@ describe Toy::Validations do
   end
 
   describe "#save" do
-    describe "with valid" do
+    context "with valid" do
       before do
         @doc = User.new(:name => 'John')
         @result = @doc.save
@@ -67,7 +67,7 @@ describe Toy::Validations do
       end
     end
 
-    describe "with invalid" do
+    context "with invalid" do
       before do
         @doc = User.new
         @result = @doc.save
@@ -79,6 +79,29 @@ describe Toy::Validations do
 
       it "does not persist instance" do
         @doc.should_not be_persisted
+      end
+    end
+
+    context "with invalid option" do
+      it "raises error" do
+        lambda { User.new.save(:foobar => '') }.should raise_error
+      end
+    end
+
+    context "with :validate option" do
+      before do
+        User.validates_presence_of(:name)
+        @doc = User.new
+      end
+
+      it "does not perform validations if false" do
+        @doc.save(:validate => false).should be_true
+        User.key?(@doc.id).should be_true
+      end
+
+      it "does perform validations if true" do
+        @doc.save(:validate => true).should be_false
+        User.key?(@doc.id).should be_false
       end
     end
   end

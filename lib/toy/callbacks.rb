@@ -7,7 +7,7 @@ module Toy
       define_model_callbacks :save, :create, :update, :destroy
     end
 
-    def save
+    def save(*)
       run_callbacks(:save) { super }
     end
 

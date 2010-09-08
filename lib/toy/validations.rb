@@ -19,8 +19,9 @@ module Toy
         run_callbacks(:validation) { super }
       end
 
-      def save
-        valid? ? super : false
+      def save(options={})
+        options.assert_valid_keys(:validate)
+        !options.fetch(:validate, true) || valid? ? super : false
       end
 
       def save!

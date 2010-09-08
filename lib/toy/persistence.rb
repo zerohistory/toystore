@@ -53,7 +53,7 @@ module Toy
         !new_record? && !destroyed?
       end
 
-      def save
+      def save(*)
         create_or_update
       end
 

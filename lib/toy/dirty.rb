@@ -22,7 +22,7 @@ module Toy
         end
       end
 
-      def save
+      def save(*)
         super.tap do
           @previously_changed = changes
           @changed_attributes.clear if @changed_attributes

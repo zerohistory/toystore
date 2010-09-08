@@ -39,12 +39,13 @@ module Toy
         self
       end
 
-      def reload
+      def reload(*)
         if attrs = store[store_key]
           self.attributes = Toy.decode(attrs)
         end
-        self.class.lists.each_key      { |name| send(name).reset }
-        self.class.references.each_key { |name| send(name).reset }
+        self.class.lists.each_key           { |name| send(name).reset }
+        self.class.embedded_lists.each_key  { |name| send(name).reset }
+        self.class.references.each_key      { |name| send(name).reset }
         self
       end
 
