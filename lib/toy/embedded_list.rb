@@ -76,7 +76,7 @@ module Toy
       private
         def find_target
           target_attrs.map do |attrs|
-            assign_reference(proxy_class.load(attrs))
+            assign_reference(proxy_class.new(attrs))
           end
         end
 
