@@ -8,5 +8,12 @@ module Toy
       false
     end
     alias :== :eql?
+
+    def equal?(other)
+      if other.respond_to?(:proxy_respond_to?) && other.respond_to?(:target)
+        other = other.target
+      end
+      super other
+    end
   end
 end
