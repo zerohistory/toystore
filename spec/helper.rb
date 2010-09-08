@@ -22,8 +22,6 @@ require 'support/identity_map_matcher'
 require 'moneta'
 require 'moneta/adapters/file'
 require 'moneta/adapters/memory'
-require 'moneta/adapters/redis'
-require 'moneta/adapters/mongodb'
 
 MemoryStore = Moneta::Builder.new do
   run Moneta::Adapters::Memory
