@@ -74,7 +74,7 @@ describe Toy::IdentityMap do
     end
   end
 
-  describe "embedded objects" do
+  context "embedded objects" do
     before do
       User.embedded_list(:skills)
       @skill = Skill.new
