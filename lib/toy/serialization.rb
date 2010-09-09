@@ -23,9 +23,8 @@ module Toy
         methods
       end
 
-      (attribute_names + method_names).each { |name|
-        hash[name] = attributes[name]
-      }
+      attribute_names.each  { |name| hash[name] = attributes[name] }
+      method_names.each     { |name| hash[name] = send(name) }
 
       serializable_add_includes(options) do |association, records, opts|
         hash[association] = records.is_a?(Enumerable) ?

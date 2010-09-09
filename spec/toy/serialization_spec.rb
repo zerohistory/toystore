@@ -25,6 +25,28 @@ describe Toy::Serialization do
 EOF
   end
 
+  it "correctly serializes methods" do
+    User.class_eval do
+      def foo
+        {'foo' => 'bar'}
+      end
+    end
+    json = User.new.to_json(:methods => [:foo])
+    Toy.decode(json)['user']['foo'].should == {'foo' => 'bar'}
+  end
+
+  it "allows using :only" do
+    user = User.new
+    json = user.to_json(:only => :id)
+    Toy.decode(json).should == {'user' => {'id' => user.id}}
+  end
+
+  it "allows using :except" do
+    user = User.new
+    json = user.to_json(:except => :id)
+    Toy.decode(json)['user'].should_not have_key('id')
+  end
+
   describe "serializing with embedded documents" do
     before do
       Game.reference(:creator, User)
