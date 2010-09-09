@@ -146,14 +146,14 @@ describe Toy::List do
     it "unmemoizes the list" do
       @game.moves.should == [@move]
       @game.moves.reset
-      Move.should_receive(:load).and_return(@move)
+      Move.should_receive(:new).and_return(@move)
       @game.moves.should == [@move]
     end
 
     it "should be reset when owner is reloaded" do
       @game.moves.should == [@move]
       @game.reload
-      Move.should_receive(:load).and_return(@move)
+      Move.should_receive(:new).and_return(@move)
       @game.moves.should == [@move]
     end
   end
@@ -161,7 +161,7 @@ describe Toy::List do
   describe "list#push" do
     before do
       @move = Move.new
-      @game = Game.create
+      @game = Game.new
       @game.moves.push(@move)
     end
 
@@ -184,18 +184,37 @@ describe Toy::List do
       @move.parent_reference.should == @game
     end
 
+    it "instances should not be persisted" do
+      @game.moves.each do |move|
+        move.should_not be_persisted
+      end
+    end
+
     it "marks instances as persisted when parent saved" do
       @game.save
       @game.moves.each do |move|
         move.should be_persisted
       end
     end
+
+    it "marks instances as persisted when updated" do
+      @game.save
+      game = @game.reload
+      move = Move.new
+      game.moves.push(move)
+      move.should_not be_persisted
+      game.save
+      game.moves.each do |move|
+        move.should be_persisted
+      end
+      # move.should be_persisted
+    end
   end
 
   describe "list#<<" do
     before do
       @move = Move.new
-      @game = Game.create
+      @game = Game.new
       @game.moves << @move
     end
 
@@ -218,6 +237,12 @@ describe Toy::List do
       @move.parent_reference.should == @game
     end
 
+    it "instances should not be persisted" do
+      @game.moves.each do |move|
+        move.should_not be_persisted
+      end
+    end
+
     it "marks instances as persisted when parent saved" do
       @game.save
       @game.moves.each do |move|
@@ -230,7 +255,7 @@ describe Toy::List do
     before do
       @move1 = Move.new
       @move2 = Move.new
-      @game  = Game.create
+      @game  = Game.new
       @game.moves.concat(@move1, @move2)
     end
 
@@ -252,6 +277,12 @@ describe Toy::List do
       end
       @move1.parent_reference.should == @game
       @move2.parent_reference.should == @game
+    end
+
+    it "instances should not be persisted" do
+      @game.moves.each do |move|
+        move.should_not be_persisted
+      end
     end
 
     it "marks instances as persisted when parent saved" do
@@ -288,6 +319,12 @@ describe Toy::List do
       end
       @move1.parent_reference.should == @game
       @move2.parent_reference.should == @game
+    end
+
+    it "instances should not be persisted" do
+      @game.moves.each do |move|
+        move.should_not be_persisted
+      end
     end
 
     it "marks instances as persisted when parent saved" do
@@ -521,7 +558,7 @@ describe Toy::List do
       @game.moves.get(@move.id).should == @move
     end
   end
-  
+
   describe "list#get!" do
     before do
       @game = Game.create

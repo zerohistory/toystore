@@ -87,6 +87,7 @@ module Toy
         def update
           logger.debug("ToyStore SET [#{store_key.inspect}] #{attributes.inspect}")
           store[store_key] = Toy.encode(attributes)
+          each_embedded_object { |obj| obj.instance_variable_set("@_new_record", false) }
           true
         end
     end
