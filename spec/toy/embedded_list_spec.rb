@@ -65,7 +65,7 @@ describe Toy::List do
 
   describe "setting list type" do
     before do
-      @list = Game.list(:recent_moves, Move)
+      @list = Game.embedded_list(:recent_moves, Move)
     end
     let(:list) { @list }
 
