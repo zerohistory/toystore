@@ -19,11 +19,13 @@ module Toy
     end
 
     def default
-      options[:default]
+      if default?
+        options[:default].respond_to?(:call) ? options[:default].call : options[:default]
+      end
     end
 
     def default?
-      default.present?
+      options.key?(:default)
     end
 
     # Stores reference to related embedded list

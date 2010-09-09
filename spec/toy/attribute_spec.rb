@@ -50,20 +50,46 @@ describe Toy::Attribute do
       @attribute = Toy::Attribute.new(User, :brother_name, String, :default => 'Daryl')
     end
 
-    it "should return default when reading a nil value" do
+    it "returns default when reading a nil value" do
       @attribute.read(nil).should == 'Daryl'
     end
 
-    it "should return value when reading a non-nil value" do
+    it "returns value when reading a non-nil value" do
       @attribute.read('Larry').should == 'Larry'
     end
 
-    it "should return default when writing a nil value" do
+    it "returns default when writing a nil value" do
       @attribute.write(nil).should == 'Daryl'
     end
 
-    it "should return value when writing a non-nil value" do
+    it "returns value when writing a non-nil value" do
       @attribute.write('Larry').should == 'Larry'
+    end
+  end
+
+  describe "attribute with default that is proc" do
+    before do
+      @time = 4.days.ago
+      default = proc { @time }
+      @attribute = Toy::Attribute.new(User, :created_at, Time, :default => default)
+    end
+
+    it "returns default when reading a nil value" do
+      @attribute.read(nil).should == @time
+    end
+
+    it "returns value when reading a non-nil value" do
+      time = 3.days.ago
+      @attribute.read(time).should == time
+    end
+
+    it "returns default when writing a nil value" do
+      @attribute.write(nil).to_i.should == @time.to_i
+    end
+
+    it "returns value when writing a non-nil value" do
+      time = 2.days.ago
+      @attribute.write(time).to_i.should == time.to_i
     end
   end
 end
