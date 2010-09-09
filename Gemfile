@@ -11,4 +11,5 @@ group :development do
   gem 'tzinfo'
   gem 'log_buddy'
   gem 'diff-lcs'
+  gem 'ruby-debug'
 end
