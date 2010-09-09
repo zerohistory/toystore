@@ -197,6 +197,13 @@ describe Toy::List do
       end
     end
 
+    it "should keep existing instances as persisted when adding a new instance" do
+      @game.save
+      @game.moves.push(Move.new)
+      @game.moves.first.should be_persisted
+      @game.moves.last.should_not be_persisted
+    end
+
     it "marks instances as persisted when updated" do
       @game.save
       game = @game.reload
