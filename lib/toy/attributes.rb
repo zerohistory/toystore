@@ -29,6 +29,10 @@ module Toy
     module InstanceMethods
       def initialize(attrs={})
         @_new_record = true unless defined?(@_new_record)
+        @attributes = {}.with_indifferent_access
+        self.class.attributes_with_default.each do |attribute|
+          @attributes[attribute.name] = attribute.default
+        end
         self.attributes = attrs
         write_attribute :id, self.class.next_key(self) if new_record? && !id?
       end
@@ -41,11 +45,10 @@ module Toy
 
       def reload(*)
         if attrs = store[store_key]
+          self.class.lists.each_key           { |name| send(name).reset }
+          self.class.references.each_key      { |name| send(name).reset }
           self.attributes = Toy.decode(attrs)
         end
-        self.class.lists.each_key           { |name| send(name).reset }
-        self.class.embedded_lists.each_key  { |name| send(name).reset }
-        self.class.references.each_key      { |name| send(name).reset }
         self
       end
 
@@ -54,9 +57,13 @@ module Toy
       end
 
       def attributes
-        @attributes ||= {}.with_indifferent_access.tap do |attrs|
-          self.class.attributes_with_default.each do |attribute|
-            attrs[attribute.name] = attribute.default
+        @attributes.merge(embedded_attributes)
+      end
+
+      def embedded_attributes
+        {}.tap do |attrs|
+          self.class.embedded_lists.each_key do |name|
+            attrs[name] = send(name).map(&:attributes)
           end
         end
       end
@@ -82,11 +89,11 @@ module Toy
 
       private
         def read_attribute(key)
-          attribute_definition(key).read(attributes[key])
+          attribute_definition(key).read(@attributes[key])
         end
 
         def write_attribute(key, value)
-          attributes[key] = attribute_definition(key).write(value)
+          @attributes[key] = attribute_definition(key).write(value)
         end
 
         def attribute_definition(key)

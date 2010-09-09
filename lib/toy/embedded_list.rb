@@ -2,23 +2,9 @@ module Toy
   class EmbeddedList
     include Toy::Collection
 
-    def self.to_store(value, attribute)
-      Array.to_store(value).map do |item|
-        if item.respond_to?(:attributes)
-          item.attributes
-        else
-          # Ensures that using foo_attributes correctly typecasts values
-          attribute.embedded_list.type.new(item).attributes
-        end
-      end
-    end
-
-    def self.from_store(value, attribute)
-      Array.from_store(value, attribute)
-    end
-
-    def key
-      @key ||= :"#{name.to_s.singularize}_attributes"
+    def initialize(*)
+      super
+      create_accessors
     end
 
     class EmbeddedListProxy < Proxy
@@ -38,21 +24,24 @@ module Toy
       def push(instance)
         assert_type(instance)
         assign_reference(instance)
-        self.target_attrs = target_attrs + [instance]
+        self.target.push(instance)
       end
       alias :<< :push
 
       def concat(*instances)
         instances = instances.flatten
-        instances.map do |instance|
+        instances.each do |instance|
           assert_type(instance)
           assign_reference(instance)
         end
-        self.target_attrs = target_attrs + instances
+        self.target.concat instances
       end
 
       def replace(instances)
-        self.target_attrs = instances
+        @target = instances.map do |instance|
+          instance = instance.is_a?(proxy_class) ? instance : proxy_class.load(instance)
+          assign_reference(instance)
+        end
       end
 
       def create(attrs={})
@@ -68,40 +57,47 @@ module Toy
 
       def destroy(*args, &block)
         ids = block_given? ? target.select(&block).map(&:id) : args.flatten
-        target_attrs.delete_if { |attrs| ids.include?(attrs['id']) }
+        target.delete_if { |instance| ids.include?(instance.id) }
         proxy_owner.save
-        reset
       end
 
       private
         def find_target
-          target_attrs.map do |attrs|
-            assign_reference(proxy_class.new(attrs))
-          end
+          []
         end
 
         def assign_reference(instance)
           instance.parent_reference = proxy_owner
           instance
         end
-
-        def target_attrs
-          proxy_owner.send(proxy_key)
-        end
-
-        def target_attrs=(value)
-          proxy_owner.send(:"#{proxy_key}=", value)
-          reset
-        end
     end
 
     private
       def define_attribute
-        model.attribute(key, EmbeddedList, :embedded_list => self)
+        # model.attribute(key, EmbeddedList, :embedded_list => self)
       end
-      
+
       def create_accessors
-        super
+        model.class_eval """
+          def #{name}
+            #{instance_variable} ||= self.class.#{list_method}[:#{name}].new_proxy(self)
+          end
+
+          def #{name}=(records)
+            #{name}.replace(records)
+          end
+
+          def #{name.to_s.singularize}_attributes=(attrs)
+            self.#{name} = attrs.map do |value|
+              #{type}.new(value)
+            end
+          end
+
+          def #{name.to_s.singularize}_attributes
+            #{name}.map(&:attributes)
+          end
+        """
+
         type.class_eval { attr_accessor :parent_reference }
       end
 

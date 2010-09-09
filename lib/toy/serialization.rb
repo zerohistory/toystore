@@ -3,11 +3,29 @@ module Toy
     extend ActiveSupport::Concern
     include ActiveModel::Serializers::JSON
     include ActiveModel::Serializers::Xml
-    
+
     def serializable_hash(options = nil)
+      hash = {}
       options ||= {}
 
-      hash = super(options)
+      options[:only]   = Array.wrap(options[:only]).map { |n| n.to_s }
+      options[:except] = Array.wrap(options[:except]).map { |n| n.to_s }
+
+      attribute_names = attributes.keys.sort
+      if options[:only].any?
+        attribute_names &= options[:only]
+      elsif options[:except].any?
+        attribute_names -= options[:except]
+      end
+
+      method_names = Array.wrap(options[:methods]).inject([]) do |methods, name|
+        methods << name if respond_to?(name.to_s)
+        methods
+      end
+
+      (attribute_names + method_names).each { |name|
+        hash[name] = attributes[name]
+      }
 
       serializable_add_includes(options) do |association, records, opts|
         hash[association] = records.is_a?(Enumerable) ?
@@ -39,7 +57,7 @@ module Toy
           elsif self.class.references.include?(association)
             send(association)
           end
-          
+
           unless records.nil?
             association_options = include_has_options ? include_associations[association] : base_only_or_except
             opts = options.merge(association_options)

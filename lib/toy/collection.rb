@@ -13,8 +13,6 @@ module Toy
       @type    = args.shift
 
       model.send(list_method)[name] = self
-      define_attribute
-      create_accessors
 
       options[:extensions] = modularized_extensions(block, options[:extensions])
     end
@@ -73,10 +71,6 @@ module Toy
       end
       alias :to_a :target
 
-      def reset
-        @target = nil
-      end
-
       def assert_type(record)
         unless record.is_a?(proxy_class)
           raise(ArgumentError, "#{proxy_class} expected, but was #{record.class}")
@@ -94,24 +88,8 @@ module Toy
     end
 
     private
-      def define_attribute
-        model.attribute(key, Array)
-      end
-
       def proxy_class
         raise('Not Implemented')
-      end
-
-      def create_accessors
-        model.class_eval """
-          def #{name}
-            #{instance_variable} ||= self.class.#{list_method}[:#{name}].new_proxy(self)
-          end
-
-          def #{name}=(records)
-            #{name}.replace(records)
-          end
-        """
       end
 
       def modularized_extensions(*extensions)

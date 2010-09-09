@@ -2,6 +2,12 @@ module Toy
   class List
     include Toy::Collection
 
+    def initialize(*)
+      super
+      define_attribute
+      create_accessors
+    end
+
     def key
       @key ||= :"#{name.to_s.singularize}_ids"
     end
@@ -62,6 +68,10 @@ module Toy
         reset
       end
 
+      def reset
+        @target = nil
+      end
+
       private
         def find_target
           return [] if target_ids.blank?
@@ -88,6 +98,11 @@ module Toy
     end
 
     private
+
+      def define_attribute
+        model.attribute(key, Array)
+      end
+
       def proxy_class
         ListProxy
       end
@@ -97,7 +112,16 @@ module Toy
       end
 
       def create_accessors
-        super
+        model.class_eval """
+          def #{name}
+            #{instance_variable} ||= self.class.#{list_method}[:#{name}].new_proxy(self)
+          end
+
+          def #{name}=(records)
+            #{name}.replace(records)
+          end
+        """
+
         if options[:dependent]
           model.class_eval """
             after_destroy :destroy_#{name}

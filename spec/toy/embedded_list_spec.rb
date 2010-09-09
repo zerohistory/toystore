@@ -21,20 +21,12 @@ describe Toy::List do
     list.type.should == Move
   end
 
-  it "has key" do
-    list.key.should == :move_attributes
-  end
-
   it "has instance_variable" do
     list.instance_variable.should == :@_moves
   end
 
   it "adds list to model" do
     Game.embedded_lists.keys.should include(:moves)
-  end
-
-  it "adds attribute to model" do
-    Game.attributes.keys.should include(:move_attributes)
   end
 
   it "adds reader method" do
@@ -83,12 +75,18 @@ describe Toy::List do
 
   describe "list reader" do
     before do
-      @move = Move.new
-      @game = Game.create(:move_attributes => [@move.attributes])
+      Move.attribute(:index, Integer)
+      @game = Game.create(:move_attributes => [{:index => 0}, {:index => 1}])
     end
 
     it "returns instances" do
-      @game.moves.should == [@move]
+      @game.moves.each do |move|
+        move.should be_instance_of(Move)
+      end
+      @game.moves[0].id.should_not be_nil
+      @game.moves[1].id.should_not be_nil
+      @game.moves[0].index.should == 0
+      @game.moves[1].index.should == 1
     end
 
     it "sets reference to parent for each instance" do
@@ -137,27 +135,6 @@ describe Toy::List do
     end
   end
 
-  describe "list#reset" do
-    before do
-      @move = Move.new
-      @game = Game.create(:move_attributes => [@move.attributes])
-    end
-
-    it "unmemoizes the list" do
-      @game.moves.should == [@move]
-      @game.moves.reset
-      Move.should_receive(:new).and_return(@move)
-      @game.moves.should == [@move]
-    end
-
-    it "should be reset when owner is reloaded" do
-      @game.moves.should == [@move]
-      @game.reload
-      Move.should_receive(:new).and_return(@move)
-      @game.moves.should == [@move]
-    end
-  end
-
   describe "list#push" do
     before do
       @move = Move.new
@@ -165,7 +142,7 @@ describe Toy::List do
       @game.moves.push(@move)
     end
 
-    it "adds attributes to attribute" do
+    xit "adds attributes to attribute" do
       @game.move_attributes.should == [@move.attributes]
     end
 
@@ -197,6 +174,13 @@ describe Toy::List do
       end
     end
 
+    it "should save list" do
+      moves = @game.moves.target
+      @game.save
+      @game.reload
+      @game.moves.should == moves
+    end
+
     it "should keep existing instances as persisted when adding a new instance" do
       @game.save
       @game.moves.push(Move.new)
@@ -225,7 +209,7 @@ describe Toy::List do
       @game.moves << @move
     end
 
-    it "adds attributes to attribute" do
+    xit "adds attributes to attribute" do
       @game.move_attributes.should == [@move.attributes]
     end
 
@@ -266,7 +250,7 @@ describe Toy::List do
       @game.moves.concat(@move1, @move2)
     end
 
-    it "adds attributes to attribute" do
+    xit "adds attributes to attribute" do
       @game.move_attributes.should == [@move1.attributes, @move2.attributes]
     end
 
@@ -308,7 +292,7 @@ describe Toy::List do
       @game.moves.concat([@move1, @move2])
     end
 
-    it "adds id to attribute" do
+    xit "adds id to attribute" do
       @game.move_attributes.should == [@move1.attributes, @move2.attributes]
     end
 
@@ -355,7 +339,7 @@ describe Toy::List do
       @move.id.should_not be_nil
     end
 
-    it "adds attributes to attribute" do
+    xit "adds attributes to attribute" do
       @game.move_attributes.should == [@move.attributes]
     end
 
