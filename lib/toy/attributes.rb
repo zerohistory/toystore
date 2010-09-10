@@ -22,7 +22,7 @@ module Toy
       end
 
       def attribute?(key)
-        attributes.keys.include?(key.to_sym)
+        attributes.has_key?(key.to_s)
       end
     end
 
@@ -97,7 +97,7 @@ module Toy
         end
 
         def attribute_definition(key)
-          self.class.attributes[key.to_sym] || raise("Attribute '#{key}' is not defined")
+          self.class.attributes[key.to_s] || raise("Attribute '#{key}' is not defined")
         end
 
         def attribute_method?(key)

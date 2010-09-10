@@ -5,7 +5,7 @@ module Toy
     def initialize(model, name, type, options={})
       options.assert_valid_keys(:default, :embedded_list)
       @model, @name, @type, @options = model, name.to_sym, type, options
-      model.attributes[name] = self
+      model.attributes[name.to_s] = self
     end
 
     def read(value)
