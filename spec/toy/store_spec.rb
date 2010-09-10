@@ -2,7 +2,7 @@ require 'helper'
 
 describe Toy::Store do
   uses_constants('User')
-  
+
   describe "including" do
     it "adds model naming" do
       model_name = User.model_name
@@ -30,7 +30,7 @@ describe Toy::Store do
     describe "#to_param" do
       it "returns key joined by - if to_key present" do
         user = User.create
-        user.to_param.should == user.to_key.to_s
+        user.to_param.should == user.to_key.join('-')
       end
 
       it "returns nil if to_key nil" do

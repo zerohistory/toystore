@@ -21,14 +21,14 @@ describe Toy::Serialization do
 
   it "serializes to xml" do
     doc = User.new(:name => 'John', :age => 28)
-    doc.to_xml.should == <<-EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<user>
-  <name>John</name>
-  <id>#{doc.id}</id>
-  <age type="integer">28</age>
-</user>
-EOF
+    Hash.from_xml(doc.to_xml).should == {
+      'user' => {
+        'name' => 'John',
+        'id' => doc.id,
+        'age' => 28
+      }
+    }
+
   end
 
   it "correctly serializes methods" do
