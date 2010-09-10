@@ -34,7 +34,7 @@ describe Toy::List do
   end
 
   it "adds attribute to model" do
-    User.attributes.keys.should include(:game_ids)
+    User.attributes.keys.should include('game_ids')
   end
 
   it "adds reader method" do

@@ -34,7 +34,7 @@ describe Toy::Reference do
   end
 
   it "adds attribute to model" do
-    Game.attributes.keys.should include(:user_id)
+    Game.attributes.keys.should include('user_id')
   end
 
   it "adds reader method" do
