@@ -13,7 +13,7 @@ module Toy
         @attributes ||= {}
       end
 
-      def attributes_with_default
+      def attributes_with_defaults
         attributes.values.select { |attribute| attribute.default? }
       end
 
@@ -30,7 +30,7 @@ module Toy
       def initialize(attrs={})
         @_new_record = true unless defined?(@_new_record)
         @attributes = {}.with_indifferent_access
-        self.class.attributes_with_default.each do |attribute|
+        self.class.attributes_with_defaults.each do |attribute|
           @attributes[attribute.name] = attribute.default
         end
         self.attributes = attrs
