@@ -164,10 +164,6 @@ describe Toy::List do
       @game.moves.push(@move)
     end
 
-    xit "adds attributes to attribute" do
-      @game.move_attributes.should == [@move.attributes]
-    end
-
     it "raises error if wrong type assigned" do
       lambda {
         @game.moves.push(Game.new)
@@ -231,10 +227,6 @@ describe Toy::List do
       @game.moves << @move
     end
 
-    xit "adds attributes to attribute" do
-      @game.move_attributes.should == [@move.attributes]
-    end
-
     it "raises error if wrong type assigned" do
       lambda {
         @game.moves << Game.new
@@ -270,10 +262,6 @@ describe Toy::List do
       @move2 = Move.new
       @game  = Game.new
       @game.moves.concat(@move1, @move2)
-    end
-
-    xit "adds attributes to attribute" do
-      @game.move_attributes.should == [@move1.attributes, @move2.attributes]
     end
 
     it "raises error if wrong type assigned" do
@@ -312,10 +300,6 @@ describe Toy::List do
       @move2 = Move.new
       @game  = Game.create
       @game.moves.concat([@move1, @move2])
-    end
-
-    xit "adds id to attribute" do
-      @game.move_attributes.should == [@move1.attributes, @move2.attributes]
     end
 
     it "raises error if wrong type assigned" do
@@ -359,10 +343,6 @@ describe Toy::List do
 
     it "assigns id" do
       @move.id.should_not be_nil
-    end
-
-    xit "adds attributes to attribute" do
-      @game.move_attributes.should == [@move.attributes]
     end
 
     it "adds instance to reader" do
