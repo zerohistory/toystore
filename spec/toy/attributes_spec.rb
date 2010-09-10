@@ -3,6 +3,11 @@ require 'helper'
 describe Toy::Attributes do
   uses_constants('User', 'Game', 'Move', 'Tile')
 
+  before do
+    Game.embedded_list(:moves)
+    Move.embedded_list(:tiles)
+  end
+
   describe "including" do
     it "adds id attribute" do
       User.attributes.keys.should == [:id]
@@ -73,9 +78,6 @@ describe Toy::Attributes do
     end
 
     it "includes all embedded documents" do
-      Game.embedded_list(:moves)
-      Move.embedded_list(:tiles)
-
       game = Game.new(:moves => [Move.new(:tiles => [Tile.new])])
       game.attributes.should == {
         'id'    => game.id,
