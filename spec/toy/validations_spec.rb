@@ -1,7 +1,7 @@
 require 'helper'
 
 describe Toy::Validations do
-  uses_constants('User')
+  uses_constants('User', 'Game', 'Move')
 
   before do
     User.class_eval do
@@ -145,6 +145,27 @@ describe Toy::Validations do
       it "raises an RecordInvalidError" do
         lambda { User.create! }.should raise_error(Toy::RecordInvalidError)
       end
+    end
+  end
+
+  describe ".validates_embedded" do
+    before do
+      Game.embedded_list(:moves)
+      Move.attribute(:index, Integer)
+      Move.validates_presence_of(:index)
+      Game.validates_embedded(:moves)
+    end
+
+    it "adds errors if any of the embedded are invalid" do
+      game = Game.new(:moves => [Move.new])
+      game.valid?
+      game.errors[:moves].should include('is invalid')
+    end
+
+    it "does not have errors if all embedded are valid" do
+      game = Game.new(:moves => [Move.new(:index => 1)])
+      game.valid?
+      game.errors[:moves].should_not include('is invalid')
     end
   end
 end

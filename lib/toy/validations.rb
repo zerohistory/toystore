@@ -9,6 +9,12 @@ module Toy
     end
 
     module ClassMethods
+      def validates_embedded(*names)
+        validates_each(*names) do |record, name, value|
+          record.errors.add(name, 'is invalid') unless value.compact.all?(&:valid?)
+        end
+      end
+
       def create!(attrs={})
         new(attrs).tap { |doc| doc.save! }
       end
