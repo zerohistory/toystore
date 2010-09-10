@@ -11,7 +11,11 @@ module Toy
     module ClassMethods
       def validates_embedded(*names)
         validates_each(*names) do |record, name, value|
-          record.errors.add(name, 'is invalid') unless value.compact.all?(&:valid?)
+          value.compact!
+          unless value.all?(&:valid?)
+            logger.info 'ToyStore INVALID EMBEDDED ' + value.collect { |obj| obj.errors.full_messages.to_sentence }.join('; ')
+            record.errors.add(name, 'is invalid')
+          end
         end
       end
 
