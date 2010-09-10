@@ -43,12 +43,10 @@ module Toy
 
     def add_to_identity_map
       identity_map[store_key] = self
-      each_embedded_object { |object| object.add_to_identity_map }
     end
 
     def remove_from_identity_map
       identity_map.delete(store_key)
-      each_embedded_object { |object| object.remove_from_identity_map }
     end
 
     private
