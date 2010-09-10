@@ -7,6 +7,24 @@ describe Toy::References do
     User.references.should == {}
   end
 
+  describe ".reference?" do
+    before do
+      Game.reference(:user)
+    end
+
+    it "returns true if attribute (symbol)" do
+      Game.reference?(:user).should be_true
+    end
+
+    it "returns true if attribute (string)" do
+      Game.reference?('user').should be_true
+    end
+
+    it "returns false if not attribute" do
+      Game.reference?(:foobar).should be_false
+    end
+  end
+
   describe "declaring a reference" do
     before do
       @reference = Game.reference(:user)

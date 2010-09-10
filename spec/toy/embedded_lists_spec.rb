@@ -77,6 +77,36 @@ describe Toy::Lists do
     end
   end
 
+  describe '.parent_references' do
+    it 'keeps track of single names' do
+      Move.parent_reference(:game)
+      Move.parent_references.should == [:game]
+    end
+
+    it 'keeps track of single names' do
+      Move.parent_reference(:game, :yaypants)
+      Move.parent_references.should == [:game, :yaypants]
+    end
+  end
+
+  describe '.parent_reference?' do
+    before do
+      Move.parent_reference(:game)
+    end
+
+    it 'returns true if attribute (symbol)' do
+      Move.parent_reference?(:game).should be_true
+    end
+
+    it 'returns true if attribute (string)' do
+      Move.parent_reference?('game').should be_true
+    end
+
+    it 'returns false if not an attribute' do
+      Move.parent_reference?(:foobar).should be_false
+    end
+  end
+
   describe "declaring an embedded list" do
     describe "using conventions" do
       before do

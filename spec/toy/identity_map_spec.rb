@@ -69,7 +69,7 @@ describe Toy::IdentityMap do
     it "forces new query each time and skips the identity map" do
       user = User.create
       user.should be_in_identity_map
-      User.store.should_receive(:[]).with("users:#{user.id}")
+      User.store.should_receive(:[]).with("User:#{user.id}")
       user.reload
     end
   end

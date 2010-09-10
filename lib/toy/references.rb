@@ -7,6 +7,10 @@ module Toy
         @references ||= {}
       end
 
+      def reference?(key)
+        references.keys.include?(key.to_sym)
+      end
+
       def reference(name, *args)
         Reference.new(self, name, *args)
       end

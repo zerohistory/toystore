@@ -19,8 +19,17 @@ module Toy
         end
       end
 
+      def parent_references
+        @parent_references ||= []
+      end
+
+      def parent_reference?(key)
+        parent_references.include?(key.to_sym)
+      end
+
       def parent_reference(*names)
         names.flatten.each do |name|
+          parent_references << name
           parent_reference_module.module_eval <<-CODE
             def #{name}
               parent_reference

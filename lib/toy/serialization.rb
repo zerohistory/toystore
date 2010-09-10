@@ -7,7 +7,7 @@ module Toy
     def serializable_attributes
       attributes.keys.sort.map(&:to_sym)
     end
-    
+
     def serializable_hash(options = nil)
       hash = {}
       options ||= {}
@@ -58,9 +58,9 @@ module Toy
         associations = include_has_options ? include_associations.keys : Array.wrap(include_associations)
 
         for association in associations
-          records = if self.class.lists.include?(association)
+          records = if self.class.list?(association)
             send(association).to_a
-          elsif self.class.references.include?(association)
+          elsif self.class.reference?(association) || self.class.parent_reference?(association)
             send(association)
           end
 

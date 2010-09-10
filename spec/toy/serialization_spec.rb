@@ -196,6 +196,30 @@ describe Toy::Serialization do
     end
   end
 
+  describe "serializing parent relationships" do
+    before do
+      Game.embedded_list :moves
+      Move.parent_reference :game
+    end
+
+    it "should include references" do
+      game = Game.create
+      move = game.moves.create
+
+      Toy.decode(move.to_json(:include => [:game])).should == {
+        'move' => {
+          'id' => move.id,
+          'game' => {
+            'id' => game.id,
+            'moves' => [{
+              'id' => move.id
+            }]
+          }
+        }
+      }
+    end
+  end
+
   describe "serializing specific attributes" do
     before do
       Move.attribute(:index,  Integer)
