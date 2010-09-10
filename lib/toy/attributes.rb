@@ -34,7 +34,7 @@ module Toy
           @attributes[attribute.name] = attribute.default
         end
         self.attributes = attrs
-        write_attribute :id, self.class.next_key(self) if new_record? && !id?
+        write_attribute :id, self.class.next_key(self) unless id?
       end
 
       def instantiate_from_database(attrs={})
@@ -45,8 +45,8 @@ module Toy
 
       def reload
         if attrs = store[store_key]
-          self.class.lists.each_key           { |name| send(name).reset }
-          self.class.references.each_key      { |name| send(name).reset }
+          self.class.lists.each_key      { |name| send(name).reset }
+          self.class.references.each_key { |name| send(name).reset }
           self.attributes = Toy.decode(attrs)
         end
         self

@@ -20,29 +20,6 @@ describe Toy::Attributes do
     end
   end
 
-  describe "initialization" do
-    before do
-      User.attribute :name, String
-      User.attribute :age,  Integer
-    end
-
-    it "writes id" do
-      id = User.new.id
-      id.should_not be_nil
-      id.size.should == 36
-    end
-
-    it "sets attributes" do
-      instance = User.new(:name => 'John', :age => 28)
-      instance.name.should == 'John'
-      instance.age.should  == 28
-    end
-
-    it "does not fail with nil" do
-      User.new(nil).should be_instance_of(User)
-    end
-  end
-
   describe ".attribute?" do
     before do
       User.attribute :age, Integer
@@ -58,6 +35,68 @@ describe Toy::Attributes do
 
     it "returns false if not attribute" do
       User.attribute?(:foobar).should be_false
+    end
+  end
+
+  describe "#initialize" do
+    before do
+      User.attribute :name, String
+      User.attribute :age,  Integer
+    end
+
+    it "writes id" do
+      id = User.new.id
+      id.should_not be_nil
+      id.size.should == 36
+    end
+
+    it "does not attempt to set id if already set" do
+      user = User.new(:id => 'frank')
+      user.id.should == 'frank'
+    end
+
+    it "sets attributes" do
+      instance = User.new(:name => 'John', :age => 28)
+      instance.name.should == 'John'
+      instance.age.should  == 28
+    end
+
+    it "sets defaults" do
+      User.attribute(:awesome, Boolean, :default => true)
+      User.new.awesome.should be_true
+    end
+
+    it "does not fail with nil" do
+      User.new(nil).should be_instance_of(User)
+    end
+  end
+
+  describe "#instantiate_from_database" do
+    before do
+      User.attribute(:age, Integer, :default => 20)
+      @user = User.allocate
+    end
+
+    it "sets new record to false" do
+      @user.instantiate_from_database
+      @user.should_not be_new_record
+    end
+
+    it "sets attributes" do
+      @user.instantiate_from_database('age' => 21)
+    end
+
+    it "sets defaults" do
+      @user.instantiate_from_database
+      @user.age.should == 20
+    end
+
+    it "does not fail with nil" do
+      @user.instantiate_from_database(nil).should == @user
+    end
+
+    it "returns self" do
+      @user.instantiate_from_database.should == @user
     end
   end
 
@@ -111,9 +150,7 @@ describe Toy::Attributes do
     end
 
     it "ignores keys that are not attributes and do not have accessors defined" do
-      lambda {
-        User.new(:taco => 'bell')
-      }.should_not raise_error
+      lambda { User.new(:taco => 'bell') }.should_not raise_error
     end
   end
 
