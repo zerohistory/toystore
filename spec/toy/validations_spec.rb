@@ -107,7 +107,7 @@ describe Toy::Validations do
   end
 
   describe "#save!" do
-    describe "with valid" do
+    context "with valid" do
       before do
         @doc = User.new(:name => 'John')
         @result = @doc.save!
@@ -122,7 +122,7 @@ describe Toy::Validations do
       end
     end
 
-    describe "with invalid" do
+    context "with invalid" do
       before do
         @doc = User.new
       end
@@ -134,18 +134,17 @@ describe Toy::Validations do
   end
 
   describe "#create!" do
-    describe "with valid" do
+    context "with valid" do
       it "persists the instance" do
         @doc = User.create!(:name => 'John')
         @doc.should be_persisted
       end
     end
 
-    describe "with invalid" do
+    context "with invalid" do
       it "raises an RecordInvalidError" do
         lambda { User.create! }.should raise_error(Toy::RecordInvalidError)
       end
     end
   end
-
 end
