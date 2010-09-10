@@ -9,7 +9,7 @@ module Toy
       end
 
       def store_key(id)
-        [model_name.plural, id].join(':')
+        [self.name, id].join(':')
       end
 
       def create(attrs={})

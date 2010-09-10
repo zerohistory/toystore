@@ -41,7 +41,7 @@ describe Toy::Persistence do
   describe ".store_key" do
     it "returns plural model name and id" do
       doc = User.new
-      User.store_key(doc.id).should == "users:#{doc.id}"
+      User.store_key(doc.id).should == "User:#{doc.id}"
     end
   end
 
@@ -76,7 +76,7 @@ describe Toy::Persistence do
   describe "#store_key" do
     it "returns pluralized human name and id" do
       doc = User.new
-      doc.store_key.should == "users:#{doc.id}"
+      doc.store_key.should == "User:#{doc.id}"
     end
   end
 
