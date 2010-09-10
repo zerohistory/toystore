@@ -96,7 +96,7 @@ describe Toy::List do
     end
   end
 
-  describe "list writer (with instances)" do
+  describe "list writer" do
     before do
       @move1 = Move.new
       @move2 = Move.new
@@ -131,6 +131,19 @@ describe Toy::List do
     it "typecasts hash values correctly" do
       @game.move_attributes.should == [
         {'id' => '1', 'index' => 1}
+      ]
+    end
+
+    it "accepts hash of hashes" do
+      game = Game.new('move_attributes' => {
+        '0' => {'index' => 1},
+        '1' => {'index' => 2},
+        '2' => {'index' => 3},
+      })
+      game.move_attributes.should == [
+        {'id' => game.moves[0].id, 'index' => 1},
+        {'id' => game.moves[1].id, 'index' => 2},
+        {'id' => game.moves[2].id, 'index' => 3},
       ]
     end
   end

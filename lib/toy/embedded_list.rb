@@ -89,6 +89,7 @@ module Toy
 
           def #{name.to_s.singularize}_attributes=(attrs)
             self.#{name} = attrs.map do |value|
+              value = value.is_a?(Hash) ? value : value[1]
               #{type}.new(value)
             end
           end
