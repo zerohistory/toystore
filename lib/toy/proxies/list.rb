@@ -58,6 +58,13 @@ module Toy
         reset
       end
 
+      def destroy_all
+        proxy_class.destroy(*target_ids)
+        self.target_ids = []
+        proxy_owner.save
+        reset
+      end
+
       def reset
         @target = nil
       end

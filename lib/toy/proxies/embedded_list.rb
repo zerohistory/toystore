@@ -56,6 +56,11 @@ module Toy
         proxy_owner.save
       end
 
+      def destroy_all
+        target.clear
+        proxy_owner.save
+      end
+
       private
         def find_target
           []

@@ -454,6 +454,22 @@ describe Toy::List do
     end
   end
 
+  describe "list#destroy_all" do
+    before do
+      Move.attribute(:move_index, Integer)
+      @game = Game.create
+      @move1 = @game.moves.create(:move_index => 0)
+      @move2 = @game.moves.create(:move_index => 1)
+    end
+
+    it "should destroy all" do
+      @game.moves.destroy_all
+      @game.moves.should be_empty
+      @game.reload
+      @game.moves.should be_empty
+    end
+  end
+
   describe "list#each" do
     before do
       @move1 = Move.new

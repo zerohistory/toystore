@@ -412,6 +412,23 @@ describe Toy::List do
     end
   end
 
+  describe "list#destroy_all" do
+    before do
+      @user = User.create
+      @game1 = @user.games.create
+      @game2 = @user.games.create
+      User.get(@user.id).games.should == [@game1, @game2]
+    end
+
+    it "should destroy all" do
+      @user.games.destroy_all
+
+      User.get(@user.id).games.should be_empty
+      Game.get(@game1.id).should be_nil
+      Game.get(@game2.id).should be_nil
+    end
+  end
+
   describe "list#each" do
     before do
       @game1 = Game.create
