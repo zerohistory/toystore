@@ -10,13 +10,13 @@ describe Toy::Attributes do
 
   describe "including" do
     it "adds id attribute" do
-      User.attributes.keys.should == [:id]
+      User.attributes.keys.should == ['id']
     end
   end
 
   describe ".attributes" do
     it "defaults to hash with id" do
-      User.attributes.keys.should == [:id]
+      User.attributes.keys.should == ['id']
     end
   end
 
@@ -161,8 +161,10 @@ describe Toy::Attributes do
     end
 
     it "adds attribute to attributes" do
-      User.attributes[:name].should == Toy::Attribute.new(User, :name, String)
-      User.attributes[:age].should  == Toy::Attribute.new(User, :age, Integer)
+      User.attributes['name'].should == Toy::Attribute.new(User, :name, String)
+      User.attributes[:name].should be_nil
+      User.attributes['age'].should  == Toy::Attribute.new(User, :age, Integer)
+      User.attributes[:age].should be_nil
     end
 
     it "adds accessors" do
@@ -215,7 +217,7 @@ describe Toy::Attributes do
 
     it "adds attribute to attributes" do
       attribute = Toy::Attribute.new(User, :active, Boolean, {:default => true})
-      User.attributes[:active].should == attribute
+      User.attributes['active'].should == attribute
     end
 
     it "defaults value when initialized" do
