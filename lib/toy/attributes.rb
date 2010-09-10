@@ -37,7 +37,7 @@ module Toy
         write_attribute :id, self.class.next_key(self) unless id?
       end
 
-      def instantiate_from_database(attrs={})
+      def initialize_from_database(attrs={})
         @_new_record = false
         send(:initialize, attrs)
         self

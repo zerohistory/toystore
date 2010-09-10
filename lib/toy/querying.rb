@@ -31,7 +31,7 @@ module Toy
       def load(attrs)
         attrs = normalize_load_attributes(attrs)
         return nil if attrs.nil?
-        allocate.instantiate_from_database(attrs)
+        allocate.initialize_from_database(attrs)
       end
 
       private

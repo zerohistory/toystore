@@ -71,32 +71,32 @@ describe Toy::Attributes do
     end
   end
 
-  describe "#instantiate_from_database" do
+  describe "#initialize_from_database" do
     before do
       User.attribute(:age, Integer, :default => 20)
       @user = User.allocate
     end
 
     it "sets new record to false" do
-      @user.instantiate_from_database
+      @user.initialize_from_database
       @user.should_not be_new_record
     end
 
     it "sets attributes" do
-      @user.instantiate_from_database('age' => 21)
+      @user.initialize_from_database('age' => 21)
     end
 
     it "sets defaults" do
-      @user.instantiate_from_database
+      @user.initialize_from_database
       @user.age.should == 20
     end
 
     it "does not fail with nil" do
-      @user.instantiate_from_database(nil).should == @user
+      @user.initialize_from_database(nil).should == @user
     end
 
     it "returns self" do
-      @user.instantiate_from_database.should == @user
+      @user.initialize_from_database.should == @user
     end
   end
 
