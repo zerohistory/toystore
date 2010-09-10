@@ -15,7 +15,7 @@ module Toy
         end
       end
 
-      def reload(*)
+      def reload
         super.tap do
           @previously_changed.clear if @previously_changed
           @changed_attributes.clear if @changed_attributes

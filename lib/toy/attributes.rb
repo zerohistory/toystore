@@ -43,7 +43,7 @@ module Toy
         self
       end
 
-      def reload(*)
+      def reload
         if attrs = store[store_key]
           self.class.lists.each_key           { |name| send(name).reset }
           self.class.references.each_key      { |name| send(name).reset }
