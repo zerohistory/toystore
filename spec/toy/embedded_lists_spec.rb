@@ -12,6 +12,24 @@ describe Toy::Lists do
     Game.embedded_lists.should == {}
   end
 
+  describe ".embedded_list?" do
+    before do
+      Game.embedded_list(:moves)
+    end
+
+    it "returns true if attribute (symbol)" do
+      Game.embedded_list?(:moves).should be_true
+    end
+
+    it "returns true if attribute (string)" do
+      Game.embedded_list?('moves').should be_true
+    end
+
+    it "returns false if not attribute" do
+      Game.embedded_list?(:foobar).should be_false
+    end
+  end
+
   describe ".parent_reference" do
     before do
       Game.embedded_list(:moves)

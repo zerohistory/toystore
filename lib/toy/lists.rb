@@ -7,6 +7,10 @@ module Toy
         @lists ||= {}
       end
 
+      def list?(key)
+        lists.keys.include?(key.to_sym)
+      end
+
       # @examples
       #   list :games                                   # assumes Game
       #   list :games, :dependent => true               # assumes Game

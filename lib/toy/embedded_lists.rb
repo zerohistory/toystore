@@ -7,6 +7,10 @@ module Toy
         @embedded_lists ||= {}
       end
 
+      def embedded_list?(key)
+        embedded_lists.keys.include?(key.to_sym)
+      end
+
       def parent_reference_module
         @parent_reference_module ||= begin
           mod = Module.new

@@ -12,6 +12,24 @@ describe Toy::Lists do
     Game.lists.should == {}
   end
 
+  describe ".list?" do
+    before do
+      User.list(:games)
+    end
+
+    it "returns true if attribute (symbol)" do
+      User.list?(:games).should be_true
+    end
+
+    it "returns true if attribute (string)" do
+      User.list?('games').should be_true
+    end
+
+    it "returns false if not attribute" do
+      User.list?(:foobar).should be_false
+    end
+  end
+
   describe "declaring a list" do
     describe "using conventions" do
       before do

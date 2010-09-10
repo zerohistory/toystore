@@ -15,25 +15,23 @@ module Toy
       options[:only]   = Array.wrap(options[:only]).map { |n| n.to_sym }
       options[:except] = Array.wrap(options[:except]).map { |n| n.to_sym }
 
-      attribute_names = serializable_attributes
+      attribute_names, method_names = serializable_attributes.partition do |name|
+        self.class.attribute?(name) || self.class.embedded_list?(name)
+      end
+
       if options[:only].any?
         attribute_names &= options[:only]
       elsif options[:except].any?
         attribute_names -= options[:except]
       end
 
-      method_names = Array.wrap(options[:methods]).inject([]) do |methods, name|
+      method_names = Array.wrap(options[:methods]).inject(method_names) do |methods, name|
         methods << name if respond_to?(name.to_s)
         methods
       end
 
-      (attribute_names + method_names).each do |name|
-        hash[name] = if self.class.attribute?(name) || self.class.embedded_lists[name]
-          attributes[name]
-        else
-          send(name)
-        end
-      end
+      attribute_names.each { |name| hash[name] = attributes[name] }
+      method_names.each    { |name| hash[name] = send(name) }
 
       serializable_add_includes(options) do |association, records, opts|
         hash[association] = records.is_a?(Enumerable) ?

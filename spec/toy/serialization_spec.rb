@@ -202,12 +202,12 @@ EOF
       Move.attribute(:points, Integer)
       Move.attribute(:words,  Array)
     end
-    
+
     it "should default to all attributes" do
       move = Move.new(:index => 0, :points => 15, :words => ['QI', 'XI'])
       move.serializable_attributes.should == [:id, :index, :points, :words]
     end
-    
+
     it "should be set per model" do
       Move.class_eval do
         def serializable_attributes
@@ -219,7 +219,7 @@ EOF
       move = Move.new(:index => 0, :points => 15, :words => ['QI', 'XI'])
       move.serializable_attributes.should == [:id, :points, :words]
     end
-    
+
     it "should only serialize specified attributes" do
       Move.class_eval do
         def serializable_attributes
@@ -231,20 +231,20 @@ EOF
       move = Move.new(:index => 0, :points => 15, :words => ['QI', 'XI'])
       Toy.decode(move.to_json).should == {
        'move' => {
-         'id' => move.id, 
+         'id'     => move.id,
          'points' => 15,
-         'words' => ["QI", "XI"]
+         'words'  => ["QI", "XI"]
         }
       }
     end
-    
-    it "should serialize additional 'attributes'" do
+
+    it "should serialize additional methods along with attributes" do
       Move.class_eval do
         def serializable_attributes
           attribute_names = super + [:calculated_attribute]
           attribute_names
         end
-        
+
         def calculated_attribute
           'some value'
         end
@@ -253,10 +253,10 @@ EOF
       move = Move.new(:index => 0, :points => 15, :words => ['QI', 'XI'])
       Toy.decode(move.to_json).should == {
        'move' => {
-         'id' => move.id, 
-         'index' => 0,
-         'points' => 15,
-         'words' => ["QI", "XI"],
+         'id'                   => move.id,
+         'index'                => 0,
+         'points'               => 15,
+         'words'                => ["QI", "XI"],
          'calculated_attribute' => 'some value'
         }
       }
