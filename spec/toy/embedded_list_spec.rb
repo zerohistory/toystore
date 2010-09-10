@@ -124,13 +124,13 @@ describe Toy::List do
     before do
       Move.attribute(:index, Integer)
       @game = Game.new('move_attributes' => [
-        {'id' => '1', 'index' => '1'}
+        {'index' => '1'}
       ])
     end
 
     it "typecasts hash values correctly" do
       @game.move_attributes.should == [
-        {'id' => '1', 'index' => 1}
+        {'id' => @game.moves[0].id, 'index' => 1}
       ]
     end
 
@@ -144,6 +144,15 @@ describe Toy::List do
         {'id' => game.moves[0].id, 'index' => 1},
         {'id' => game.moves[1].id, 'index' => 2},
         {'id' => game.moves[2].id, 'index' => 3},
+      ]
+    end
+
+    it "sets ids if present" do
+      game = Game.new('move_attributes' => [
+        {'id' => 'foo', 'index' => '1'}
+      ])
+      game.move_attributes.should == [
+        {'id' => 'foo', 'index' => 1},
       ]
     end
   end
