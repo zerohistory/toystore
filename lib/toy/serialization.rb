@@ -4,14 +4,18 @@ module Toy
     include ActiveModel::Serializers::JSON
     include ActiveModel::Serializers::Xml
 
+    def serializable_attributes
+      attributes.keys.sort.map(&:to_sym)
+    end
+    
     def serializable_hash(options = nil)
       hash = {}
       options ||= {}
 
-      options[:only]   = Array.wrap(options[:only]).map { |n| n.to_s }
-      options[:except] = Array.wrap(options[:except]).map { |n| n.to_s }
+      options[:only]   = Array.wrap(options[:only]).map { |n| n.to_sym }
+      options[:except] = Array.wrap(options[:except]).map { |n| n.to_sym }
 
-      attribute_names = attributes.keys.sort
+      attribute_names = serializable_attributes
       if options[:only].any?
         attribute_names &= options[:only]
       elsif options[:except].any?
@@ -23,8 +27,13 @@ module Toy
         methods
       end
 
-      attribute_names.each  { |name| hash[name] = attributes[name] }
-      method_names.each     { |name| hash[name] = send(name) }
+      (attribute_names + method_names).each do |name|
+        hash[name] = if self.class.attribute?(name) || self.class.embedded_lists[name]
+          attributes[name]
+        else
+          send(name)
+        end
+      end
 
       serializable_add_includes(options) do |association, records, opts|
         hash[association] = records.is_a?(Enumerable) ?

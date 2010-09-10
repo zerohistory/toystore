@@ -10,7 +10,13 @@ describe Toy::Serialization do
 
   it "serializes to json" do
     doc = User.new(:name => 'John', :age => 28)
-    doc.to_json.should == %Q({"user":{"name":"John","id":"#{doc.id}","age":28}})
+    Toy.decode(doc.to_json).should == {
+      'user' => {
+        'name' => 'John',
+        'id' => doc.id,
+        'age' => 28
+      }
+    }
   end
 
   it "serializes to xml" do
@@ -186,6 +192,73 @@ EOF
             'user_id' => user.id
           }
         }]
+      }
+    end
+  end
+
+  describe "serializing specific attributes" do
+    before do
+      Move.attribute(:index,  Integer)
+      Move.attribute(:points, Integer)
+      Move.attribute(:words,  Array)
+    end
+    
+    it "should default to all attributes" do
+      move = Move.new(:index => 0, :points => 15, :words => ['QI', 'XI'])
+      move.serializable_attributes.should == [:id, :index, :points, :words]
+    end
+    
+    it "should be set per model" do
+      Move.class_eval do
+        def serializable_attributes
+          attribute_names = super - [:index]
+          attribute_names
+        end
+      end
+
+      move = Move.new(:index => 0, :points => 15, :words => ['QI', 'XI'])
+      move.serializable_attributes.should == [:id, :points, :words]
+    end
+    
+    it "should only serialize specified attributes" do
+      Move.class_eval do
+        def serializable_attributes
+          attribute_names = super - [:index]
+          attribute_names
+        end
+      end
+
+      move = Move.new(:index => 0, :points => 15, :words => ['QI', 'XI'])
+      Toy.decode(move.to_json).should == {
+       'move' => {
+         'id' => move.id, 
+         'points' => 15,
+         'words' => ["QI", "XI"]
+        }
+      }
+    end
+    
+    it "should serialize additional 'attributes'" do
+      Move.class_eval do
+        def serializable_attributes
+          attribute_names = super + [:calculated_attribute]
+          attribute_names
+        end
+        
+        def calculated_attribute
+          'some value'
+        end
+      end
+
+      move = Move.new(:index => 0, :points => 15, :words => ['QI', 'XI'])
+      Toy.decode(move.to_json).should == {
+       'move' => {
+         'id' => move.id, 
+         'index' => 0,
+         'points' => 15,
+         'words' => ["QI", "XI"],
+         'calculated_attribute' => 'some value'
+        }
       }
     end
   end
