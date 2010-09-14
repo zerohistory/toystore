@@ -33,8 +33,10 @@ module Toy
   # Do not use in production, harty harr harr.
   def clear
     models.each do |model|
-      model.store.clear
-      model.identity_map.clear
+      if model.store.present?
+        model.store.clear
+        model.identity_map.clear
+      end
     end
   end
 end
