@@ -1,6 +1,6 @@
 require 'helper'
 
-describe Toy::Dirty do
+describe Toy::Equality do
   uses_constants('User', 'Game', 'Person')
 
   describe "#eql?" do

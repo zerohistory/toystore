@@ -40,5 +40,6 @@ Spec::Runner.configure do |config|
     Toy.store = MemoryStore
     Toy.store.clear
     Toy.identity_map.clear
+    Toy.models.clear
   end
 end

@@ -8,6 +8,7 @@ module Toy
       include Attributes
       include Identity
       include Persistence
+      include Plugins
       include Dirty
       include Equality
       include Inspect
@@ -27,6 +28,6 @@ module Toy
       include IdentityMap
     end
   end
-  
+
   extend Connection
 end
