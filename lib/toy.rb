@@ -1,3 +1,4 @@
+require 'set'
 require 'pathname'
 require 'forwardable'
 
@@ -21,10 +22,20 @@ module Toy
   extend Forwardable
   def_delegators ActiveSupport::JSON, :encode, :decode
 
-  def clear
+  # Resets all tracking of things in memory
+  def reset
     identity_map.clear
     plugins.clear
     models.clear
+  end
+
+  # Clears all the stores for all the models. Useful in specs/tests/etc.
+  # Do not use in production, harty harr harr.
+  def clear
+    models.each do |model|
+      model.store.clear
+      model.identity_map.clear
+    end
   end
 end
 

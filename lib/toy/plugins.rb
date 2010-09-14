@@ -1,5 +1,3 @@
-require 'set'
-
 module Toy
   def models
     @models ||= Set.new
@@ -10,9 +8,7 @@ module Toy
   end
 
   def plugin(mod)
-    Toy.models.each do |model|
-      model.send(:include, mod)
-    end
+    Toy.models.each { |model| model.send(:include, mod) }
     plugins << mod
   end
 

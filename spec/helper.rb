@@ -38,7 +38,7 @@ Spec::Runner.configure do |config|
 
   config.before(:each) do
     Toy.store = MemoryStore
-    Toy.store.clear
     Toy.clear
+    Toy.reset
   end
 end
