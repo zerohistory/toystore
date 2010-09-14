@@ -37,7 +37,6 @@ Spec::Runner.configure do |config|
   config.include(IdentityMapMatcher)
 
   config.before(:each) do
-    Toy.store = MemoryStore
     Toy.clear
     Toy.reset
   end

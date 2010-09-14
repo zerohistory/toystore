@@ -11,27 +11,17 @@ describe Toy do
     Toy.decode('{"foo":"bar"}').should == {'foo' => 'bar'}
   end
 
-  it "can clear all the stores in one magical moment" do
-    Game.embedded_list(:moves)
-    user = User.create!
-    game = Game.create!(:moves => [Move.new])
-    Toy.clear
-    User.get(user.id).should be_nil
-    Game.get(game.id).should be_nil
-  end
-
-  context "no default store" do
-    before do
-      @store = Toy.store
-      Toy.store = nil
+  describe ".clear" do
+    it "can clear all the stores in one magical moment" do
+      Game.embedded_list(:moves)
+      user = User.create!
+      game = Game.create!(:moves => [Move.new])
+      Toy.clear
+      User.get(user.id).should be_nil
+      Game.get(game.id).should be_nil
     end
 
-    after do
-      Toy.store = @store
-    end
-
-    it "does something" do
-      Toy.store.should be_nil
+    it "does not raise error when no default store set" do
       klass = Class.new { include Toy::Store }
       lambda { Toy.clear }.should_not raise_error
     end

@@ -1,7 +1,7 @@
 module Toy
   module Connection
     def store
-      @@store
+      @@store if defined?(@@store)
     end
 
     def store=(store)
