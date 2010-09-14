@@ -29,5 +29,11 @@ describe Toy::Plugins do
     it "adds plugin to plugins" do
       Toy.plugins.should == [@mod].to_set
     end
+
+    it "adds plugins to classes declared after plugin was called" do
+      create_constant('Move')
+      Move.foo.should     == 'foo'
+      Move.new.bar.should == 'bar'
+    end
   end
 end

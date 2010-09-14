@@ -19,6 +19,9 @@ module Toy
   module Plugins
     extend ActiveSupport::Concern
 
-    included { Toy.models << self }
+    included do
+      Toy.models << self
+      Toy.plugins.each { |mod| include mod }
+    end
   end
 end
