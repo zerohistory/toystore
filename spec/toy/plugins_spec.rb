@@ -12,11 +12,11 @@ describe Toy::Plugins do
       class_methods_mod    = Module.new { def foo; 'foo' end }
       instance_methods_mod = Module.new { def bar; 'bar' end }
 
-      mod = Module.new { extend ActiveSupport::Concern }
-      mod.const_set(:ClassMethods,    class_methods_mod)
-      mod.const_set(:InstanceMethods, instance_methods_mod)
+      @mod = Module.new { extend ActiveSupport::Concern }
+      @mod.const_set(:ClassMethods,    class_methods_mod)
+      @mod.const_set(:InstanceMethods, instance_methods_mod)
 
-      Toy.plugin(mod)
+      Toy.plugin(@mod)
     end
 
     it "includes module in all models" do
@@ -24,6 +24,10 @@ describe Toy::Plugins do
         model.foo.should     == 'foo'
         model.new.bar.should == 'bar'
       end
+    end
+
+    it "adds plugin to plugins" do
+      Toy.plugins.should == [@mod].to_set
     end
   end
 end

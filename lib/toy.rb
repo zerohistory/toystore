@@ -20,6 +20,12 @@ module Toy
   extend self
   extend Forwardable
   def_delegators ActiveSupport::JSON, :encode, :decode
+
+  def clear
+    identity_map.clear
+    plugins.clear
+    models.clear
+  end
 end
 
 require 'toy/exceptions'

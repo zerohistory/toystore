@@ -1,7 +1,7 @@
 module Toy
   module Logger
     extend ActiveSupport::Concern
-    
+
     module ClassMethods
       def logger
         Toy.logger
