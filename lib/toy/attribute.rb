@@ -3,8 +3,9 @@ module Toy
     attr_reader :model, :name, :type, :options
 
     def initialize(model, name, type, options={})
-      options.assert_valid_keys(:default, :embedded_list)
+      options.assert_valid_keys(:default, :embedded_list, :virtual)
       @model, @name, @type, @options = model, name.to_sym, type, options
+      @virtual = options.fetch(:virtual, false)
       model.attributes[name.to_s] = self
     end
 
@@ -26,6 +27,14 @@ module Toy
 
     def default?
       options.key?(:default)
+    end
+
+    def virtual?
+      @virtual
+    end
+
+    def persisted?
+      !virtual?
     end
 
     # Stores reference to related embedded list

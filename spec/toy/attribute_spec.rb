@@ -21,16 +21,6 @@ describe Toy::Attribute do
     attribute.type.should == String
   end
 
-  describe "#default" do
-    it "defaults to nil" do
-      Toy::Attribute.new(User, :age, String).default.should be_nil
-    end
-
-    it "returns default if set" do
-      Toy::Attribute.new(User, :age, String, :default => 1).default.should == 1
-    end
-  end
-
   it "should write using the attribute type" do
     attribute.write(12).should == '12'
   end
@@ -43,6 +33,50 @@ describe Toy::Attribute do
     lambda {
       Toy::Attribute.new(User, :age, String, :taco => 'bell')
     }.should raise_error(ArgumentError)
+  end
+
+  it "allows :virtual option" do
+    lambda {
+      Toy::Attribute.new(User, :score, Integer, :virtual => true)
+    }.should_not raise_error(ArgumentError)
+  end
+
+  describe "#virtual?" do
+    it "defaults to false" do
+      Toy::Attribute.new(User, :score, Integer).should_not be_virtual
+    end
+
+    it "returns true if :virtual => true" do
+      Toy::Attribute.new(User, :score, Integer, :virtual => true).should be_virtual
+    end
+
+    it "returns false if :virtual => false" do
+      Toy::Attribute.new(User, :score, Integer, :virtual => false).should_not be_virtual
+    end
+  end
+
+  describe "#persisted?" do
+    it "defaults to true" do
+      Toy::Attribute.new(User, :score, Integer).should be_persisted
+    end
+
+    it "returns false if :virtual => true" do
+      Toy::Attribute.new(User, :score, Integer, :virtual => true).should_not be_persisted
+    end
+
+    it "returns true if :virtual => false" do
+      Toy::Attribute.new(User, :score, Integer, :virtual => false).should be_persisted
+    end
+  end
+
+  describe "#default" do
+    it "defaults to nil" do
+      Toy::Attribute.new(User, :age, String).default.should be_nil
+    end
+
+    it "returns default if set" do
+      Toy::Attribute.new(User, :age, String, :default => 1).default.should == 1
+    end
   end
 
   describe "attribute with default" do

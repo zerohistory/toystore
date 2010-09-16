@@ -20,6 +20,57 @@ describe Toy::Attributes do
     end
   end
 
+  describe ".virtual_attributes" do
+    before do
+      @name  = User.attribute(:name, String)
+      @score = User.attribute(:score, Integer, :virtual => true)
+    end
+
+    it "includes all virtual attributes" do
+      User.virtual_attributes.should include(@score)
+    end
+
+    it "excludes persisted attributes" do
+      User.virtual_attributes.should_not include(@name)
+    end
+  end
+
+  describe "#persisted_attributes" do
+    before do
+      Game.embedded_list(:moves)
+      @over  = Game.attribute(:over, Boolean)
+      @score = Game.attribute(:creator_score, Integer, :virtual => true)
+      @game  = Game.new(:over => true, :creator_score => 20, :moves => [Move.new, Move.new])
+    end
+
+    it "includes persisted attributes" do
+      @game.persisted_attributes.should have_key('over')
+    end
+
+    it "includes embedded" do
+      @game.persisted_attributes.should have_key('moves')
+    end
+
+    it "does not include virtual attributes" do
+      @game.persisted_attributes.should_not have_key(:creator_score)
+    end
+  end
+
+  describe ".defaulted_attributes" do
+    before do
+      @name = User.attribute(:name, String)
+      @age  = User.attribute(:age, Integer, :default => 10)
+    end
+
+    it "includes attributes with a default" do
+      User.defaulted_attributes.should include(@age)
+    end
+
+    it "excludes attributes without a default" do
+      User.defaulted_attributes.should_not include(@name)
+    end
+  end
+
   describe ".attribute?" do
     before do
       User.attribute :age, Integer

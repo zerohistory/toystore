@@ -54,7 +54,7 @@ module Toy
       end
 
       def save(*)
-        create_or_update
+        new_record? ? create : update
       end
 
       def update_attributes(attrs)
@@ -67,27 +67,30 @@ module Toy
       end
 
       def delete
+        logger.debug("ToyStore DELETE [#{store_key.inspect}]")
         @_destroyed = true
         store.delete(store_key)
       end
 
       private
-        def create_or_update
-          new_record? ? create : update
-        end
-
         def create
-          logger.debug("ToyStore SET [#{store_key.inspect}] #{attributes.inspect}")
-          store[store_key] = Toy.encode(attributes)
-          @_new_record = false
-          each_embedded_object { |obj| obj.instance_variable_set("@_new_record", false) }
-          true
+          persist!
         end
 
         def update
-          logger.debug("ToyStore SET [#{store_key.inspect}] #{attributes.inspect}")
-          store[store_key] = Toy.encode(attributes)
-          each_embedded_object { |obj| obj.instance_variable_set("@_new_record", false) }
+          persist!
+        end
+
+        def persist
+          @_new_record = false
+        end
+
+        def persist!
+          attrs = persisted_attributes
+          logger.debug("ToyStore SET [#{store_key.inspect}] #{attrs.inspect}")
+          store[store_key] = Toy.encode(attrs)
+          persist
+          each_embedded_object(&:persist)
           true
         end
     end

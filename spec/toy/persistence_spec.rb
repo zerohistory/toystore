@@ -110,22 +110,32 @@ describe Toy::Persistence do
     before do
       User.attribute :name, String
       User.attribute :age, Integer
+      User.attribute :accepted_terms, Boolean, :virtual => true
     end
 
     context "with new record" do
+      before do
+        @doc = User.new(:name => 'John', :age => 28, :accepted_terms => true)
+        @doc.save
+      end
+
       it "saves to key" do
-        doc = User.new(:name => 'John')
-        doc.save
-        User.key?(doc.id)
+        User.key?(@doc.id)
+      end
+
+      it "does not persist virtual attributes" do
+        attrs = Toy.decode(@doc.store[@doc.store_key])
+        attrs.should_not include('accepted_terms')
       end
     end
 
     context "with existing record" do
       before do
-        @doc      = User.create(:name => 'John')
+        @doc      = User.create(:name => 'John', :age => 28)
         @key      = @doc.store_key
         @value    = User.store[@doc.store_key]
         @doc.name = 'Bill'
+        @doc.accepted_terms = false
         @doc.save
       end
       let(:doc) { @doc }
@@ -136,6 +146,11 @@ describe Toy::Persistence do
 
       it "updates value in store" do
         User.store[doc.store_key].should_not == @value
+      end
+
+      it "does not persist virtual attributes" do
+        attrs = Toy.decode(@doc.store[@doc.store_key])
+        attrs.should_not include('accepted_terms')
       end
 
       it "updates the attributes in the instance" do

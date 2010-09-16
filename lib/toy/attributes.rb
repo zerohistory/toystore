@@ -13,8 +13,12 @@ module Toy
         @attributes ||= {}
       end
 
-      def attributes_with_defaults
-        attributes.values.select { |attribute| attribute.default? }
+      def virtual_attributes
+        attributes.values.select(&:virtual?)
+      end
+
+      def defaulted_attributes
+        attributes.values.select(&:default?)
       end
 
       def attribute(key, type, options = {})
@@ -30,7 +34,7 @@ module Toy
       def initialize(attrs={})
         @_new_record = true unless defined?(@_new_record)
         @attributes = {}.with_indifferent_access
-        self.class.attributes_with_defaults.each do |attribute|
+        self.class.defaulted_attributes.each do |attribute|
           @attributes[attribute.name] = attribute.default
         end
         self.attributes = attrs
@@ -58,6 +62,22 @@ module Toy
 
       def attributes
         @attributes.merge(embedded_attributes)
+      end
+
+      def virtual_attribute_names
+        self.class.virtual_attributes.map { |attribute| attribute.name.to_s }
+      end
+
+      def virtual_attribute?(key)
+        virtual_attribute_names.include?(key.to_s)
+      end
+
+      def persisted_attributes
+        attributes.tap do |attrs|
+          attrs.each_key do |key|
+            attrs.delete(key) if virtual_attribute?(key)
+          end
+        end
       end
 
       def embedded_attributes
