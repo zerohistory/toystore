@@ -28,15 +28,17 @@ describe Toy::Indices do
 
   describe ".index_key" do
     it "returns key if index exists" do
+      sha = Digest::SHA1.hexdigest('taco@bell.com')
       User.attribute(:email, String)
       User.index(:email)
-      User.index_key(:email, 'taco@bell.com').should == 'User:email:taco@bell.com'
+      User.index_key(:email, 'taco@bell.com').should == "User:email:#{sha}"
     end
 
     it "works with string name" do
+      sha = Digest::SHA1.hexdigest('taco@bell.com')
       User.attribute(:email, String)
       User.index(:email)
-      User.index_key('email', 'taco@bell.com').should == 'User:email:taco@bell.com'
+      User.index_key('email', 'taco@bell.com').should == "User:email:#{sha}"
     end
 
     it "raises error if index does not exist" do

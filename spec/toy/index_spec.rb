@@ -23,8 +23,8 @@ describe Toy::Index do
     }.should raise_error(ArgumentError, "No attribute student_id for index")
   end
 
-  it "has a key for a value" do
-    index.key('some_value').should == 'User:ssn:some_value'
+  it "has a sha1'd key for a value" do
+    index.key('some_value').should == 'User:ssn:8c818171573b03feeae08b0b4ffeb6999e3afc05'
   end
 
   it "adds index to model" do
@@ -59,7 +59,7 @@ describe Toy::Index do
       let(:user) { @user }
 
       it "creates key for indexed value" do
-        User.store.key?("User:ssn:555-00-1234").should be_true
+        User.store.should be_key("User:ssn:f6edc9155d79e311ad2d4a6e1b54004f31497f4c")
       end
 
       it "adds instance id to index array" do
@@ -168,8 +168,8 @@ describe Toy::Index do
 
     describe "creating with index" do
       it "creates key for indexed values sorted" do
-        ids = [user1.id, user2.id].sort.join(':')
-        Friendship.store.key?("Friendship:user_ids:#{ids}").should be_true
+        sha_value = Digest::SHA1.hexdigest([user1.id, user2.id].sort.join(''))
+        Friendship.store.should be_key("Friendship:user_ids:#{sha_value}")
       end
 
       it "adds instance id to index array" do

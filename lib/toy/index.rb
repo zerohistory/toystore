@@ -19,8 +19,8 @@ module Toy
     alias :== :eql?
 
     def key(value)
-      value = Array.wrap(value).sort
-      [model.name, name, *value].join(':')
+      sha_value = Digest::SHA1.hexdigest(Array.wrap(value).sort.join('')) # sorted for predictability
+      [model.name, name, sha_value].join(':')
     end
 
     module IndexCallbacks

@@ -1,6 +1,7 @@
 require 'set'
 require 'pathname'
 require 'forwardable'
+require 'digest/sha1'
 
 root_path       = Pathname(__FILE__).dirname.join('..').expand_path
 extensions_path = root_path.join('lib', 'toy', 'extensions')
@@ -20,6 +21,7 @@ Dir[extensions_path + '**/*.rb'].each { |file| require(file) }
 module Toy
   extend self
   extend Forwardable
+
   def_delegators ActiveSupport::JSON, :encode, :decode
 
   # Resets all tracking of things in memory
