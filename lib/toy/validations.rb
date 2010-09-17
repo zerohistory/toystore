@@ -11,9 +11,9 @@ module Toy
     module ClassMethods
       def validates_embedded(*names)
         validates_each(*names) do |record, name, value|
-          value.compact!
-          unless value.all?(&:valid?)
-            logger.info 'ToyStore INVALID EMBEDDED ' + value.collect { |obj| obj.errors.full_messages.to_sentence }.join('; ')
+          invalid = value.compact.select { |o| !o.valid? }
+          if invalid.any?
+            logger.debug("ToyStore INVALID EMBEDDED #{invalid.map { |o| "#{o.attributes.inspect} #{o.errors.full_messages.inspect}" }.join('; ')}")
             record.errors.add(name, 'is invalid')
           end
         end

@@ -4,7 +4,10 @@ module Toy
 
     module ClassMethods
       def get(id)
-        load(store[store_key(id)])
+        key = store_key(id)
+        value = store[key]
+        logger.debug("ToyStore GET [#{key.inspect}] #{value.inspect}")
+        load(value)
       end
 
       def get!(id)
