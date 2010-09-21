@@ -13,10 +13,6 @@ module Toy
         @attributes ||= {}
       end
 
-      def virtual_attributes
-        attributes.values.select(&:virtual?)
-      end
-
       def defaulted_attributes
         attributes.values.select(&:default?)
       end
@@ -64,18 +60,13 @@ module Toy
         @attributes.merge(embedded_attributes)
       end
 
-      def virtual_attribute_names
-        self.class.virtual_attributes.map { |attribute| attribute.name.to_s }
-      end
-
-      def virtual_attribute?(key)
-        virtual_attribute_names.include?(key.to_s)
-      end
-
       def persisted_attributes
         attributes.tap do |attrs|
           attrs.each_key do |key|
-            attrs.delete(key) if virtual_attribute?(key)
+            if attribute = attribute_definition(key)
+              attrs.delete(key) if attribute.virtual?
+              attrs[attribute.abbr] = attrs.delete(attribute.name) if attribute.abbr?
+            end
           end
         end
       end
@@ -109,15 +100,15 @@ module Toy
 
       private
         def read_attribute(key)
-          attribute_definition(key).read(@attributes[key])
+          attribute_definition(key).try(:read, @attributes[key])
         end
 
         def write_attribute(key, value)
-          @attributes[key] = attribute_definition(key).write(value)
+          @attributes[key] = attribute_definition(key).try(:write, value)
         end
 
         def attribute_definition(key)
-          self.class.attributes[key.to_s] || raise("Attribute '#{key}' is not defined")
+          self.class.attributes[key.to_s]
         end
 
         def attribute_method?(key)

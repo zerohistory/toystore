@@ -20,31 +20,25 @@ describe Toy::Attributes do
     end
   end
 
-  describe ".virtual_attributes" do
-    before do
-      @name  = User.attribute(:name, String)
-      @score = User.attribute(:score, Integer, :virtual => true)
-    end
-
-    it "includes all virtual attributes" do
-      User.virtual_attributes.should include(@score)
-    end
-
-    it "excludes persisted attributes" do
-      User.virtual_attributes.should_not include(@name)
-    end
-  end
-
   describe "#persisted_attributes" do
     before do
       Game.embedded_list(:moves)
       @over  = Game.attribute(:over, Boolean)
       @score = Game.attribute(:creator_score, Integer, :virtual => true)
-      @game  = Game.new(:over => true, :creator_score => 20, :moves => [Move.new, Move.new])
+      @abbr  = Game.attribute(:super_secret_hash, String, :abbr => :ssh)
+      @game  = Game.new(:over => true, :creator_score => 20, :ssh => 'h4x', :moves => [Move.new, Move.new])
     end
 
     it "includes persisted attributes" do
       @game.persisted_attributes.should have_key('over')
+    end
+
+    it "includes abbreviated names for abbreviated attributes" do
+      @game.persisted_attributes.should have_key('ssh')
+    end
+
+    it "does not include full names for abbreviated attributes" do
+      @game.persisted_attributes.should_not have_key('super_secret_hash')
     end
 
     it "includes embedded" do
@@ -277,6 +271,39 @@ describe Toy::Attributes do
 
     it "overrides default if present" do
       User.new(:active => false).active.should be(false)
+    end
+  end
+
+  describe "declaring an attribute with an abbreviation" do
+    before do
+      User.attribute(:twitter_access_token, String, :abbr => 'tat')
+    end
+
+    it "aliases reading to abbreviation" do
+      user = User.new
+      user.twitter_access_token = '1234'
+      user.tat.should == '1234'
+    end
+
+    it "aliases writing to abbreviation" do
+      user = User.new
+      user.tat = '1234'
+      user.twitter_access_token.should == '1234'
+    end
+
+    it "persists to store using abbreviation" do
+      user = User.create(:twitter_access_token => '1234')
+      raw = user.store[user.store_key]
+      json = Toy.decode(raw)
+      json['tat'].should == '1234'
+      json.should_not have_key('twitter_access_token')
+    end
+
+    it "loads from store correctly" do
+      user = User.create(:twitter_access_token => '1234')
+      user = User.get(user.id)
+      user.twitter_access_token.should == '1234'
+      user.tat.should == '1234'
     end
   end
 

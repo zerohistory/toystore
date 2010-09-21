@@ -35,12 +35,6 @@ describe Toy::Attribute do
     }.should raise_error(ArgumentError)
   end
 
-  it "allows :virtual option" do
-    lambda {
-      Toy::Attribute.new(User, :score, Integer, :virtual => true)
-    }.should_not raise_error(ArgumentError)
-  end
-
   describe "#virtual?" do
     it "defaults to false" do
       Toy::Attribute.new(User, :score, Integer).should_not be_virtual
@@ -124,6 +118,26 @@ describe Toy::Attribute do
     it "returns value when writing a non-nil value" do
       time = 2.days.ago
       @attribute.write(time).to_i.should == time.to_i
+    end
+  end
+
+  describe "#abbr" do
+    it "returns abbr if present" do
+      Toy::Attribute.new(User, :twitter_access_token, String, :abbr => :tat).abbr.should == :tat
+    end
+
+    it "returns nil if not present" do
+      Toy::Attribute.new(User, :twitter_access_token, String).abbr.should be_nil
+    end
+  end
+
+  describe "#abbr?" do
+    it "returns true if abbreviation present" do
+      Toy::Attribute.new(User, :twitter_access_token, String, :abbr => :tat).abbr?.should be_true
+    end
+
+    it "returns false if abbreviation missing" do
+      Toy::Attribute.new(User, :twitter_access_token, String).abbr?.should be_false
     end
   end
 end
