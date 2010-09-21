@@ -126,6 +126,10 @@ describe Toy::Attribute do
       Toy::Attribute.new(User, :twitter_access_token, String, :abbr => :tat).abbr.should == :tat
     end
 
+    it "returns abbr as symbol if present as string" do
+      Toy::Attribute.new(User, :twitter_access_token, String, :abbr => 'tat').abbr.should == :tat
+    end
+
     it "returns nil if not present" do
       Toy::Attribute.new(User, :twitter_access_token, String).abbr.should be_nil
     end

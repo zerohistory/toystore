@@ -8,7 +8,11 @@ module Toy
       @model, @name, @type, @options = model, name.to_sym, type, options
       @virtual = options.fetch(:virtual, false)
 
-      model.alias_attribute(abbr, name) if abbr?
+      if abbr?
+        options[:abbr] = abbr.to_sym
+        model.alias_attribute(abbr, name)
+      end
+
       model.attributes[name.to_s] = self
     end
 
