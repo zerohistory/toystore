@@ -6,7 +6,7 @@ module Toy
       def get(id)
         key = store_key(id)
         value = store[key]
-        logger.debug("ToyStore GET [#{key.inspect}] #{value.inspect}")
+        logger.debug("ToyStore GET #{key.inspect} #{value.inspect}")
         load(value)
       end
 
@@ -27,7 +27,9 @@ module Toy
       end
 
       def key?(id)
-        store.key?(store_key(id))
+        key, value = store_key(id), store.key?(key)
+        logger.debug("ToyStore KEY #{key.inspect} #{value.inspect}")
+        value
       end
       alias :has_key? :key?
 

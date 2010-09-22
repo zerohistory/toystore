@@ -67,7 +67,7 @@ module Toy
       end
 
       def delete
-        logger.debug("ToyStore DELETE [#{store_key.inspect}]")
+        logger.debug("ToyStore DEL #{store_key.inspect}")
         @_destroyed = true
         store.delete(store_key)
       end
@@ -87,7 +87,7 @@ module Toy
 
         def persist!
           attrs = persisted_attributes
-          logger.debug("ToyStore SET [#{store_key.inspect}] #{attrs.inspect}")
+          logger.debug("ToyStore SET #{store_key.inspect} #{attrs.inspect}")
           store[store_key] = Toy.encode(attrs)
           persist
           each_embedded_object(&:persist)

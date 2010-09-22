@@ -18,7 +18,7 @@ module Toy
       def get_from_identity_map(id)
         key = store_key(id)
         if record = identity_map[key]
-          logger.debug("ToyStore MAP [#{key.inspect}]")
+          logger.debug("ToyStore MAP #{key.inspect}")
           record
         end
       end
