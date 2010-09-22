@@ -15,6 +15,13 @@ module Toy
         end
       end
 
+      def initialize_copy(*)
+        super.tap do
+          @previously_changed = {}
+          @changed_attributes = {}
+        end
+      end
+
       def reload
         super.tap do
           @previously_changed.clear if @previously_changed

@@ -9,6 +9,7 @@ module Toy
       include Identity
       include Persistence
       include Plugins
+      include Dolly
       include Dirty
       include Equality
       include Inspect
