@@ -61,6 +61,10 @@ describe Toy::Connection do
       user.clone.game_ids.should_not equal(user.game_ids)
     end
 
+    it "clones the list" do
+      user.clone.games.should_not equal(user.games)
+    end
+
     it "clones embedded list objects" do
       game.clone.moves.first.should_not equal(game.moves.first)
     end

@@ -11,6 +11,10 @@ module Toy
         instance_variable_set(list.instance_variable, nil)
       end
 
+      self.class.lists.each do |name, list|
+        instance_variable_set(list.instance_variable, nil)
+      end
+
       other.attributes.except('id').each do |key, value|
         value = if self.class.embedded_list?(key)
                   value.clone.map { |v| v.delete('id'); v }
