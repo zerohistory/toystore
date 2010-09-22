@@ -7,11 +7,12 @@ moneta_path = root_path.join('vendor', 'moneta', 'lib')
 $:.unshift(lib_path, moneta_path)
 
 require 'toy'
-require 'moneta/redis'
+require 'moneta'
+require 'moneta/adapters/memory'
 
 class User
   include Toy::Store
-  store Moneta::Adapters::Redis.new
+  store :memory
   attribute :name, String
 end
 
