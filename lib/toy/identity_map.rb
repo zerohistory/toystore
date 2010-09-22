@@ -12,7 +12,15 @@ module Toy
       end
 
       def get(id)
-        identity_map[store_key(id)] || super
+        get_from_identity_map(id) || super
+      end
+
+      def get_from_identity_map(id)
+        key = store_key(id)
+        if record = identity_map[key]
+          logger.debug("ToyStore MAP [#{key.inspect}]")
+          record
+        end
       end
 
       def load(attrs)
