@@ -128,6 +128,13 @@ describe Toy::Reference do
       }.should raise_error(ArgumentError, "User expected, but was Move")
     end
 
+    it "should not reload target when setting to an object" do
+      User.should_not_receive(:get)
+      user = User.new
+      @game.user = user
+      @game.user.should == user
+    end
+
     describe "with nil value" do
       before do
         @game.user = nil

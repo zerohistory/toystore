@@ -67,7 +67,7 @@ module Toy
           self.target_id = nil
         else
           assert_type(record)
-          reset
+          @target = record
           self.target_id = record.id
         end
       end
