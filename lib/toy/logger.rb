@@ -10,7 +10,7 @@ module Toy
 
     module InstanceMethods
       def logger
-        self.class.logger
+        Toy.logger
       end
     end
   end
