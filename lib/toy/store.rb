@@ -27,6 +27,7 @@ module Toy
       include Logger
 
       include IdentityMap
+      include Caching
     end
   end
 
