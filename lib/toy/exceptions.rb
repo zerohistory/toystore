@@ -14,4 +14,10 @@ module Toy
       super("Could not find document with id: #{id.inspect}")
     end
   end
+
+  class AccessibleOrProtected < Error
+    def initialize(name)
+      super("Declare either attr_protected or attr_accessible for #{name}, but not both.")
+    end
+  end
 end
