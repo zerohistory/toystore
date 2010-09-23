@@ -4,7 +4,7 @@ module Toy
 
     module ClassMethods
       def store(new_store=nil, *args)
-        @store = get_builder(new_store, *args) unless new_store.nil?
+        @store = Toy.build_store(new_store, *args) unless new_store.nil?
         @store || Toy.store
       end
 
@@ -23,13 +23,6 @@ module Toy
       def destroy(*ids)
         ids.each { |id| get(id).try(:destroy) }
       end
-
-      private
-        def get_builder(store, *args)
-          return store if store.is_a?(Moneta::Builder)
-          adapter = Moneta::Adapters.const_get(store.to_s.capitalize)
-          Moneta::Builder.new { run(adapter, *args) }
-        end
     end
 
     module InstanceMethods
