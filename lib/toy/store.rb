@@ -8,8 +8,7 @@ module Toy
       include Attributes
       include Identity
       include Persistence
-      include Accessible
-      include Protected
+      include MassAssignmentSecurity
       include Plugins
       include Dolly
       include Dirty
