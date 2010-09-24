@@ -45,9 +45,13 @@ module Toy
 
       def reload
         if attrs = store[store_key]
+          instance_variables.each        { |ivar| instance_variable_set(ivar, nil) }
+          @attributes = {}.with_indifferent_access
+          self.attributes = Toy.decode(attrs)
           self.class.lists.each_key      { |name| send(name).reset }
           self.class.references.each_key { |name| send(name).reset }
-          self.attributes = Toy.decode(attrs)
+        else
+          raise NotFound.new(id)
         end
         self
       end

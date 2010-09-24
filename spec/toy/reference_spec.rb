@@ -217,8 +217,7 @@ describe Toy::Reference do
   describe "reference#reset" do
     before do
       @user = User.create
-      @game  = Game.create
-      @game.user = @user
+      @game = Game.create(:user => @user)
     end
 
     it "unmemoizes the list" do

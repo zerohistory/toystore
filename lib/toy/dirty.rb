@@ -24,8 +24,8 @@ module Toy
 
       def reload
         super.tap do
-          @previously_changed.clear if @previously_changed
-          @changed_attributes.clear if @changed_attributes
+          @previously_changed = {}
+          @changed_attributes = {}
         end
       end
 

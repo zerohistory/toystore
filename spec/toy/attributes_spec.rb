@@ -320,9 +320,21 @@ describe Toy::Attributes do
       user.name.should == 'John'
     end
 
+    it "is still persisted" do
+      user.should be_persisted
+      user.reload
+      user.should be_persisted
+    end
+
     it "returns the record" do
       user.name = 'Steve'
       user.reload.should equal(user)
+    end
+
+    it "resets instance variables" do
+      user.instance_variable_set("@foo", true)
+      user.reload
+      user.instance_variable_get("@foo").should be_nil
     end
 
     it "resets lists" do
@@ -342,6 +354,11 @@ describe Toy::Attributes do
       game.user.should be_nil
       game.reload
       game.user.should == user
+    end
+
+    it "raises NotFound if does not exist" do
+      user.destroy
+      lambda { user.reload }.should raise_error(Toy::NotFound)
     end
   end
 end
