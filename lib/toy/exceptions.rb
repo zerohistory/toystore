@@ -14,4 +14,17 @@ module Toy
       super("Could not find document with id: #{id.inspect}")
     end
   end
+
+  class UndefinedLock < Error
+    def initialize(klass, name)
+      super("Undefined lock :#{name} for class #{klass.name}")
+    end
+  end
+
+  class LockTimeout < Error
+    def initialize(key, timeout)
+      super("Timeout on lock #{key} exceeded #{timeout} sec")
+    end
+  end
+
 end

@@ -29,6 +29,7 @@ module Toy
 
       include IdentityMap
       include Caching
+      include Locks
     end
   end
 
