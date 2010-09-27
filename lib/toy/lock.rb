@@ -1,3 +1,4 @@
+# based on the redis-objects lock (http://github.com/nateware/redis-objects/blob/master/lib/redis/lock.rb)
 module Toy
   class Lock
     attr_reader :model, :name, :options
