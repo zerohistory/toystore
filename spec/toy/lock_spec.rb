@@ -7,6 +7,18 @@ describe Toy::Lock do
     User.store.clear
   end
 
+  it "should default to use the store of the model" do
+    lock = Toy::Lock.new(User, :test_lock)
+    lock.store.should == User.store
+  end
+
+  it "should be able to pass options to a separate store" do
+    lock = Toy::Lock.new(User, :test_lock, :store => :file, :store_options => {:path => 'testing'})
+    adapter = lock.store.instance_variable_get("@adapter")
+    adapter.should be_instance_of(Moneta::Adapters::File)
+    adapter.instance_variable_get("@directory").should == 'testing'
+  end
+
   it "should set the value to the expiration" do
     start = Time.now
     expiry = 15

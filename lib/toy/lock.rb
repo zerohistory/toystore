@@ -1,18 +1,24 @@
 # based on the redis-objects lock (http://github.com/nateware/redis-objects/blob/master/lib/redis/lock.rb)
 module Toy
   class Lock
-    attr_reader :model, :name, :options
+    attr_reader :model, :store, :name, :options
 
     def initialize(model, name, options={})
-      options.assert_valid_keys(:timeout, :expiration, :start, :init)
+      options.assert_valid_keys(:timeout, :expiration, :start, :init, :store, :store_options)
       @model, @name, @options = model, name, options
+      if options[:store]
+        options[:store_options] ||= {}
+        @store = Toy.build_store options[:store], options[:store_options]
+      else
+        @store = model.store
+      end
       @options[:timeout] ||= 5
       @options[:init] = false if @options[:init].nil? # default :init to false
       setnx(@options[:start]) unless @options[:start] == 0 || @options[:init] === false
     end
 
     def clear
-      model.store.delete(name)
+      store.delete(name)
     end
 
     # Get the lock and execute the code block. Any other code that needs the lock
@@ -30,7 +36,7 @@ module Toy
 
         # Lock is being held.  Now check to see if it's expired (if we're using lock expiration).
         if !options[:expiration].nil?
-          old_expiration = model.store[name].to_f
+          old_expiration = store[name].to_f
 
           if old_expiration < Time.now.to_f
             # If it's expired, use GETSET to update it.
@@ -63,17 +69,17 @@ module Toy
 
     # This is not a true set if not exists
     def setnx(expiration)
-      if model.store[name]
+      if store[name]
         return false
       else
-        model.store[name] = expiration
+        store[name] = expiration
         return true
       end
     end
 
     def getset(expiration)
-      old_value = model.store[name]
-      model.store[name] = expiration
+      old_value = store[name]
+      store[name] = expiration
       return old_value
     end
 
