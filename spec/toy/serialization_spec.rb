@@ -47,9 +47,21 @@ describe Toy::Serialization do
     Toy.decode(json).should == {'user' => {'id' => user.id}}
   end
 
+  it "allows using :only with strings" do
+    user = User.new
+    json = user.to_json(:only => 'id')
+    Toy.decode(json).should == {'user' => {'id' => user.id}}
+  end
+
   it "allows using :except" do
     user = User.new
     json = user.to_json(:except => :id)
+    Toy.decode(json)['user'].should_not have_key('id')
+  end
+
+  it "allows using :except with strings" do
+    user = User.new
+    json = user.to_json(:except => 'id')
     Toy.decode(json)['user'].should_not have_key('id')
   end
 

@@ -11,38 +11,28 @@ module Toy
     def serializable_hash(options = nil)
       hash = {}
       options ||= {}
-      embedded_lists   = []
-      attribute_names  = []
+      # so attributes only gets called once and thus only does one hash merge and lookup of values
+      attrs            = attributes
       options[:only]   = Array.wrap(options[:only]).map { |n| n.to_sym }
       options[:except] = Array.wrap(options[:except]).map { |n| n.to_sym }
-      method_names     = Array.wrap(options[:methods])
 
-      serializable_attributes.each do |name|
-        if self.class.attribute?(name)
-          attribute_names << name
-        elsif self.class.embedded_list?(name)
-          embedded_lists << name
-        else
-          method_names << name
-        end
-      end
+      serializable_stuff = serializable_attributes + Array.wrap(options[:methods])
 
       if options[:only].any?
-        attribute_names &= options[:only]
-        embedded_lists  &= options[:only]
+        serializable_stuff &= options[:only]
       elsif options[:except].any?
-        attribute_names -= options[:except]
-        embedded_lists  -= options[:except]
+        serializable_stuff -= options[:except]
       end
 
-      attribute_names.each { |name| hash[name.to_s] = attributes[name] }
-      embedded_lists.each  { |name| hash[name.to_s] = attributes[name] }
-
-      method_names.each do |name|
-        if respond_to?(name.to_s)
-          result = send(name)
-          hash[name.to_s] = result.respond_to?(:serializable_hash) ?
-                              result.serializable_hash : result
+      serializable_stuff.each do |name|
+        if self.class.attribute?(name) || self.class.embedded_list?(name)
+          hash[name.to_s] = attrs[name]
+        else
+          if respond_to?(name.to_s)
+            result = send(name)
+            hash[name.to_s] = result.respond_to?(:serializable_hash) ?
+                                result.serializable_hash : result
+          end
         end
       end
 
