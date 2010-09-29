@@ -47,9 +47,21 @@ describe Toy::Serialization do
     Toy.decode(json).should == {'user' => {'id' => user.id}}
   end
 
+  it "allows using :only with strings" do
+    user = User.new
+    json = user.to_json(:only => 'id')
+    Toy.decode(json).should == {'user' => {'id' => user.id}}
+  end
+
   it "allows using :except" do
     user = User.new
     json = user.to_json(:except => :id)
+    Toy.decode(json)['user'].should_not have_key('id')
+  end
+
+  it "allows using :except with strings" do
+    user = User.new
+    json = user.to_json(:except => 'id')
     Toy.decode(json)['user'].should_not have_key('id')
   end
 
@@ -284,6 +296,58 @@ describe Toy::Serialization do
          'calculated_attribute' => 'some value'
         }
       }
+    end
+  end
+
+  describe "#serializable_hash" do
+    context "with embedded list" do
+      before do
+        Game.embedded_list :moves
+        Move.parent_reference :game
+
+        @game = Game.create
+        @move = game.moves.create
+      end
+      let(:game) { @game }
+
+      it "returns a hash the whole way through" do
+        game.serializable_hash.should == {
+          'id' => game.id,
+          'moves' => [
+            {'id' => game.moves.first.id}
+          ]
+        }
+      end
+
+      it "allows using only with embedded" do
+        game.serializable_hash(:only => :moves).should == {
+          'moves' => [
+            {'id' => game.moves.first.id}
+          ]
+        }
+      end
+
+      it "allows using except to not include embedded" do
+        game.serializable_hash(:except => :moves).should == {
+          'id' => game.id,
+        }
+      end
+    end
+
+    context "with method that is another toystore object" do
+      before do
+        Game.reference(:creator, User)
+        @game = Game.create(:creator => User.create)
+      end
+      let(:game) { @game }
+
+      it "returns serializable hash of object" do
+        game.serializable_hash(:methods => [:creator]).should == {
+          'id'         => game.id,
+          'creator_id' => game.creator_id,
+          'creator'    => {'id' => game.creator.id}
+        }
+      end
     end
   end
 end
