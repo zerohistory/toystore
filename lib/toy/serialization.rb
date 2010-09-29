@@ -13,9 +13,9 @@ module Toy
       options ||= {}
       embedded_lists   = []
       attribute_names  = []
-      method_names     = Array.wrap(options[:methods])
       options[:only]   = Array.wrap(options[:only]).map { |n| n.to_sym }
       options[:except] = Array.wrap(options[:except]).map { |n| n.to_sym }
+      method_names     = Array.wrap(options[:methods])
 
       serializable_attributes.each do |name|
         if self.class.attribute?(name)
@@ -29,8 +29,10 @@ module Toy
 
       if options[:only].any?
         attribute_names &= options[:only]
+        embedded_lists  &= options[:only]
       elsif options[:except].any?
         attribute_names -= options[:except]
+        embedded_lists  -= options[:except]
       end
 
       attribute_names.each { |name| hash[name.to_s] = attributes[name] }

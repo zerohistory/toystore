@@ -306,6 +306,20 @@ describe Toy::Serialization do
           ]
         }
       end
+
+      it "allows using only with embedded" do
+        game.serializable_hash(:only => :moves).should == {
+          'moves' => [
+            {'id' => game.moves.first.id}
+          ]
+        }
+      end
+
+      it "allows using except to not include embedded" do
+        game.serializable_hash(:except => :moves).should == {
+          'id' => game.id,
+        }
+      end
     end
 
     context "with method that is another toystore object" do
