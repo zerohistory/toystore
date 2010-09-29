@@ -5,16 +5,27 @@ module Toy
 
     def initialize(model, name, options={})
       options.assert_valid_keys(:timeout, :expiration, :start, :init, :store, :store_options)
+
       @model, @name, @options = model, name, options
+
       if options[:store]
         options[:store_options] ||= {}
         @store = Toy.build_store options[:store], options[:store_options]
       else
         @store = model.store
       end
+
       @options[:timeout] ||= 5
       @options[:init] = false if @options[:init].nil? # default :init to false
+
       setnx(@options[:start]) unless @options[:start] == 0 || @options[:init] === false
+
+      case options[:store]
+      when :redis
+        self.extend(Toy::Locks::Redis)
+      when :memcache
+        self.extend(Toy::Locks::Memcache)
+      end
     end
 
     def clear

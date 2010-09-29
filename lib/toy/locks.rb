@@ -18,13 +18,13 @@ module Toy
             end
           """
           self.class_eval """
-            def #{name}_lock
-              self.class.#{name}_lock
+            def #{lock_name}
+              self.class.#{lock_name}
             end
           """
         else
           self.class_eval """
-            def #{name}_lock
+            def #{lock_name}
               @#{lock_name} ||= Toy::Lock.new(self, lock_key(:#{name}), self.class.locks[:#{name}])
             end
           """

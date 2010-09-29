@@ -11,4 +11,6 @@ group :development do
   gem 'tzinfo'
   gem 'log_buddy'
   gem 'diff-lcs'
+  gem 'redis'
+  gem 'memcached'
 end
