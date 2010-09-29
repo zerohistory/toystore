@@ -11,12 +11,20 @@ module Toy
     def serializable_hash(options = nil)
       hash = {}
       options ||= {}
-
+      embedded_lists   = []
+      attribute_names  = []
+      method_names     = Array.wrap(options[:methods])
       options[:only]   = Array.wrap(options[:only]).map { |n| n.to_sym }
       options[:except] = Array.wrap(options[:except]).map { |n| n.to_sym }
 
-      attribute_names, method_names = serializable_attributes.partition do |name|
-        self.class.attribute?(name) || self.class.embedded_list?(name)
+      serializable_attributes.each do |name|
+        if self.class.attribute?(name)
+          attribute_names << name
+        elsif self.class.embedded_list?(name)
+          embedded_lists << name
+        else
+          method_names << name
+        end
       end
 
       if options[:only].any?
@@ -25,13 +33,16 @@ module Toy
         attribute_names -= options[:except]
       end
 
-      method_names = Array.wrap(options[:methods]).inject(method_names) do |methods, name|
-        methods << name if respond_to?(name.to_s)
-        methods
-      end
+      attribute_names.each { |name| hash[name.to_s] = attributes[name] }
+      embedded_lists.each  { |name| hash[name.to_s] = attributes[name] }
 
-      attribute_names.each { |name| hash[name] = attributes[name] }
-      method_names.each    { |name| hash[name] = send(name) }
+      method_names.each do |name|
+        if respond_to?(name.to_s)
+          result = send(name)
+          hash[name.to_s] = result.respond_to?(:serializable_hash) ?
+                              result.serializable_hash : result
+        end
+      end
 
       serializable_add_includes(options) do |association, records, opts|
         hash[association] = records.is_a?(Enumerable) ?

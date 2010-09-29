@@ -286,4 +286,42 @@ describe Toy::Serialization do
       }
     end
   end
+
+  describe "#serializable_hash" do
+    context "with embedded list" do
+      before do
+        Game.embedded_list :moves
+        Move.parent_reference :game
+
+        @game = Game.create
+        @move = game.moves.create
+      end
+      let(:game) { @game }
+
+      it "returns a hash the whole way through" do
+        game.serializable_hash.should == {
+          'id' => game.id,
+          'moves' => [
+            {'id' => game.moves.first.id}
+          ]
+        }
+      end
+    end
+
+    context "with method that is another toystore object" do
+      before do
+        Game.reference(:creator, User)
+        @game = Game.create(:creator => User.create)
+      end
+      let(:game) { @game }
+
+      it "returns serializable hash of object" do
+        game.serializable_hash(:methods => [:creator]).should == {
+          'id'         => game.id,
+          'creator_id' => game.creator_id,
+          'creator'    => {'id' => game.creator.id}
+        }
+      end
+    end
+  end
 end
