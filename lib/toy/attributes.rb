@@ -29,10 +29,7 @@ module Toy
     module InstanceMethods
       def initialize(attrs={})
         @_new_record = true unless defined?(@_new_record)
-        @attributes = {}.with_indifferent_access
-        self.class.defaulted_attributes.each do |attribute|
-          @attributes[attribute.name] = attribute.default
-        end
+        initialize_attributes_with_defaults
         self.attributes = attrs
         write_attribute :id, self.class.next_key(self) unless id?
       end
@@ -46,7 +43,7 @@ module Toy
       def reload
         if attrs = store[store_key]
           instance_variables.each        { |ivar| instance_variable_set(ivar, nil) }
-          @attributes = {}.with_indifferent_access
+          initialize_attributes_with_defaults
           self.attributes = Toy.decode(attrs)
           self.class.lists.each_key      { |name| send(name).reset }
           self.class.references.each_key { |name| send(name).reset }
@@ -61,24 +58,22 @@ module Toy
       end
 
       def attributes
-        @attributes.merge(embedded_attributes)
+        @attributes
       end
 
       def persisted_attributes
-        attributes.tap do |attrs|
-          attrs.each_key do |key|
-            if attribute = attribute_definition(key)
-              attrs.delete(key) if attribute.virtual?
-              attrs[attribute.abbr] = attrs.delete(attribute.name) if attribute.abbr?
-            end
+        {}.tap do |attrs|
+          self.class.attributes.each do |name, attribute|
+            next if attribute.virtual?
+            attrs[attribute.store_key] = attribute.to_store(read_attribute(attribute.name))
           end
-        end
+        end.merge(embedded_attributes)
       end
 
       def embedded_attributes
         {}.tap do |attrs|
           self.class.embedded_lists.each_key do |name|
-            attrs[name] = send(name).map(&:attributes)
+            attrs[name.to_s] = send(name).map(&:persisted_attributes)
           end
         end
       end
@@ -104,11 +99,11 @@ module Toy
 
       private
         def read_attribute(key)
-          attribute_definition(key).try(:read, @attributes[key])
+          @attributes[key]
         end
 
         def write_attribute(key, value)
-          @attributes[key] = attribute_definition(key).try(:write, value)
+          @attributes[key] = attribute_definition(key).try(:from_store, value)
         end
 
         def attribute_definition(key)
@@ -129,6 +124,13 @@ module Toy
 
         def attribute?(key)
           read_attribute(key).present?
+        end
+
+        def initialize_attributes_with_defaults
+          @attributes = {}.with_indifferent_access
+          self.class.defaulted_attributes.each do |attribute|
+            @attributes[attribute.name] = attribute.default
+          end
         end
     end
   end

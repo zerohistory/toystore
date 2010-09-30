@@ -21,12 +21,12 @@ describe Toy::Attribute do
     attribute.type.should == String
   end
 
-  it "should write using the attribute type" do
-    attribute.write(12).should == '12'
+  it "can convert from_store using the attribute type" do
+    attribute.from_store(12).should == '12'
   end
 
-  it "should read using the attribute type" do
-    attribute.read(12).should == '12'
+  it "can convert to_store using the attribute type" do
+    attribute.to_store(12).should == '12'
   end
 
   it "raises error if option is passed that we do not know about" do
@@ -71,6 +71,38 @@ describe Toy::Attribute do
     it "returns default if set" do
       Toy::Attribute.new(User, :age, String, :default => 1).default.should == 1
     end
+
+    it "returns store_default if set for type" do
+      Toy::Attribute.new(User, :skills, Array).default.should == []
+    end
+
+    it "returns default if set even if store_default is set" do
+      Toy::Attribute.new(User, :skills, Array, :default => [1]).default.should == [1]
+    end
+  end
+
+  describe "#default?" do
+    it "returns false if no default or store_default" do
+      Toy::Attribute.new(User, :age, String).default?.should be_false
+    end
+
+    it "returns true if default set" do
+      Toy::Attribute.new(User, :age, String, :default => 1).default?.should be_true
+    end
+
+    it "returns true if store_default set" do
+      Toy::Attribute.new(User, :skills, Array).default?.should be_true
+    end
+  end
+
+  describe "#store_key" do
+    it "returns abbr if abbreviated" do
+      Toy::Attribute.new(User, :age, String, :abbr => :a).store_key.should == 'a'
+    end
+
+    it "returns name if not abbreviated" do
+      Toy::Attribute.new(User, :age, String).store_key.should == 'age'
+    end
   end
 
   describe "attribute with default" do
@@ -79,45 +111,42 @@ describe Toy::Attribute do
     end
 
     it "returns default when reading a nil value" do
-      @attribute.read(nil).should == 'Daryl'
+      @attribute.from_store(nil).should == 'Daryl'
     end
 
     it "returns value when reading a non-nil value" do
-      @attribute.read('Larry').should == 'Larry'
+      @attribute.from_store('Larry').should == 'Larry'
     end
 
     it "returns default when writing a nil value" do
-      @attribute.write(nil).should == 'Daryl'
+      @attribute.to_store(nil).should == 'Daryl'
     end
 
     it "returns value when writing a non-nil value" do
-      @attribute.write('Larry').should == 'Larry'
+      @attribute.to_store('Larry').should == 'Larry'
     end
   end
 
   describe "attribute with default that is proc" do
     before do
-      @time = 4.days.ago
-      default = proc { @time }
-      @attribute = Toy::Attribute.new(User, :created_at, Time, :default => default)
+      default = proc { 'foo' }
+      @attribute = Toy::Attribute.new(User, :foo, String, :default => default)
     end
 
     it "returns default when reading a nil value" do
-      @attribute.read(nil).should == @time
+      @attribute.from_store(nil).should == 'foo'
     end
 
     it "returns value when reading a non-nil value" do
-      time = 3.days.ago
-      @attribute.read(time).should == time
+      @attribute.from_store('bar').should == 'bar'
     end
 
     it "returns default when writing a nil value" do
-      @attribute.write(nil).to_i.should == @time.to_i
+      @attribute.to_store(nil).should == 'foo'
     end
 
     it "returns value when writing a non-nil value" do
-      time = 2.days.ago
-      @attribute.write(time).to_i.should == time.to_i
+      @attribute.to_store('bar').should == 'bar'
     end
   end
 

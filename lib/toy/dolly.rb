@@ -16,12 +16,12 @@ module Toy
       end
 
       other.attributes.except('id').each do |key, value|
-        value = if self.class.embedded_list?(key)
-                  value.clone.map { |v| v.delete('id'); v }
-                else
-                  value.duplicable? ? value.clone : value
-                end
+        value = value.duplicable? ? value.clone : value
         send("#{key}=", value)
+      end
+
+      other.class.embedded_lists.keys.each do |name|
+        send("#{name}=", other.send(name).map(&:clone))
       end
 
       write_attribute(:id, self.class.next_key(self))

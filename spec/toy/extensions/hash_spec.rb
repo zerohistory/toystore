@@ -13,3 +13,9 @@ describe "Hash.from_store" do
     hash.is_a?(HashWithIndifferentAccess).should be_true
   end
 end
+
+describe "Hash.store_default" do
+  it "returns emtpy hash with indifferent access" do
+    Hash.store_default.should == {}.with_indifferent_access
+  end
+end

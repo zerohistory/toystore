@@ -20,3 +20,8 @@ describe "Set.from_store" do
   end
 end
 
+describe "Set.store_default" do
+  it "returns empty set" do
+    Set.store_default.should == Set.new
+  end
+end
