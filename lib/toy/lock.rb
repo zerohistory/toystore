@@ -10,7 +10,7 @@ module Toy
 
       if options[:store]
         options[:store_options] ||= {}
-        @store = Toy.build_store options[:store], options[:store_options]
+        @store = Toy.build_store(options[:store], options[:store_options])
       else
         @store = model.store
       end
