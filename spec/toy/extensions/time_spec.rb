@@ -53,9 +53,14 @@ describe "Time.to_store with Time.zone" do
 end
 
 describe "Time.from_store without Time.zone" do
-  it "should be time" do
+  it "should be time in utc" do
     time = Time.now
-    Time.from_store(time).should == time
+    Time.from_store(time).should be_close(time.utc, 1)
+  end
+
+  it "should be time if string" do
+    time = Time.now
+    Time.from_store(time.to_s).should be_close(time, 1)
   end
 
   it "should be nil if nil" do
@@ -64,19 +69,26 @@ describe "Time.from_store without Time.zone" do
 end
 
 describe "Time.from_store with Time.zone" do
-  it "should be time in Time.zone" do
+  before do
     Time.zone = 'Hawaii'
+  end
 
-    time = Time.from_store(Time.utc(2009, 10, 1))
-    time.should == Time.zone.local(2009, 9, 30, 14)
-    time.is_a?(ActiveSupport::TimeWithZone).should be_true
-
+  after do
     Time.zone = nil
   end
 
+  it "should be time in Time.zone" do
+    time = Time.from_store(Time.utc(2009, 10, 1))
+    time.should == Time.zone.local(2009, 9, 30, 14)
+    time.is_a?(ActiveSupport::TimeWithZone).should be_true
+  end
+
+  it "should be time if string" do
+    time = Time.zone.now
+    Time.from_store(time.to_s).should be_close(time, 1)
+  end
+
   it "should be nil if nil" do
-    Time.zone = 'Hawaii'
     Time.from_store(nil).should be_nil
-    Time.zone = nil
   end
 end

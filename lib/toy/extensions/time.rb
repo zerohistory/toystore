@@ -13,6 +13,7 @@ module Toy
       end
 
       def from_store(value, *)
+        value = to_store(value)
         if ::Time.try(:zone).present? && value.present?
           value.in_time_zone(::Time.zone)
         else
