@@ -16,24 +16,26 @@ module Toy
       model.attributes[name.to_s] = self
     end
 
-    def read(value)
+    def from_store(value)
       value = default if default? && value.nil?
       type.from_store(value, self)
     end
 
-    def write(value)
+    def to_store(value)
       value = default if default? && value.nil?
       type.to_store(value, self)
     end
 
     def default
-      if default?
+      if options.key?(:default)
         options[:default].respond_to?(:call) ? options[:default].call : options[:default]
+      else
+        type.respond_to?(:store_default) ? type.store_default : nil
       end
     end
 
     def default?
-      options.key?(:default)
+      options.key?(:default) || type.respond_to?(:store_default)
     end
 
     def virtual?
@@ -50,6 +52,10 @@ module Toy
 
     def abbr
       options[:abbr]
+    end
+
+    def store_key
+      (abbr? ? abbr : name).to_s
     end
 
     # Stores reference to related embedded list

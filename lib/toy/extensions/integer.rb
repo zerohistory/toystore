@@ -9,6 +9,10 @@ module Toy
           value_to_i
         end
       end
+
+      def from_store(value, *)
+        to_store(value)
+      end
     end
   end
 end

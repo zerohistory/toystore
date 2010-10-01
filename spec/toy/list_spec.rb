@@ -494,7 +494,7 @@ describe Toy::List do
     end
 
     it "extends block methods onto proxy" do
-      @user.moves.should respond_to(:old)
+      @user.moves.respond_to?(:old).should be_true
       @user.moves.old.should == [@move_old]
     end
   end
@@ -522,12 +522,12 @@ describe Toy::List do
     end
 
     it "extends modules" do
-      @user.moves.should respond_to(:old)
+      @user.moves.respond_to?(:old).should be_true
       @user.moves.old.should    == [@move_old]
     end
 
     it "extends procs" do
-      @user.moves.should respond_to(:recent)
+      @user.moves.respond_to?(:recent).should be_true
       @user.moves.recent.should == [@move_new]
     end
   end

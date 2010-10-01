@@ -17,3 +17,9 @@ describe "Array.from_store" do
     Array.from_store(nil).should == []
   end
 end
+
+describe "Array.store_default" do
+  it "returns emtpy array" do
+    Array.store_default.should == []
+  end
+end

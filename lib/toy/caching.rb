@@ -8,7 +8,7 @@ module Toy
                       when new_record?
                         "#{self.class.name}:new"
                       when timestamp = self[:updated_at]
-                        "#{self.class.name}:#{id}-#{timestamp.to_s(:number)}"
+                        "#{self.class.name}:#{id}-#{timestamp.utc.to_s(:number)}"
                       else
                         "#{self.class.name}:#{id}"
                     end

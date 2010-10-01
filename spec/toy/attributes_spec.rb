@@ -23,10 +23,17 @@ describe Toy::Attributes do
   describe "#persisted_attributes" do
     before do
       Game.embedded_list(:moves)
-      @over  = Game.attribute(:over, Boolean)
-      @score = Game.attribute(:creator_score, Integer, :virtual => true)
-      @abbr  = Game.attribute(:super_secret_hash, String, :abbr => :ssh)
-      @game  = Game.new(:over => true, :creator_score => 20, :ssh => 'h4x', :moves => [Move.new, Move.new])
+      @over    = Game.attribute(:over, Boolean)
+      @score   = Game.attribute(:creator_score, Integer, :virtual => true)
+      @abbr    = Game.attribute(:super_secret_hash, String, :abbr => :ssh)
+      @rewards = Game.attribute(:rewards, Set)
+      @game    = Game.new({
+        :over          => true,
+        :creator_score => 20,
+        :rewards       => %w(twigs berries).to_set,
+        :ssh           => 'h4x',
+        :moves         => [Move.new, Move.new],
+      })
     end
 
     it "includes persisted attributes" do
@@ -47,6 +54,11 @@ describe Toy::Attributes do
 
     it "does not include virtual attributes" do
       @game.persisted_attributes.should_not have_key(:creator_score)
+    end
+
+    it "includes to_store values for attributes" do
+      @game.persisted_attributes['rewards'].should be_instance_of(Array)
+      @game.persisted_attributes['rewards'].should == @rewards.to_store(@game.rewards)
     end
   end
 
@@ -161,17 +173,9 @@ describe Toy::Attributes do
       }
     end
 
-    it "includes all embedded documents" do
+    it "does not include embedded documents" do
       game = Game.new(:moves => [Move.new(:tiles => [Tile.new])])
-      game.attributes.should == {
-        'id'    => game.id,
-        'moves' => [
-          {
-            'id'    => game.moves.first.id,
-            'tiles' => [{'id' => game.moves.first.tiles.first.id}],
-          }
-        ],
-      }
+      game.attributes.should_not have_key('moves')
     end
   end
 
@@ -196,6 +200,17 @@ describe Toy::Attributes do
 
     it "ignores keys that are not attributes and do not have accessors defined" do
       lambda { User.new(:taco => 'bell') }.should_not raise_error
+    end
+  end
+
+  describe "reading an attribute" do
+    before do
+      User.attribute(:info, Hash)
+      @user = User.new(:info => {'name' => 'John'})
+    end
+
+    it "returns the same instance" do
+      @user.info.should equal(@user.info)
     end
   end
 
@@ -359,6 +374,22 @@ describe Toy::Attributes do
     it "raises NotFound if does not exist" do
       user.destroy
       lambda { user.reload }.should raise_error(Toy::NotFound)
+    end
+
+    it "reloads defaults" do
+      User.attribute(:skills, Array)
+      @user.reload
+      @user.skills.should == []
+    end
+  end
+
+  describe "Initialization of array attributes" do
+    before do
+      User.attribute(:skills, Array)
+    end
+
+    it "initializes to empty array" do
+      User.new.skills.should == []
     end
   end
 end

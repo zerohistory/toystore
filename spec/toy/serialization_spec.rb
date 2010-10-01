@@ -97,14 +97,15 @@ describe Toy::Serialization do
       tile2 = move.tiles[1]
       Toy.decode(@game.to_json).should == {
         'game' => {
-          'id'              => @game.id,
-          'creator_id'      => @user.id,
-          'moves' => [
+          'id'         => @game.id,
+          'creator_id' => @user.id,
+          'moves'      => [
             {
-              'id'      => move.id,
-              'index'   => 0,
-              'points'  => 15,
-              'tiles' => [
+              'id'     => move.id,
+              'index'  => 0,
+              'points' => 15,
+              'words'  => [],
+              'tiles'  => [
                 {'id' => tile1.id, 'column' => 7, 'row' => 7, 'index' => 23},
                 {'id' => tile2.id, 'column' => 8, 'row' => 7, 'index' => 24},
               ]
