@@ -17,26 +17,7 @@ require 'log_buddy'
 require 'support/constants'
 require 'support/name_and_number_key_factory'
 require 'support/identity_map_matcher'
-
-Adapter.define(:memory) do
-  def read(key)
-    deserialize(client[key_for(key)])
-  end
-
-  def write(key, value)
-    client[key_for(key)] = serialize(value)
-  end
-
-  def delete(key)
-    client.delete(key_for(key))
-  end
-
-  def clear
-    client.clear
-  end
-end
-
-MemoryStore = Adapter[:memory]
+require 'adapter/memory'
 
 Logger.new(log_path.join('test.log')).tap do |log|
   LogBuddy.init(:logger => log)
