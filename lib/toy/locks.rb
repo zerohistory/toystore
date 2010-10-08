@@ -38,7 +38,7 @@ module Toy
       end
 
       def clear_lock(name, id)
-        store.delete(lock_key(name, id))
+        adapter.delete(lock_key(name, id))
       end
 
       def lock_key(name, id=nil)

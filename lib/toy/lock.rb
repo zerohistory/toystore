@@ -1,35 +1,31 @@
 # based on the redis-objects lock (http://github.com/nateware/redis-objects/blob/master/lib/redis/lock.rb)
 module Toy
   class Lock
-    attr_reader :model, :store, :name, :options
+    extend Forwardable
+
+    attr_reader :model, :name, :options
+    def_delegator :model, :adapter
 
     def initialize(model, name, options={})
-      options.assert_valid_keys(:timeout, :expiration, :start, :init, :store, :store_options)
+      options.assert_valid_keys(:timeout, :expiration, :start, :init)
 
       @model, @name, @options = model, name, options
-
-      if options[:store]
-        options[:store_options] ||= {}
-        @store = Toy.build_store(options[:store], options[:store_options])
-      else
-        @store = model.store
-      end
 
       @options[:timeout] ||= 5
       @options[:init] = false if @options[:init].nil? # default :init to false
 
       setnx(@options[:start]) unless @options[:start] == 0 || @options[:init] === false
 
-      case options[:store]
+      case model.adapter.name
       when :redis
         self.extend(Toy::Locks::Redis)
-      when :memcache
+      when :memcached
         self.extend(Toy::Locks::Memcache)
       end
     end
 
     def clear
-      store.delete(name)
+      adapter.delete(name)
     end
 
     # Get the lock and execute the code block. Any other code that needs the lock
@@ -47,7 +43,7 @@ module Toy
 
         # Lock is being held.  Now check to see if it's expired (if we're using lock expiration).
         if !options[:expiration].nil?
-          old_expiration = store[name].to_f
+          old_expiration = adapter[name].to_f
 
           if old_expiration < Time.now.to_f
             # If it's expired, use GETSET to update it.
@@ -80,17 +76,17 @@ module Toy
 
     # This is not a true set if not exists
     def setnx(expiration)
-      if store[name]
+      if adapter[name]
         return false
       else
-        store[name] = expiration
+        adapter[name] = expiration
         return true
       end
     end
 
     def getset(expiration)
-      old_value = store[name]
-      store[name] = expiration
+      old_value = adapter[name]
+      adapter[name] = expiration
       return old_value
     end
 

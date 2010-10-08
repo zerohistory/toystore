@@ -1,6 +1,6 @@
 GIT
   remote: git@github.com:newtoy/adapter.git
-  revision: df33e0a9fc51a8fe298bc803f6472bf9c03b32bb
+  revision: 112c8c984c504885cbd2950fb7a3325ad95b11e2
   specs:
     adapter (0.1)
 
