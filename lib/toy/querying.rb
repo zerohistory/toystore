@@ -5,7 +5,7 @@ module Toy
     module ClassMethods
       def get(id)
         key = store_key(id)
-        value = store[key]
+        value = adapter[key]
         logger.debug("ToyStore GET #{key.inspect} #{value.inspect}")
         load(value)
       end
@@ -28,7 +28,7 @@ module Toy
 
       def key?(id)
         key = store_key(id)
-        value = store.key?(key)
+        value = adapter.key?(key)
         logger.debug("ToyStore KEY #{key.inspect} #{value.inspect}")
         value
       end

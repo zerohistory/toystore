@@ -3,22 +3,32 @@ require 'pathname'
 
 root_path   = Pathname(__FILE__).dirname.join('..').expand_path
 lib_path    = root_path.join('lib')
-moneta_path = root_path.join('vendor', 'moneta', 'lib')
 
-$:.unshift(lib_path, moneta_path)
+$:.unshift(lib_path)
 
 require 'toy'
-require 'moneta'
-require 'moneta/adapters/file'
-require 'moneta/adapters/memory'
 
-MemoryStore = Moneta::Builder.new do
-  run Moneta::Adapters::Memory
+Adapter.define(:memory) do
+  def read(key)
+    deserialize(client[key_for(key)])
+  end
+
+  def write(key, value)
+    client[key_for(key)] = serialize(value)
+  end
+
+  def delete(key)
+    client.delete(key_for(key))
+  end
+
+  def clear
+    client.clear
+  end
 end
 
 class User
   include Toy::Store
-  store MemoryStore
+  adapter :memory, {}
 end
 
 class LintTest < ActiveModel::TestCase

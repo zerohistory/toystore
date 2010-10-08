@@ -3,9 +3,9 @@ require 'pathname'
 require 'forwardable'
 require 'digest/sha1'
 
-root_path       = Pathname(__FILE__).dirname.join('..').expand_path
-extensions_path = root_path.join('lib', 'toy', 'extensions')
+root_path = Pathname(__FILE__).dirname.join('..').expand_path
 
+require 'adapter'
 require 'simple_uuid'
 require 'active_model'
 require 'active_support/json'
@@ -16,6 +16,7 @@ require 'active_support/core_ext/class/inheritable_attributes'
 require 'active_support/core_ext/string/conversions'
 require 'active_support/core_ext/string/inflections'
 
+extensions_path = root_path.join('lib', 'toy', 'extensions')
 Dir[extensions_path + '**/*.rb'].each { |file| require(file) }
 
 module Toy
@@ -35,8 +36,8 @@ module Toy
   # Do not use in production, harty harr harr.
   def clear
     models.each do |model|
-      if model.store.present?
-        model.store.clear
+      if model.adapter.present?
+        model.adapter.clear
         model.identity_map.clear
       end
     end

@@ -23,25 +23,30 @@ def run(cmd)
   form_growl_message output
 end
 
+def run_all
+  run('bundle exec rake')
+end
+
 def run_spec(path)
   path.gsub!('lib/', 'spec/')
   path.gsub!('_spec', '')
   file_name = File.basename(path, '.rb')
   path.gsub!(file_name, file_name + "_spec")
-  run %Q(spec #{path}) if File.exists?(path)
+  if File.exists?(path)
+    system('clear')
+    run(%Q(bundle exec spec #{path}))
+  end
 end
 
-watch('test/lint_test.rb') {     system('clear'); run 'rake test' }
-watch('spec/helper\.rb')   {     system('clear'); run 'rake'      }
-watch('lib/.*\.rb')        { |m| system('clear'); run_spec m[0]   }
-watch('spec/.*_spec\.rb')  { |m| system('clear'); run_spec m[0]   }
+watch('spec/helper\.rb')   {     run_all }
+watch('lib/.*\.rb')        { |m| run_spec(m[0]) }
+watch('spec/.*_spec\.rb')  { |m| run_spec(m[0]) }
 
 # Ctrl-\
 Signal.trap('QUIT') do
   puts " --- Running all tests ---\n\n"
-  run('rake')
+  run_all
 end
 
 # Ctrl-C
 Signal.trap('INT') { abort("\n") }
-

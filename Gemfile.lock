@@ -1,3 +1,9 @@
+GIT
+  remote: git@github.com:newtoy/adapter.git
+  revision: df33e0a9fc51a8fe298bc803f6472bf9c03b32bb
+  specs:
+    adapter (0.1)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -24,6 +30,7 @@ PLATFORMS
 DEPENDENCIES
   activemodel (= 3)
   activesupport (= 3)
+  adapter!
   diff-lcs
   log_buddy
   memcached

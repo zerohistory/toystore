@@ -11,49 +11,19 @@ describe Toy::Connection do
     Toy.logger = @logger
   end
 
-  describe "store" do
-    it "should set the default store" do
-      Toy.store(MemoryStore)
-      Toy.store.should == MemoryStore
+  describe ".adapter" do
+    it "should set the default adapter" do
+      Toy.adapter(:memory, {})
+      Toy.adapter.should == Adapter[:memory].new({})
     end
 
-    it "including Toy::Store should use the default store, if present" do
-      Toy.store(MemoryStore)
-      klass = Class.new { include Toy::Store }
-      klass.store.should == MemoryStore
+    it "including Toy::Store should use the default adapter, if present" do
+      Toy.adapter(:memory, {})
+      Class.new { include Toy::Store }.adapter.should == Adapter[:memory].new({})
     end
-
-    describe "with symbol" do
-      before do
-        Toy.store(:file, :path => 'testing')
-      end
-
-      it "constantizes and sets up moneta builder correctly" do
-        # Moneta does not expose anything and Moneta::Builder has no
-        # equality knowledge so we have to dig in unfortunately.
-        adapter = Toy.store.instance_variable_get("@adapter")
-        adapter.should be_instance_of(Moneta::Adapters::File)
-        adapter.instance_variable_get("@directory").should == 'testing'
-      end
-    end
-
-    describe "with string" do
-      before do
-        Toy.store('file', :path => 'testing')
-      end
-
-      it "constantizes and sets up moneta builder correctly" do
-        # Moneta does not expose anything and Moneta::Builder has no
-        # equality knowledge so we have to dig in unfortunately.
-        adapter = Toy.store.instance_variable_get("@adapter")
-        adapter.should be_instance_of(Moneta::Adapters::File)
-        adapter.instance_variable_get("@directory").should == 'testing'
-      end
-    end
-
   end
 
-  describe "logger" do
+  describe ".logger" do
     it "should set the default logger" do
       logger = stub
       Toy.logger = logger
@@ -74,7 +44,7 @@ describe Toy::Connection do
     end
   end
 
-  describe "key_factory" do
+  describe ".key_factory" do
     it "should set the default key_factory" do
       key_factory = stub
       Toy.key_factory = key_factory

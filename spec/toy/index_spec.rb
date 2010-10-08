@@ -59,7 +59,7 @@ describe Toy::Index do
       let(:user) { @user }
 
       it "creates key for indexed value" do
-        User.store.should be_key("User:ssn:f6edc9155d79e311ad2d4a6e1b54004f31497f4c")
+        User.adapter.should be_key("User:ssn:f6edc9155d79e311ad2d4a6e1b54004f31497f4c")
       end
 
       it "adds instance id to index array" do
@@ -169,7 +169,7 @@ describe Toy::Index do
     describe "creating with index" do
       it "creates key for indexed values sorted" do
         sha_value = Digest::SHA1.hexdigest([user1.id, user2.id].sort.join(''))
-        Friendship.store.should be_key("Friendship:user_ids:#{sha_value}")
+        Friendship.adapter.should be_key("Friendship:user_ids:#{sha_value}")
       end
 
       it "adds instance id to index array" do

@@ -21,7 +21,7 @@ module Toy
 
       def get_index(name, value)
         key = index_key(name, value)
-        if value = store[key]
+        if value = adapter[key]
           Toy.decode(value)
         else
           []
@@ -32,14 +32,14 @@ module Toy
         key = index_key(name, value)
         ids = get_index(name, value)
         ids.push(id) unless ids.include?(id)
-        store[key] = Toy.encode(ids)
+        adapter[key] = Toy.encode(ids)
       end
 
       def destroy_index(name, value, id)
         key = index_key(name, value)
         ids = get_index(name, value)
         ids.delete(id)
-        store[key] = Toy.encode(ids)
+        adapter[key] = Toy.encode(ids)
       end
     end
 

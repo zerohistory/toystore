@@ -3,6 +3,7 @@ source 'http://rubygems.org'
 gem 'simple_uuid'
 gem 'activemodel', '3'
 gem 'activesupport', '3'
+gem 'adapter', :git => 'git@github.com:newtoy/adapter.git'
 
 group :development do
   gem 'rake'
