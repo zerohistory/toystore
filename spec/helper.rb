@@ -5,11 +5,10 @@ require 'logger'
 root_path   = Pathname(__FILE__).dirname.join('..').expand_path
 lib_path    = root_path.join('lib')
 log_path    = root_path.join('log')
-moneta_path = root_path.join('vendor', 'moneta', 'lib')
 
 log_path.mkpath
 
-$:.unshift(lib_path, moneta_path)
+$:.unshift(lib_path)
 
 require 'toy'
 require 'spec'
@@ -19,13 +18,25 @@ require 'support/constants'
 require 'support/name_and_number_key_factory'
 require 'support/identity_map_matcher'
 
-require 'moneta'
-require 'moneta/adapters/file'
-require 'moneta/adapters/memory'
+Adapter.define(:memory) do
+  def read(key)
+    deserialize(client[key_for(key)])
+  end
 
-MemoryStore = Moneta::Builder.new do
-  run Moneta::Adapters::Memory
+  def write(key, value)
+    client[key_for(key)] = serialize(value)
+  end
+
+  def delete(key)
+    client.delete(key_for(key))
+  end
+
+  def clear
+    client.clear
+  end
 end
+
+MemoryStore = Adapter[:memory]
 
 Logger.new(log_path.join('test.log')).tap do |log|
   LogBuddy.init(:logger => log)

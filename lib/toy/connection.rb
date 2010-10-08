@@ -1,12 +1,8 @@
 module Toy
   module Connection
-    def store
-      @@store if defined?(@@store)
-    end
-
-    def store(new_store=nil, *args)
-      @store = build_store(new_store, *args) unless new_store.nil?
-      @store
+    def adapter(name=nil, client=nil)
+      @adapter = Adapter[name].new(client) if !name.nil? && !client.nil?
+      @adapter
     end
 
     def logger
@@ -32,12 +28,6 @@ module Toy
         require 'logger'
         @@logger = ::Logger.new(STDOUT)
       end
-    end
-
-    def build_store(store, *args)
-      return store if store.is_a?(Moneta::Builder)
-      adapter = Moneta::Adapters.const_get(store.to_s.capitalize)
-      Moneta::Builder.new { run(adapter, *args) }
     end
   end
 end

@@ -1,3 +1,9 @@
+GIT
+  remote: git@github.com:newtoy/adapter.git
+  revision: e107ace51ec431edd626b7e38aeed22c3501e270
+  specs:
+    adapter (0.1)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -22,6 +28,7 @@ PLATFORMS
 DEPENDENCIES
   activemodel (= 3)
   activesupport (= 3)
+  adapter!
   diff-lcs
   log_buddy
   rake

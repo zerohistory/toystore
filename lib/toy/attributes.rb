@@ -41,7 +41,7 @@ module Toy
       end
 
       def reload
-        if attrs = store[store_key]
+        if attrs = adapter[store_key]
           instance_variables.each        { |ivar| instance_variable_set(ivar, nil) }
           initialize_attributes_with_defaults
           self.attributes = Toy.decode(attrs)

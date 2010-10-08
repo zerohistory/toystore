@@ -3,38 +3,10 @@ require 'helper'
 describe Toy::Persistence do
   uses_constants('User')
 
-  describe ".store" do
-    it "sets store if argument and reads store if not" do
-      User.store(MemoryStore)
-      User.store.should be(MemoryStore)
-    end
-
-    describe "with symbol" do
-      before do
-        User.store(:file, :path => 'testing')
-      end
-
-      it "constantizes and sets up moneta builder correctly" do
-        # Moneta does not expose anything and Moneta::Builder has no
-        # equality knowledge so we have to dig in unfortunately.
-        adapter = User.store.instance_variable_get("@adapter")
-        adapter.should be_instance_of(Moneta::Adapters::File)
-        adapter.instance_variable_get("@directory").should == 'testing'
-      end
-    end
-
-    describe "with string" do
-      before do
-        User.store('file', :path => 'testing')
-      end
-
-      it "constantizes and sets up moneta builder correctly" do
-        # Moneta does not expose anything and Moneta::Builder has no
-        # equality knowledge so we have to dig in unfortunately.
-        adapter = User.store.instance_variable_get("@adapter")
-        adapter.should be_instance_of(Moneta::Adapters::File)
-        adapter.instance_variable_get("@directory").should == 'testing'
-      end
+  describe ".adapter" do
+    it "sets if arguments and reads if not" do
+      User.adapter(:memory, {})
+      User.adapter.should == Adapter[:memory].new({})
     end
   end
 
@@ -54,7 +26,7 @@ describe Toy::Persistence do
     let(:doc) { @doc }
 
     it "creates key in database with value that is json dumped" do
-      value = User.store[doc.store_key]
+      value = User.adapter[doc.store_key]
       Toy.decode(value).should == {
         'name' => 'John',
         'id'   => doc.id,
@@ -67,9 +39,9 @@ describe Toy::Persistence do
     end
   end
 
-  describe "#store" do
+  describe "#adapter" do
     it "delegates to class" do
-      User.store.should equal(User.new.store)
+      User.new.adapter.should equal(User.adapter)
     end
   end
 
@@ -124,7 +96,7 @@ describe Toy::Persistence do
       end
 
       it "does not persist virtual attributes" do
-        attrs = Toy.decode(@doc.store[@doc.store_key])
+        attrs = Toy.decode(@doc.adapter[@doc.store_key])
         attrs.should_not include('accepted_terms')
       end
     end
@@ -133,7 +105,7 @@ describe Toy::Persistence do
       before do
         @doc      = User.create(:name => 'John', :age => 28)
         @key      = @doc.store_key
-        @value    = User.store[@doc.store_key]
+        @value    = User.adapter[@doc.store_key]
         @doc.name = 'Bill'
         @doc.accepted_terms = false
         @doc.save
@@ -144,12 +116,12 @@ describe Toy::Persistence do
         doc.store_key.should == @key
       end
 
-      it "updates value in store" do
-        User.store[doc.store_key].should_not == @value
+      it "updates value in adapter" do
+        User.adapter[doc.store_key].should_not == @value
       end
 
       it "does not persist virtual attributes" do
-        attrs = Toy.decode(@doc.store[@doc.store_key])
+        attrs = Toy.decode(@doc.adapter[@doc.store_key])
         attrs.should_not include('accepted_terms')
       end
 
