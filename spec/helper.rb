@@ -15,8 +15,9 @@ require 'spec'
 require 'timecop'
 require 'log_buddy'
 require 'support/constants'
-require 'support/name_and_number_key_factory'
 require 'support/identity_map_matcher'
+require 'support/name_and_number_key_factory'
+require 'support/lock_adapter'
 require 'adapter/memory'
 
 Logger.new(log_path.join('test.log')).tap do |log|

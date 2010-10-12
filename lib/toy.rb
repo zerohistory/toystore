@@ -42,6 +42,11 @@ module Toy
       end
     end
   end
+
+  module Locks
+    autoload :Redis,     'toy/locks/redis'
+    autoload :Memcached, 'toy/locks/memcached'
+  end
 end
 
 require 'toy/exceptions'
@@ -79,6 +84,4 @@ require 'toy/identity'
 require 'toy/caching'
 require 'toy/lock'
 require 'toy/locks'
-require 'toy/locks/redis'
-require 'toy/locks/memcache'
 require 'toy/logger'

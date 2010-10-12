@@ -7,11 +7,12 @@ gem 'adapter', :git => 'git@github.com:newtoy/adapter.git'
 
 group :development do
   gem 'rake'
-  gem 'rspec'
+  gem 'rspec', '1.3.0'
   gem 'timecop'
   gem 'tzinfo'
   gem 'log_buddy'
   gem 'diff-lcs'
   gem 'redis'
+  gem 'SystemTimer'
   gem 'memcached'
 end

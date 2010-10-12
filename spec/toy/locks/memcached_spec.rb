@@ -1,11 +1,11 @@
 require 'helper'
-require 'adapter/redis'
+require 'adapter/memcached'
 
-describe Toy::Locks::Redis do
+describe Toy::Locks::Memcached do
   uses_constants('User')
 
   before do
-    User.adapter(:redis, Redis.new)
+    User.adapter(:memcached, Memcached.new('localhost:11211', :namespace => 'moneta_spec'))
     @lock_name = :test_lock
     @lock = Toy::Lock.new(User, @lock_name)
     @lock.adapter.clear

@@ -7,7 +7,7 @@ describe Toy::Lock do
     User.adapter.clear
   end
 
-  it "should default to use the adapter of the model" do
+  it "uses the adapter of the model" do
     lock = Toy::Lock.new(User, :test_lock)
     lock.adapter.should == User.adapter
   end
@@ -27,7 +27,6 @@ describe Toy::Lock do
     lock.lock do
       sleep 1.1
     end
-
     User.adapter[:test_lock].should be_nil
   end
 
@@ -45,13 +44,13 @@ describe Toy::Lock do
     # create a fake lock in the past
     User.adapter[:test_lock] = Time.now - (expiry + 60)
 
-    gotit = false
+    acquired_lock = false
     lock.lock do
-      gotit = true
+      acquired_lock = true
     end
 
     # should get the lock because it has expired
-    gotit.should be_true
+    acquired_lock.should be_true
   end
 
   it "should not let non-expired locks be gettable" do
@@ -61,16 +60,16 @@ describe Toy::Lock do
     # create a fake lock
     User.adapter[:test_lock] = (Time.now + expiry).to_f
 
-    gotit = false
+    acquired_lock = false
     error = nil
     lambda {
       lock.lock do
-        gotit = true
+        acquired_lock = true
       end
     }.should raise_error(Toy::LockTimeout, 'Timeout on lock test_lock exceeded 0.1 sec')
 
     # should not have the lock
-    gotit.should_not be_true
+    acquired_lock.should_not be_true
   end
 
   it "should not remove the key if lock is held past expiration" do

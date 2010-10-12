@@ -3,19 +3,13 @@ require 'redis'
 module Toy
   module Locks
     module Redis
-      def setnx(expiration)
-        redis.setnx(name.to_s, expiration)
+      def set_expiration_if_not_exists(expiration)
+        adapter.client.setnx(name.to_s, expiration)
       end
 
       def getset(expiration)
-        redis.getset(name.to_s, expiration)
+        adapter.client.getset(name.to_s, expiration)
       end
-
-      private
-        def redis
-          # Moneta does not expose anything
-          @redis ||= store.instance_variable_get("@adapter").instance_variable_get("@cache")
-        end
     end
   end
 end
