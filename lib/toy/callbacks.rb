@@ -18,6 +18,8 @@ module Toy
       end
 
       def run_callbacks(callback, &block)
+        callback = :create if callback == :update && !persisted?
+
         embedded_records = self.class.embedded_lists.keys.inject([]) do |records, key|
           records += send(key).target
         end

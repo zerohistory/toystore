@@ -85,5 +85,13 @@ describe Toy::Callbacks do
         @move.history.should be_empty
       end.should_not raise_error
     end
+
+    it "runs create callback when saving new embbeded doc on existing parent" do
+      @game.save
+      move = Move.new
+      @game.moves << move
+      @game.save
+      move.history.should == [:before_save, :before_create, :after_create, :after_save]
+    end
   end
 end
