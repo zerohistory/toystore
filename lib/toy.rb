@@ -42,11 +42,6 @@ module Toy
       end
     end
   end
-
-  module Locks
-    autoload :Redis,     'toy/locks/redis'
-    autoload :Memcached, 'toy/locks/memcached'
-  end
 end
 
 require 'toy/exceptions'

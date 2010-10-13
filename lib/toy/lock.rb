@@ -3,8 +3,10 @@ module Toy
   class Lock
     extend Forwardable
 
+    def_delegator :model,   :adapter
+    def_delegator :adapter, :client
+
     attr_reader :model, :name, :options
-    def_delegator :model, :adapter
 
     def initialize(model, name, options={})
       options.assert_valid_keys(:timeout, :expiration, :start, :init)

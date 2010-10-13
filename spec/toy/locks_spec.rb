@@ -7,7 +7,7 @@ describe Toy::Locks do
     User.adapter.clear
   end
 
-  it "should define a global lock" do
+  xit "should define a global lock" do
     User.lock :games, :global => true
 
     User.games_lock.lock do
@@ -15,7 +15,7 @@ describe Toy::Locks do
     end
   end
 
-  it "should use global lock for instances" do
+  xit "should use global lock for instances" do
     User.lock :games, :global => true
     user = User.new
 
@@ -24,7 +24,7 @@ describe Toy::Locks do
     end
   end
 
-  it "should use instance lock when not global" do
+  xit "should use instance lock when not global" do
     User.lock :games
     user = User.new
 
@@ -33,20 +33,20 @@ describe Toy::Locks do
     end
   end
 
-  it "should raise an error when lock is not defined" do
+  xit "should raise an error when lock is not defined" do
     lambda {
       User.obtain_lock(:games, 1)
     }.should raise_error(Toy::UndefinedLock, 'Undefined lock :games for class User')
   end
 
-  it "should obtain lock for specific id" do
+  xit "should obtain lock for specific id" do
     User.lock :games
     User.obtain_lock(:games, 1) do
       User.adapter['User:1:games_lock'].should_not be_nil
     end
   end
 
-  it "should release lock for specific id" do
+  xit "should release lock for specific id" do
     User.lock :games
     User.obtain_lock(:games, 1) do
       sleep 1.1

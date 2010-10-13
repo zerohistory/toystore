@@ -21,10 +21,9 @@ module Toy
     end
   end
 
-  class LockTimeout < Error
-    def initialize(key, timeout)
-      super("Timeout on lock #{key} exceeded #{timeout} sec")
+  class AdapterNoLocky < Error
+    def initialize(adapter)
+      super("#{adapter.name.to_s.capitalize} adapter does not support locking")
     end
   end
-
 end
