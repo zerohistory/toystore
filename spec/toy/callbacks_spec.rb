@@ -55,12 +55,43 @@ describe Toy::Callbacks do
     before do
       Game.embedded_list(:moves)
       Move.send(:include, CallbackHelper)
+
+      @move = Move.new
+      @game = Game.create(:moves => [@move])
     end
 
-    xit "runs callbacks for save of parent" do
+    it "runs callbacks for save of parent" do
+      @move.history.should == [:before_save, :before_create, :after_create, :after_save]
+    end
+
+    it "runs callbacks for update of parent" do
+      @move.clear_history
+      @game.save
+      @move.history.should == [:before_save, :before_update, :after_update, :after_save]
+    end
+
+    it "runs callbacks for destroy of parent" do
+      @move.clear_history
+      @game.destroy
+      @move.history.should == [:before_destroy, :after_destroy]
+    end
+
+    it "does not attempt to run callback defined on parent that is not defined on embedded" do
+      Game.define_callbacks :win
+      @move.clear_history
+
+      lambda do
+        @game.run_callbacks(:win)
+        @move.history.should be_empty
+      end.should_not raise_error
+    end
+
+    it "runs create callback when saving new embbeded doc on existing parent" do
+      @game.save
       move = Move.new
-      game = Game.create(:moves => [move])
-      move.history.should == [:before_save, :after_save]
+      @game.moves << move
+      @game.save
+      move.history.should == [:before_save, :before_create, :after_create, :after_save]
     end
   end
 end

@@ -20,7 +20,6 @@ end
 
 Spec::Rake::SpecTask.new do |t|
   t.ruby_opts << '-rubygems'
-  t.verbose = true
 end
 task :default => :spec
 task :default => :test
