@@ -44,7 +44,7 @@ module Toy
         if attrs = adapter[store_key]
           instance_variables.each        { |ivar| instance_variable_set(ivar, nil) }
           initialize_attributes_with_defaults
-          self.attributes = Toy.decode(attrs)
+          self.attributes = attrs
           self.class.lists.each_key      { |name| send(name).reset }
           self.class.references.each_key { |name| send(name).reset }
         else

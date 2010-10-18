@@ -21,11 +21,9 @@ Dir[extensions_path + '**/*.rb'].each { |file| require(file) }
 
 module Toy
   extend self
-  extend Forwardable
 
-  def_delegators ActiveSupport::JSON, :encode, :decode
-
-  # Resets all tracking of things in memory
+  # Resets all tracking of things in memory. Useful for running
+  # before each request in development mode with Rails and such.
   def reset
     identity_map.clear
     plugins.clear
@@ -34,6 +32,10 @@ module Toy
 
   # Clears all the stores for all the models. Useful in specs/tests/etc.
   # Do not use in production, harty harr harr.
+  #
+  # Note: that if your models are auto-loaded like in Rails, you will need
+  # to make sure they are loaded in order to clear them or ToyStore will
+  # not be aware of their existence.
   def clear
     models.each do |model|
       if model.adapter.present?

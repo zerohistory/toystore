@@ -25,9 +25,8 @@ describe Toy::Persistence do
     end
     let(:doc) { @doc }
 
-    it "creates key in database with value that is json dumped" do
-      value = User.adapter[doc.store_key]
-      Toy.decode(value).should == {
+    it "creates key in database with attributes" do
+      User.adapter[doc.store_key].should == {
         'name' => 'John',
         'id'   => doc.id,
         'age'  => 50,
@@ -96,8 +95,7 @@ describe Toy::Persistence do
       end
 
       it "does not persist virtual attributes" do
-        attrs = Toy.decode(@doc.adapter[@doc.store_key])
-        attrs.should_not include('accepted_terms')
+        @doc.adapter[@doc.store_key].should_not include('accepted_terms')
       end
     end
 
@@ -121,8 +119,7 @@ describe Toy::Persistence do
       end
 
       it "does not persist virtual attributes" do
-        attrs = Toy.decode(@doc.adapter[@doc.store_key])
-        attrs.should_not include('accepted_terms')
+        @doc.adapter[@doc.store_key].should_not include('accepted_terms')
       end
 
       it "updates the attributes in the instance" do

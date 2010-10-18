@@ -81,7 +81,7 @@ module Toy
         def persist!
           attrs = persisted_attributes
           logger.debug("ToyStore SET #{store_key.inspect} #{attrs.inspect}")
-          adapter[store_key] = Toy.encode(attrs)
+          adapter[store_key] = attrs
           persist
           each_embedded_object(&:persist)
           true

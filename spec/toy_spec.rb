@@ -3,14 +3,6 @@ require 'helper'
 describe Toy do
   uses_constants('User', 'Game', 'Move')
 
-  it "can encode to json" do
-    Toy.encode({'foo' => 'bar'}).should == '{"foo":"bar"}'
-  end
-
-  it "can parse to json" do
-    Toy.decode('{"foo":"bar"}').should == {'foo' => 'bar'}
-  end
-
   describe ".clear" do
     it "can clear all the stores in one magical moment" do
       Game.embedded_list(:moves)

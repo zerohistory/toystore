@@ -35,17 +35,9 @@ module Toy
       alias :has_key? :key?
 
       def load(attrs)
-        attrs = normalize_load_attributes(attrs)
         return nil if attrs.nil?
         allocate.initialize_from_database(attrs)
       end
-
-      private
-        def normalize_load_attributes(attrs)
-          return nil if attrs.nil?
-          attrs = Toy.decode(attrs) if attrs.is_a?(String)
-          attrs
-        end
     end
   end
 end
