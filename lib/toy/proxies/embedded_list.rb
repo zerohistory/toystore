@@ -43,7 +43,6 @@ module Toy
         proxy_class.new(attrs).tap do |instance|
           assign_reference(instance)
           if instance.valid?
-            instance.instance_variable_set("@_new_record", false)
             push(instance)
             proxy_owner.save
           end

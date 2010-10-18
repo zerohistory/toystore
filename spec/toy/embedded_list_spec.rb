@@ -404,6 +404,26 @@ describe Toy::List do
     end
   end
 
+  describe "list#create (valid with invalid root that validates embedded)" do
+    before do
+      Game.attribute(:user_id, String)
+      Game.validates_presence_of(:user_id)
+
+      @game = Game.new
+      @move = @game.moves.create
+    end
+
+    it "is not persisted" do
+      @move.should_not be_persisted
+    end
+
+    it "is persisted when root is valid and saved" do
+      @game.user_id = '1'
+      @game.save!
+      @move.should be_persisted
+    end
+  end
+
   describe "list#destroy" do
     before do
       Move.attribute(:move_index, Integer)
