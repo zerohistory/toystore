@@ -1,18 +1,15 @@
 require 'pathname'
 
-root_path   = Pathname(__FILE__).dirname.join('..').expand_path
-lib_path    = root_path.join('lib')
-moneta_path = root_path.join('vendor', 'moneta', 'lib')
-
-$:.unshift(lib_path, moneta_path)
+root_path = Pathname(__FILE__).dirname.join('..').expand_path
+lib_path  = root_path.join('lib')
+$:.unshift(lib_path)
 
 require 'toy'
-require 'moneta'
-require 'moneta/adapters/memory'
+require 'adapter/memory'
 
 class User
   include Toy::Store
-  store :memory
+  adapter :memory, {}
   attribute :name, String
 end
 
