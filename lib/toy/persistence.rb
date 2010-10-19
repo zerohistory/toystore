@@ -4,8 +4,18 @@ module Toy
 
     module ClassMethods
       def store(name=nil, client=nil)
-        @store = Adapter[name].new(client) if !name.nil? && !client.nil?
+        raise ArgumentError, 'Client is required' if !name.nil? && client.nil?
+
+        if !name.nil? && !client.nil?
+          @store = Adapter[name].new(client)
+          stores << @store
+        end
+
         @store
+      end
+
+      def stores
+        @stores ||= []
       end
 
       def store_key(id)

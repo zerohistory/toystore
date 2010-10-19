@@ -3,10 +3,32 @@ require 'helper'
 describe Toy::Persistence do
   uses_constants('User')
 
+  let(:klass) do
+    Class.new { include Toy::Store }
+  end
+
   describe ".store" do
     it "sets if arguments and reads if not" do
       User.store(:memory, {})
       User.store.should == Adapter[:memory].new({})
+    end
+
+    it "raises argument error if name provided but not client" do
+      lambda do
+        klass.store(:memory)
+      end.should raise_error('Client is required')
+    end
+  end
+
+  describe ".stores" do
+    it "defaults to empty array" do
+      klass.stores.should == []
+    end
+
+    it "keeps track of each store added to a class" do
+      memcached = klass.store(:memcached, $memcached)
+      memory    = klass.store(:memory, {})
+      klass.stores.should == [memcached, memory]
     end
   end
 
@@ -146,7 +168,6 @@ describe Toy::Persistence do
     it "should remove the instance from the store" do
       doc = User.create
       doc.delete
-
       User.key?(doc.id).should be_false
     end
   end
@@ -155,7 +176,6 @@ describe Toy::Persistence do
     it "should remove the instance from the store" do
       doc = User.create
       doc.destroy
-
       User.key?(doc.id).should be_false
     end
   end
@@ -169,7 +189,6 @@ describe Toy::Persistence do
     it "should be true if deleted" do
       doc = User.create
       doc.delete
-
       doc.should be_destroyed
     end
   end
@@ -177,9 +196,7 @@ describe Toy::Persistence do
   describe ".delete(*ids)" do
     it "should delete a single record" do
       doc = User.create
-
       User.delete(doc.id)
-
       User.key?(doc.id).should be_false
     end
 
@@ -195,7 +212,6 @@ describe Toy::Persistence do
 
     it "should not complain when records do not exist" do
       doc = User.create
-
       User.delete("taco:bell:tacos")
     end
   end
@@ -203,9 +219,7 @@ describe Toy::Persistence do
   describe ".destroy(*ids)" do
     it "should destroy a single record" do
       doc = User.create
-
       User.destroy(doc.id)
-
       User.key?(doc.id).should be_false
     end
 
@@ -221,7 +235,6 @@ describe Toy::Persistence do
 
     it "should not complain when records do not exist" do
       doc = User.create
-
       User.destroy("taco:bell:tacos")
     end
   end
