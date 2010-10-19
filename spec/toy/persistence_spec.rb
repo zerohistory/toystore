@@ -239,4 +239,24 @@ describe Toy::Persistence do
     end
   end
 
+  describe "#stores" do
+    xit 'delegates to class stores'
+  end
+
+  describe "with multiple stores" do
+    before do
+      @memcached = User.store(:memcached, $memcached)
+      @memory    = User.store(:memory, {})
+      @user      = User.create
+    end
+
+    let(:memcached) { @memcached }
+    let(:memory)    { @memory }
+    let(:user)      { @user }
+
+    it "writes to both stores" do
+      memcached[user.store_key].should == user.persisted_attributes
+      memory[user.store_key].should    == user.persisted_attributes
+    end
+  end
 end

@@ -40,6 +40,10 @@ module Toy
         self.class.store
       end
 
+      def stores
+        self.class.stores
+      end
+
       def store_key
         self.class.store_key(id)
       end
@@ -91,7 +95,9 @@ module Toy
         def persist!
           attrs = persisted_attributes
           logger.debug("ToyStore SET #{store_key.inspect} #{attrs.inspect}")
-          store[store_key] = attrs
+          stores.reverse.each do |store|
+            store.write(store_key, attrs)
+          end
           persist
           each_embedded_object(&:persist)
           true
