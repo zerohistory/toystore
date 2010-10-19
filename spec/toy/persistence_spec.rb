@@ -240,7 +240,13 @@ describe Toy::Persistence do
   end
 
   describe "#stores" do
-    xit 'delegates to class stores'
+    before do
+      User.store(:memory, {})
+    end
+
+    it 'delegates to class stores' do
+      User.stores.should == User.new.stores
+    end
   end
 
   describe "with multiple stores" do
