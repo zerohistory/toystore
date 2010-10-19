@@ -103,4 +103,63 @@ describe Toy::Querying do
       doc.name.should == 'John'
     end
   end
+
+  describe "with multiple stores" do
+    before do
+      User.stores.clear # make sure we only are working with these stores
+
+      @memcached = User.store(:memcached, $memcached)
+      @memory    = User.store(:memory, {})
+      @user      = User.create
+
+      Toy.identity_map.clear # ensure we are just working with database
+    end
+
+    let(:memcached) { @memcached }
+    let(:memory)    { @memory }
+    let(:user)      { @user }
+
+    describe "not found in either store" do
+      before do
+        memcached.delete(user.store_key)
+        memory.delete(user.store_key)
+      end
+
+      it "returns nil" do
+        User.get('foo').should be_nil
+      end
+    end
+
+    describe "not found in first store" do
+      before do
+        memcached.delete(user.store_key)
+      end
+
+      it "returns from last store" do
+        User.get(user.id).should == user
+      end
+
+      it "populates first store" do
+        memcached.key?(user.store_key).should be_false
+        User.get(user.id)
+        memcached.key?(user.store_key).should be_true
+      end
+    end
+
+    describe "found in first store" do
+      before do
+        memcached.key?(user.store_key).should be_true
+      end
+
+      it "returns from first store" do
+        memcached.should_receive(:read).with(user.store_key).and_return(user.persisted_attributes)
+        User.get(user.id)
+      end
+
+      it "does not hit last store" do
+        memory.should_not_receive(:read)
+        User.get(user.id)
+      end
+    end
+  end
 end

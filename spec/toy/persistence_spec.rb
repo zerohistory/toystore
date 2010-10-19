@@ -48,7 +48,7 @@ describe Toy::Persistence do
     let(:doc) { @doc }
 
     it "creates key in database with attributes" do
-      User.store[doc.store_key].should == {
+      User.store.read(doc.store_key).should == {
         'name' => 'John',
         'id'   => doc.id,
         'age'  => 50,
@@ -117,7 +117,7 @@ describe Toy::Persistence do
       end
 
       it "does not persist virtual attributes" do
-        @doc.store[@doc.store_key].should_not include('accepted_terms')
+        @doc.store.read(@doc.store_key).should_not include('accepted_terms')
       end
     end
 
@@ -125,7 +125,7 @@ describe Toy::Persistence do
       before do
         @doc      = User.create(:name => 'John', :age => 28)
         @key      = @doc.store_key
-        @value    = User.store[@doc.store_key]
+        @value    = User.store.read(@doc.store_key)
         @doc.name = 'Bill'
         @doc.accepted_terms = false
         @doc.save
@@ -137,11 +137,11 @@ describe Toy::Persistence do
       end
 
       it "updates value in store" do
-        User.store[doc.store_key].should_not == @value
+        User.store.read(doc.store_key).should_not == @value
       end
 
       it "does not persist virtual attributes" do
-        @doc.store[@doc.store_key].should_not include('accepted_terms')
+        @doc.store.read(@doc.store_key).should_not include('accepted_terms')
       end
 
       it "updates the attributes in the instance" do
@@ -251,6 +251,7 @@ describe Toy::Persistence do
 
   describe "with multiple stores" do
     before do
+      User.stores.clear
       @memcached = User.store(:memcached, $memcached)
       @memory    = User.store(:memory, {})
       @user      = User.create

@@ -5,7 +5,20 @@ module Toy
     module ClassMethods
       def get(id)
         key = store_key(id)
-        value = store[key]
+        value = nil
+        populated_index = nil
+
+        stores.each_with_index do |store, index|
+          value = store.read(key)
+          populated_index = index
+          break if !value.nil?
+        end
+
+        while populated_index > 0
+          populated_index -= 1
+          stores[populated_index].write(key, value)
+        end
+
         logger.debug("ToyStore GET #{key.inspect} #{value.inspect}")
         load(value)
       end
