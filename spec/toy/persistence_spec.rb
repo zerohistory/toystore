@@ -3,10 +3,10 @@ require 'helper'
 describe Toy::Persistence do
   uses_constants('User')
 
-  describe ".adapter" do
+  describe ".store" do
     it "sets if arguments and reads if not" do
-      User.adapter(:memory, {})
-      User.adapter.should == Adapter[:memory].new({})
+      User.store(:memory, {})
+      User.store.should == Adapter[:memory].new({})
     end
   end
 
@@ -26,7 +26,7 @@ describe Toy::Persistence do
     let(:doc) { @doc }
 
     it "creates key in database with attributes" do
-      User.adapter[doc.store_key].should == {
+      User.store[doc.store_key].should == {
         'name' => 'John',
         'id'   => doc.id,
         'age'  => 50,
@@ -38,9 +38,9 @@ describe Toy::Persistence do
     end
   end
 
-  describe "#adapter" do
+  describe "#store" do
     it "delegates to class" do
-      User.new.adapter.should equal(User.adapter)
+      User.new.store.should equal(User.store)
     end
   end
 
@@ -95,7 +95,7 @@ describe Toy::Persistence do
       end
 
       it "does not persist virtual attributes" do
-        @doc.adapter[@doc.store_key].should_not include('accepted_terms')
+        @doc.store[@doc.store_key].should_not include('accepted_terms')
       end
     end
 
@@ -103,7 +103,7 @@ describe Toy::Persistence do
       before do
         @doc      = User.create(:name => 'John', :age => 28)
         @key      = @doc.store_key
-        @value    = User.adapter[@doc.store_key]
+        @value    = User.store[@doc.store_key]
         @doc.name = 'Bill'
         @doc.accepted_terms = false
         @doc.save
@@ -114,12 +114,12 @@ describe Toy::Persistence do
         doc.store_key.should == @key
       end
 
-      it "updates value in adapter" do
-        User.adapter[doc.store_key].should_not == @value
+      it "updates value in store" do
+        User.store[doc.store_key].should_not == @value
       end
 
       it "does not persist virtual attributes" do
-        @doc.adapter[@doc.store_key].should_not include('accepted_terms')
+        @doc.store[@doc.store_key].should_not include('accepted_terms')
       end
 
       it "updates the attributes in the instance" do

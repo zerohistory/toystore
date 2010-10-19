@@ -11,15 +11,15 @@ describe Toy::Connection do
     Toy.logger = @logger
   end
 
-  describe ".adapter" do
-    it "should set the default adapter" do
-      Toy.adapter(:memory, {})
-      Toy.adapter.should == Adapter[:memory].new({})
+  describe ".store" do
+    it "should set the default store" do
+      Toy.store(:memory, {})
+      Toy.store.should == Adapter[:memory].new({})
     end
 
-    it "including Toy::Store should use the default adapter, if present" do
-      Toy.adapter(:memory, {})
-      Class.new { include Toy::Store }.adapter.should == Adapter[:memory].new({})
+    it "including Toy::Store should use the default store, if present" do
+      Toy.store(:memory, {})
+      Class.new { include Toy::Store }.store.should == Adapter[:memory].new({})
     end
   end
 

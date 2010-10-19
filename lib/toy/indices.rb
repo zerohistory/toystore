@@ -21,21 +21,21 @@ module Toy
 
       def get_index(name, value)
         key = index_key(name, value)
-        adapter[key] || []
+        store[key] || []
       end
 
       def create_index(name, value, id)
         key = index_key(name, value)
         ids = get_index(name, value)
         ids.push(id) unless ids.include?(id)
-        adapter[key] = ids
+        store[key] = ids
       end
 
       def destroy_index(name, value, id)
         key = index_key(name, value)
         ids = get_index(name, value)
         ids.delete(id)
-        adapter[key] = ids
+        store[key] = ids
       end
     end
 

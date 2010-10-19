@@ -9,7 +9,7 @@ require 'adapter/memory'
 
 class User
   include Toy::Store
-  adapter :memory, {}
+  store :memory, {}
   attribute :name, String
 end
 

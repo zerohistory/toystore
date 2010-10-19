@@ -28,7 +28,7 @@ end
 
 class User
   include Toy::Store
-  adapter :memory, {}
+  store :memory, {}
 end
 
 class LintTest < ActiveModel::TestCase

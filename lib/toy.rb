@@ -38,8 +38,8 @@ module Toy
   # not be aware of their existence.
   def clear
     models.each do |model|
-      if model.adapter.present?
-        model.adapter.clear
+      if model.store.present?
+        model.store.clear
         model.identity_map.clear
       end
     end

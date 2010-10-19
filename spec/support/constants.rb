@@ -34,7 +34,7 @@ module Support
           def self.to_s; '#{name}' end
         """ if name
         model.send(:include, Toy::Store)
-        model.adapter(:memory, {})
+        model.store(:memory, {})
       end
     end
   end

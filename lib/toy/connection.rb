@@ -1,8 +1,8 @@
 module Toy
   module Connection
-    def adapter(name=nil, client=nil)
-      @adapter = Adapter[name].new(client) if !name.nil? && !client.nil?
-      @adapter
+    def store(name=nil, client=nil)
+      @store = Adapter[name].new(client) if !name.nil? && !client.nil?
+      @store
     end
 
     def logger

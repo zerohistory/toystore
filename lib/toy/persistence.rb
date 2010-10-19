@@ -3,9 +3,9 @@ module Toy
     extend ActiveSupport::Concern
 
     module ClassMethods
-      def adapter(name=nil, client=nil)
-        @adapter = Adapter[name].new(client) if !name.nil? && !client.nil?
-        @adapter || Toy.adapter
+      def store(name=nil, client=nil)
+        @store = Adapter[name].new(client) if !name.nil? && !client.nil?
+        @store || Toy.store
       end
 
       def store_key(id)
@@ -26,8 +26,8 @@ module Toy
     end
 
     module InstanceMethods
-      def adapter
-        self.class.adapter
+      def store
+        self.class.store
       end
 
       def store_key
@@ -62,7 +62,7 @@ module Toy
       def delete
         logger.debug("ToyStore DEL #{store_key.inspect}")
         @_destroyed = true
-        adapter.delete(store_key)
+        store.delete(store_key)
       end
 
       private
@@ -81,7 +81,7 @@ module Toy
         def persist!
           attrs = persisted_attributes
           logger.debug("ToyStore SET #{store_key.inspect} #{attrs.inspect}")
-          adapter[store_key] = attrs
+          store[store_key] = attrs
           persist
           each_embedded_object(&:persist)
           true
