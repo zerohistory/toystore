@@ -5,7 +5,7 @@ module Toy
     module ClassMethods
       def store(name=nil, client=nil)
         @store = Adapter[name].new(client) if !name.nil? && !client.nil?
-        @store || Toy.store
+        @store
       end
 
       def store_key(id)

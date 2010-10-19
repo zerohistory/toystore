@@ -11,18 +11,6 @@ describe Toy::Connection do
     Toy.logger = @logger
   end
 
-  describe ".store" do
-    it "should set the default store" do
-      Toy.store(:memory, {})
-      Toy.store.should == Adapter[:memory].new({})
-    end
-
-    it "including Toy::Store should use the default store, if present" do
-      Toy.store(:memory, {})
-      Class.new { include Toy::Store }.store.should == Adapter[:memory].new({})
-    end
-  end
-
   describe ".logger" do
     it "should set the default logger" do
       logger = stub

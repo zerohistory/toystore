@@ -1,10 +1,5 @@
 module Toy
   module Connection
-    def store(name=nil, client=nil)
-      @store = Adapter[name].new(client) if !name.nil? && !client.nil?
-      @store
-    end
-
     def logger
       @@logger ||= init_default_logger
     end
