@@ -16,9 +16,13 @@ Gem::Specification.new do |s|
   s.add_dependency 'activemodel', '3'
   s.add_dependency 'activesupport', '3'
 
-  s.add_development_dependency 'rspec'
+  s.add_development_dependency 'rake'
+  s.add_development_dependency 'rspec', '1.3.0'
   s.add_development_dependency 'timecop'
   s.add_development_dependency 'tzinfo'
   s.add_development_dependency 'log_buddy'
   s.add_development_dependency 'diff-lcs'
+  s.add_development_dependency 'redis'
+  s.add_development_dependency 'SystemTimer'
+  s.add_development_dependency 'memcached'
 end

@@ -4,8 +4,15 @@ GIT
   specs:
     adapter (0.1)
 
+PATH
+  remote: .
+  specs:
+    toystore (0.0.1)
+      activemodel (= 3)
+      activesupport (= 3)
+      simple_uuid
+
 GEM
-  remote: http://rubygems.org/
   specs:
     SystemTimer (1.2)
     activemodel (3.0.0)
@@ -41,4 +48,5 @@ DEPENDENCIES
   rspec (= 1.3.0)
   simple_uuid
   timecop
+  toystore!
   tzinfo
