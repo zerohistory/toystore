@@ -43,7 +43,8 @@ module Toy
       end
 
       def key?(id)
-        key, value = store_key(id), store.key?(key)
+        key = store_key(id)
+        value = store.key?(key)
         logger.debug("ToyStore KEY #{key.inspect} #{value.inspect}")
         value
       end

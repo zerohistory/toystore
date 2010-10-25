@@ -67,8 +67,8 @@ describe Toy::Querying do
 
   describe ".key?" do
     it "returns true if key exists" do
-      doc = User.create(:name => 'John')
-      User.key?(doc.id).should be_true
+      user = User.create(:name => 'John')
+      User.key?(user.id).should be_true
     end
 
     it "returns false if key does not exist" do
@@ -78,8 +78,8 @@ describe Toy::Querying do
 
   describe ".has_key?" do
     it "returns true if key exists" do
-      doc = User.create(:name => 'John')
-      User.has_key?(doc.id).should be_true
+      user = User.create(:name => 'John')
+      User.has_key?(user.id).should be_true
     end
 
     it "returns false if key does not exist" do

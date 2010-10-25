@@ -60,7 +60,9 @@ describe Toy::IdentityMap do
     it "does not query if in map" do
       user = User.create
       user.should be_in_identity_map
-      user.store.should_not_receive(:write)
+      user.stores.each do |store|
+        store.should_not_receive(:read)
+      end
       User.get(user.id).should equal(user)
     end
   end
@@ -71,6 +73,55 @@ describe Toy::IdentityMap do
       user.should be_in_identity_map
       User.store.should_receive(:read).with(user.store_key).and_return({})
       user.reload
+    end
+  end
+
+  describe "identity map off" do
+    it "does not add to map on save" do
+      User.identity_map_off
+      user = User.new
+      user.save!
+      user.should_not be_in_identity_map
+    end
+
+    it "does not add to map on load" do
+      User.identity_map_off
+      user = User.load('id' => '1')
+      user.should_not be_in_identity_map
+    end
+
+    it "does not remove from map on delete" do
+      user = User.create
+      user.should be_in_identity_map
+      User.identity_map_off
+      user.delete
+      user.should be_in_identity_map
+    end
+
+    it "does not remove from map on destroy" do
+      user = User.create
+      user.should be_in_identity_map
+      User.identity_map_off
+      user.destroy
+      user.should be_in_identity_map
+    end
+
+    describe ".get" do
+      it "does not add to map if not in map" do
+        User.identity_map_off
+        user = User.create
+        user.should_not be_in_identity_map
+        user = User.get(user.id)
+        user.should_not be_in_identity_map
+      end
+
+      it "does not load from map if in map" do
+        user = User.create
+        user.should be_in_identity_map
+        User.identity_map_off
+        user.store.should_receive(:read).with(user.store_key).and_return(user.persisted_attributes)
+        User.get(user.id)
+      end
     end
   end
 end

@@ -11,11 +11,20 @@ module Toy
         Toy.identity_map
       end
 
+      def identity_map_on?
+        @identity_map_off.nil?
+      end
+
+      def identity_map_off
+        @identity_map_off = true
+      end
+
       def get(id)
         get_from_identity_map(id) || super
       end
 
       def get_from_identity_map(id)
+        return nil unless identity_map_on?
         key = store_key(id)
         if record = identity_map[key]
           logger.debug("ToyStore IMG #{key.inspect}")
@@ -49,12 +58,14 @@ module Toy
     end
 
     def add_to_identity_map
+      return unless self.class.identity_map_on?
       key = store_key
       logger.debug("ToyStore IMS #{key.inspect}")
       identity_map[key] = self
     end
 
     def remove_from_identity_map
+      return unless self.class.identity_map_on?
       key = store_key
       logger.debug("ToyStore IMD #{key.inspect}")
       identity_map.delete(key)
