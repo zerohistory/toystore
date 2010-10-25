@@ -18,7 +18,7 @@ module Toy
       def get_from_identity_map(id)
         key = store_key(id)
         if record = identity_map[key]
-          logger.debug("ToyStore MAP #{key.inspect}")
+          logger.debug("ToyStore IMG #{key.inspect}")
           record
         end
       end
@@ -49,11 +49,15 @@ module Toy
     end
 
     def add_to_identity_map
-      identity_map[store_key] = self
+      key = store_key
+      logger.debug("ToyStore IMS #{key.inspect}")
+      identity_map[key] = self
     end
 
     def remove_from_identity_map
-      identity_map.delete(store_key)
+      key = store_key
+      logger.debug("ToyStore IMD #{key.inspect}")
+      identity_map.delete(key)
     end
 
     private

@@ -11,15 +11,18 @@ module Toy
         stores.each_with_index do |store, index|
           value = store.read(key)
           populated_index = index
-          break if !value.nil?
+          logger.debug("ToyStore GET :#{store.name} #{key.inspect}")
+          logger.debug("  #{value.inspect}")
+          break unless value.nil?
         end
 
         while populated_index > 0
           populated_index -= 1
+          logger.debug("ToyStore RTS :#{stores[populated_index].name} #{key.inspect}")
+          logger.debug("  #{value.inspect}")
           stores[populated_index].write(key, value)
         end
 
-        logger.debug("ToyStore GET #{key.inspect} #{value.inspect}")
         load(value)
       end
 
@@ -40,8 +43,7 @@ module Toy
       end
 
       def key?(id)
-        key = store_key(id)
-        value = store.key?(key)
+        key, value = store_key(id), store.key?(key)
         logger.debug("ToyStore KEY #{key.inspect} #{value.inspect}")
         value
       end

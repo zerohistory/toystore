@@ -13,7 +13,10 @@ module Toy
         validates_each(*names) do |record, name, value|
           invalid = value.compact.select { |o| !o.valid? }
           if invalid.any?
-            logger.debug("ToyStore INVALID EMBEDDED #{invalid.map { |o| "#{o.attributes.inspect} #{o.errors.full_messages.inspect}" }.join('; ')}")
+            logger.debug("ToyStore IEM")
+            invalid.each do |o|
+              logger.debug("  #{o.attributes.inspect} - #{o.errors.full_messages.inspect}")
+            end
             record.errors.add(name, 'is invalid')
           end
         end
