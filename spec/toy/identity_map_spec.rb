@@ -124,4 +124,29 @@ describe Toy::IdentityMap do
       end
     end
   end
+
+  describe ".without_identity_map" do
+    describe "with identity map off" do
+      it "turns identity map off, yields, and returns it to previous state" do
+        User.identity_map_off
+        User.should be_identity_map_off
+        User.without_identity_map do
+          user = User.create
+          user.should_not be_in_identity_map
+        end
+        User.should be_identity_map_off
+      end
+    end
+
+    describe "with identity map on" do
+      it "turns identity map off, yields, and returns it to previous state" do
+        User.should be_identity_map_on
+        User.without_identity_map do
+          user = User.create
+          user.should_not be_in_identity_map
+        end
+        User.should be_identity_map_on
+      end
+    end
+  end
 end

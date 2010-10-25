@@ -6,17 +6,39 @@ module Toy
   module IdentityMap
     extend ActiveSupport::Concern
 
+    included do
+      identity_map_on
+    end
+
     module ClassMethods
       def identity_map
         Toy.identity_map
       end
 
       def identity_map_on?
-        @identity_map_off.nil?
+        @identity_map_on == true
+      end
+
+      def identity_map_off?
+        !identity_map_on?
+      end
+
+      def identity_map_on
+        @identity_map_on = true
       end
 
       def identity_map_off
-        @identity_map_off = true
+        @identity_map_on = false
+      end
+
+      def without_identity_map(&block)
+        begin
+          original_identity_map_on = @identity_map_on
+          identity_map_off
+          yield
+        ensure
+          @identity_map_on = original_identity_map_on
+        end
       end
 
       def get(id)
