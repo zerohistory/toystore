@@ -82,15 +82,15 @@ module Toy
     def add_to_identity_map
       return unless self.class.identity_map_on?
       key = store_key
-      logger.debug("ToyStore IMS #{key.inspect}")
       identity_map[key] = self
+      logger.debug("ToyStore IMS #{key.inspect}")
     end
 
     def remove_from_identity_map
       return unless self.class.identity_map_on?
       key = store_key
-      logger.debug("ToyStore IMD #{key.inspect}")
       identity_map.delete(key)
+      logger.debug("ToyStore IMD #{key.inspect}")
     end
 
     private

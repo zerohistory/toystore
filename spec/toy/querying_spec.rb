@@ -104,14 +104,11 @@ describe Toy::Querying do
     end
   end
 
-  describe "with multiple stores" do
+  describe "with cache store" do
     before do
-      User.stores.clear # make sure we only are working with these stores
-
-      @memcached = User.store(:memcached, $memcached)
+      @memcached = User.cache(:memcached, $memcached)
       @memory    = User.store(:memory, {})
       @user      = User.create
-
       Toy.identity_map.clear # ensure we are just working with database
     end
 
@@ -119,7 +116,7 @@ describe Toy::Querying do
     let(:memory)    { @memory }
     let(:user)      { @user }
 
-    describe "not found in either store" do
+    describe "not found in cache or store" do
       before do
         memcached.delete(user.store_key)
         memory.delete(user.store_key)
@@ -130,33 +127,33 @@ describe Toy::Querying do
       end
     end
 
-    describe "not found in first store" do
+    describe "not found in cache" do
       before do
         memcached.delete(user.store_key)
       end
 
-      it "returns from last store" do
+      it "returns from store" do
         User.get(user.id).should == user
       end
 
-      it "populates first store" do
+      it "populates cache" do
         memcached.key?(user.store_key).should be_false
         User.get(user.id)
         memcached.key?(user.store_key).should be_true
       end
     end
 
-    describe "found in first store" do
+    describe "found in cache" do
       before do
         memcached.key?(user.store_key).should be_true
       end
 
-      it "returns from first store" do
+      it "returns from cache" do
         memcached.should_receive(:read).with(user.store_key).and_return(user.persisted_attributes)
         User.get(user.id)
       end
 
-      it "does not hit last store" do
+      it "does not hit store" do
         memory.should_not_receive(:read)
         User.get(user.id)
       end

@@ -9,7 +9,8 @@ What the 3 letter codes mean when they show up in logging:
   IMS: write to identity map
   IMD: delete from identity map
 
-  RTS: read through set; when using multiple stores, it does read through
-       caching and writes to stores that are not populated
+  RTG: get cache read
+  RTS: get cache set
+  WTS: cache write set
 
   IEM: invalid embedded document

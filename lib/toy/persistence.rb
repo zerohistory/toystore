@@ -4,18 +4,25 @@ module Toy
 
     module ClassMethods
       def store(name=nil, client=nil)
-        raise ArgumentError, 'Client is required' if !name.nil? && client.nil?
-
-        if !name.nil? && !client.nil?
-          @store = Adapter[name].new(client)
-          stores << @store
-        end
-
+        assert_client(name, client)
+        @store = Adapter[name].new(client) if !name.nil? && !client.nil?
+        assert_store(name, client, 'store')
         @store
       end
 
-      def stores
-        @stores ||= []
+      def has_store?
+        !@store.nil?
+      end
+
+      def cache(name=nil, client=nil)
+        assert_client(name, client)
+        @cache = Adapter[name].new(client) if !name.nil? && !client.nil?
+        assert_store(name, client, 'cache')
+        @cache
+      end
+
+      def has_cache?
+        !@cache.nil?
       end
 
       def store_key(id)
@@ -33,6 +40,15 @@ module Toy
       def destroy(*ids)
         ids.each { |id| get(id).try(:destroy) }
       end
+
+      private
+        def assert_client(name, client)
+          raise(ArgumentError, 'Client is required') if !name.nil? && client.nil?
+        end
+
+        def assert_store(name, client, which)
+          raise(StandardError, "No #{which} has been set") if name.nil? && client.nil? && !send(:"has_#{which}?")
+        end
     end
 
     module InstanceMethods
@@ -40,8 +56,8 @@ module Toy
         self.class.store
       end
 
-      def stores
-        self.class.stores
+      def cache
+        self.class.cache
       end
 
       def store_key
@@ -74,9 +90,10 @@ module Toy
       end
 
       def delete
-        logger.debug("ToyStore DEL #{store_key.inspect}")
+        key = store_key
         @_destroyed = true
-        store.delete(store_key)
+        logger.debug("ToyStore DEL #{key.inspect}")
+        store.delete(key)
       end
 
       private
@@ -94,11 +111,14 @@ module Toy
 
         def persist!
           key, attrs = store_key, persisted_attributes
-          stores.reverse.each do |store|
-            logger.debug("ToyStore SET :#{store.name} #{key.inspect}")
-            logger.debug("  #{attrs.inspect}")
-            store.write(key, attrs)
+
+          if self.class.has_cache?
+            cache.write(key, attrs)
+            log_operation('WTS', cache, key, attrs)
           end
+
+          store.write(key, attrs)
+          log_operation('SET', store, key, attrs)
           persist
           each_embedded_object(&:persist)
           true

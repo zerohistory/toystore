@@ -17,5 +17,10 @@ describe Toy do
       klass = Class.new { include Toy::Store }
       lambda { Toy.clear }.should_not raise_error
     end
+
+    it "does not raise error when no cache set" do
+      klass = Class.new { include Toy::Store }
+      lambda { Toy.clear }.should_not raise_error
+    end
   end
 end

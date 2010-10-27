@@ -5,22 +5,20 @@ module Toy
     module ClassMethods
       def get(id)
         key = store_key(id)
-        value = nil
-        populated_index = nil
 
-        stores.each_with_index do |store, index|
-          value = store.read(key)
-          populated_index = index
-          logger.debug("ToyStore GET :#{store.name} #{key.inspect}")
-          logger.debug("  #{value.inspect}")
-          break unless value.nil?
+        if has_cache?
+          value = cache.read(key)
+          log_operation('RTG', cache, key, value)
         end
 
-        while populated_index > 0
-          populated_index -= 1
-          logger.debug("ToyStore RTS :#{stores[populated_index].name} #{key.inspect}")
-          logger.debug("  #{value.inspect}")
-          stores[populated_index].write(key, value)
+        if value.nil?
+          value = store.read(key)
+          log_operation('GET', store, key, value)
+
+          if has_cache?
+            cache.write(key, value)
+            log_operation('RTS', cache, key, value)
+          end
         end
 
         load(value)
@@ -45,7 +43,7 @@ module Toy
       def key?(id)
         key = store_key(id)
         value = store.key?(key)
-        logger.debug("ToyStore KEY #{key.inspect} #{value.inspect}")
+        log_operation('KEY', store, key, value)
         value
       end
       alias :has_key? :key?

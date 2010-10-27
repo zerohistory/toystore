@@ -16,19 +16,54 @@ describe Toy::Persistence do
     it "raises argument error if name provided but not client" do
       lambda do
         klass.store(:memory)
-      end.should raise_error('Client is required')
+      end.should raise_error(ArgumentError, 'Client is required')
+    end
+
+    it "raises argument error if no name or client provided and has not been set" do
+      lambda do
+        klass.store
+      end.should raise_error(StandardError, 'No store has been set')
     end
   end
 
-  describe ".stores" do
-    it "defaults to empty array" do
-      klass.stores.should == []
+  describe ".cache" do
+    it "sets if arguments and reads if not" do
+      klass.cache(:memory, {})
+      klass.cache.should == Adapter[:memory].new({})
     end
 
-    it "keeps track of each store added to a class" do
-      memcached = klass.store(:memcached, $memcached)
-      memory    = klass.store(:memory, {})
-      klass.stores.should == [memcached, memory]
+    it "raises argument error if name provided but not client" do
+      lambda do
+        klass.cache(:memory)
+      end.should raise_error(ArgumentError, 'Client is required')
+    end
+
+    it "raises argument error if no name or client provided and has not been set" do
+      lambda do
+        klass.cache
+      end.should raise_error(StandardError, 'No cache has been set')
+    end
+  end
+
+  describe ".has_store?" do
+    it "returns true if cache set" do
+      klass.store(:memory, {})
+      klass.has_store?.should be_true
+    end
+
+    it "returns false if cache not set" do
+      klass.has_store?.should be_false
+    end
+  end
+
+  describe ".has_cache?" do
+    it "returns true if cache set" do
+      klass.cache(:memory, {})
+      klass.has_cache?.should be_true
+    end
+
+    it "returns false if cache not set" do
+      klass.has_cache?.should be_false
     end
   end
 
@@ -57,6 +92,52 @@ describe Toy::Persistence do
 
     it "returns instance of model" do
       doc.should be_instance_of(User)
+    end
+  end
+
+  describe ".delete(*ids)" do
+    it "should delete a single record" do
+      doc = User.create
+      User.delete(doc.id)
+      User.key?(doc.id).should be_false
+    end
+
+    it "should delete multiple records" do
+      doc1 = User.create
+      doc2 = User.create
+
+      User.delete(doc1.id, doc2.id)
+
+      User.key?(doc1.id).should be_false
+      User.key?(doc2.id).should be_false
+    end
+
+    it "should not complain when records do not exist" do
+      doc = User.create
+      User.delete("taco:bell:tacos")
+    end
+  end
+
+  describe ".destroy(*ids)" do
+    it "should destroy a single record" do
+      doc = User.create
+      User.destroy(doc.id)
+      User.key?(doc.id).should be_false
+    end
+
+    it "should destroy multiple records" do
+      doc1 = User.create
+      doc2 = User.create
+
+      User.destroy(doc1.id, doc2.id)
+
+      User.key?(doc1.id).should be_false
+      User.key?(doc2.id).should be_false
+    end
+
+    it "should not complain when records do not exist" do
+      doc = User.create
+      User.destroy("taco:bell:tacos")
     end
   end
 
@@ -193,66 +274,9 @@ describe Toy::Persistence do
     end
   end
 
-  describe ".delete(*ids)" do
-    it "should delete a single record" do
-      doc = User.create
-      User.delete(doc.id)
-      User.key?(doc.id).should be_false
-    end
-
-    it "should delete multiple records" do
-      doc1 = User.create
-      doc2 = User.create
-
-      User.delete(doc1.id, doc2.id)
-
-      User.key?(doc1.id).should be_false
-      User.key?(doc2.id).should be_false
-    end
-
-    it "should not complain when records do not exist" do
-      doc = User.create
-      User.delete("taco:bell:tacos")
-    end
-  end
-
-  describe ".destroy(*ids)" do
-    it "should destroy a single record" do
-      doc = User.create
-      User.destroy(doc.id)
-      User.key?(doc.id).should be_false
-    end
-
-    it "should destroy multiple records" do
-      doc1 = User.create
-      doc2 = User.create
-
-      User.destroy(doc1.id, doc2.id)
-
-      User.key?(doc1.id).should be_false
-      User.key?(doc2.id).should be_false
-    end
-
-    it "should not complain when records do not exist" do
-      doc = User.create
-      User.destroy("taco:bell:tacos")
-    end
-  end
-
-  describe "#stores" do
+  describe "with cache store" do
     before do
-      User.store(:memory, {})
-    end
-
-    it 'delegates to class stores' do
-      User.stores.should == User.new.stores
-    end
-  end
-
-  describe "with multiple stores" do
-    before do
-      User.stores.clear
-      @memcached = User.store(:memcached, $memcached)
+      @memcached = User.cache(:memcached, $memcached)
       @memory    = User.store(:memory, {})
       @user      = User.create
     end
@@ -261,7 +285,7 @@ describe Toy::Persistence do
     let(:memory)    { @memory }
     let(:user)      { @user }
 
-    it "writes to both stores" do
+    it "writes to cache and store" do
       memcached[user.store_key].should == user.persisted_attributes
       memory[user.store_key].should    == user.persisted_attributes
     end

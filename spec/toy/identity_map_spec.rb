@@ -60,9 +60,7 @@ describe Toy::IdentityMap do
     it "does not query if in map" do
       user = User.create
       user.should be_in_identity_map
-      user.stores.each do |store|
-        store.should_not_receive(:read)
-      end
+      user.store.should_not_receive(:read)
       User.get(user.id).should equal(user)
     end
   end
