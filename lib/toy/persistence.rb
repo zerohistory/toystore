@@ -25,8 +25,18 @@ module Toy
         !@cache.nil?
       end
 
+      def namespace(new_namespace=nil)
+        if new_namespace.nil?
+          @namespace ||= self.name
+        else
+          @namespace = new_namespace
+        end
+
+        @namespace
+      end
+
       def store_key(id)
-        [self.name, id].join(':')
+        [namespace, id].join(':')
       end
 
       def create(attrs={})
