@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.summary            = 'Object mapper for anything'
   s.require_path       = 'lib'
   s.authors            = ['Geoffrey Dagley', 'John Nunemaker']
-  s.email              = ['gdagley@newtoyinc.com', 'nunemaker@gmail.com']
+  s.email              = ['gdagley@gmail.com', 'nunemaker@gmail.com']
   s.version            = Toy::Version
   s.platform           = Gem::Platform::RUBY
   s.files              = Dir.glob("{examples,lib,spec}/**/*") + %w[LICENSE README.md]
