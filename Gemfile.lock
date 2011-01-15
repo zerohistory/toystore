@@ -13,6 +13,7 @@ PATH
       simple_uuid
 
 GEM
+  remote: http://rubygems.org/
   specs:
     SystemTimer (1.2)
     activemodel (3.0.0)
