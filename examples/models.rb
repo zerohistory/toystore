@@ -10,17 +10,17 @@ require 'adapter/memory'
 class Address
   include Toy::Store
   store :memory, {}
-  
+
   attribute :city,  String
   attribute :state, String
   attribute :zip,   String
-  
+
   index :zip
 end
 
 class PhoneNumber
   include Toy::Store
-  
+
   attribute :area_code, String
   attribute :number,    String
 end
@@ -28,7 +28,7 @@ end
 class Company
   include Toy::Store
   store :memory, {}
-  
+
   attribute :name, String
 end
 
@@ -41,11 +41,11 @@ class User
   attribute :admin, Boolean, :default => false
   attribute :ssn,   String
   timestamps
-  
+
   index :ssn
-  
+
   list :addresses, :dependendent => true
   reference :employer, Company
-  
+
   # validations and callbacks are available too
 end
