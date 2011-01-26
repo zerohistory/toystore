@@ -13,6 +13,11 @@ describe Toy::Persistence do
       User.store.should == Adapter[:memory].new({})
     end
 
+    it "works with options" do
+      Adapter[:memory].should_receive(:new).with({}, :something => true)
+      User.store(:memory, {}, :something => true)
+    end
+
     it "raises argument error if name provided but not client" do
       lambda do
         klass.store(:memory)
