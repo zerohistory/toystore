@@ -1,22 +1,25 @@
-require 'bundler/setup'
+$:.unshift(File.expand_path('../../lib', __FILE__))
+
 require 'pathname'
 require 'logger'
 
-root_path   = Pathname(__FILE__).dirname.join('..').expand_path
-lib_path    = root_path.join('lib')
-log_path    = root_path.join('log')
+root_path = Pathname(__FILE__).dirname.join('..').expand_path
+lib_path  = root_path.join('lib')
+log_path  = root_path.join('log')
 log_path.mkpath
-$:.unshift(lib_path)
+
+require 'rubygems'
+require 'bundler'
+
+Bundler.require(:default, :development)
 
 require 'toy'
-require 'spec'
-require 'timecop'
-require 'log_buddy'
+require 'adapter/memory'
+require 'adapter/memcached'
+
 require 'support/constants'
 require 'support/identity_map_matcher'
 require 'support/name_and_number_key_factory'
-require 'adapter/memory'
-require 'adapter/memcached'
 
 Logger.new(log_path.join('test.log')).tap do |log|
   LogBuddy.init(:logger => log)
@@ -25,11 +28,11 @@ end
 
 $memcached = Memcached.new
 
-Spec::Runner.configure do |config|
-  config.include(Support::Constants)
-  config.include(IdentityMapMatcher)
+Rspec.configure do |c|
+  c.include(Support::Constants)
+  c.include(IdentityMapMatcher)
 
-  config.before(:each) do
+  c.before(:each) do
     Toy.clear
     Toy.reset
   end

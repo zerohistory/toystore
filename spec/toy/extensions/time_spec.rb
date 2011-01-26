@@ -55,12 +55,12 @@ end
 describe "Time.from_store without Time.zone" do
   it "should be time in utc" do
     time = Time.now
-    Time.from_store(time).should be_close(time.utc, 1)
+    Time.from_store(time).should be_within(1).of(time.utc)
   end
 
   it "should be time if string" do
     time = Time.now
-    Time.from_store(time.to_s).should be_close(time, 1)
+    Time.from_store(time.to_s).should be_within(1).of(time)
   end
 
   it "should be nil if nil" do
@@ -85,7 +85,7 @@ describe "Time.from_store with Time.zone" do
 
   it "should be time if string" do
     time = Time.zone.now
-    Time.from_store(time.to_s).should be_close(time, 1)
+    Time.from_store(time.to_s).should be_within(1).of(time)
   end
 
   it "should be nil if nil" do
