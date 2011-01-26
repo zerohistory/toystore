@@ -106,19 +106,19 @@ describe Toy::Querying do
 
   describe "with cache store" do
     before do
-      @memcached = User.cache(:memcached, $memcached)
-      @memory    = User.store(:memory, {})
-      @user      = User.create
+      @cache  = User.cache(:memory, {})
+      @memory = User.store(:memory, {})
+      @user   = User.create
       Toy.identity_map.clear # ensure we are just working with database
     end
 
-    let(:memcached) { @memcached }
-    let(:memory)    { @memory }
-    let(:user)      { @user }
+    let(:cache)   { @cache }
+    let(:memory)  { @memory }
+    let(:user)    { @user }
 
     describe "not found in cache or store" do
       before do
-        memcached.delete(user.store_key)
+        cache.delete(user.store_key)
         memory.delete(user.store_key)
       end
 
@@ -129,7 +129,7 @@ describe Toy::Querying do
 
     describe "not found in cache" do
       before do
-        memcached.delete(user.store_key)
+        cache.delete(user.store_key)
       end
 
       it "returns from store" do
@@ -137,19 +137,19 @@ describe Toy::Querying do
       end
 
       it "populates cache" do
-        memcached.key?(user.store_key).should be_false
+        cache.key?(user.store_key).should be_false
         User.get(user.id)
-        memcached.key?(user.store_key).should be_true
+        cache.key?(user.store_key).should be_true
       end
     end
 
     describe "found in cache" do
       before do
-        memcached.key?(user.store_key).should be_true
+        cache.key?(user.store_key).should be_true
       end
 
       it "returns from cache" do
-        memcached.should_receive(:read).with(user.store_key).and_return(user.persisted_attributes)
+        cache.should_receive(:read).with(user.store_key).and_return(user.persisted_attributes)
         User.get(user.id)
       end
 

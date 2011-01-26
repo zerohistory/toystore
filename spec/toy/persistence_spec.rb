@@ -295,17 +295,17 @@ describe Toy::Persistence do
 
   describe "with cache store" do
     before do
-      @memcached = User.cache(:memcached, $memcached)
-      @memory    = User.store(:memory, {})
-      @user      = User.create
+      @cache  = User.cache(:memory, {})
+      @memory = User.store(:memory, {})
+      @user   = User.create
     end
 
-    let(:memcached) { @memcached }
-    let(:memory)    { @memory }
-    let(:user)      { @user }
+    let(:cache)   { @cache }
+    let(:memory)  { @memory }
+    let(:user)    { @user }
 
     it "writes to cache and store" do
-      memcached[user.store_key].should == user.persisted_attributes
+      cache[user.store_key].should == user.persisted_attributes
       memory[user.store_key].should    == user.persisted_attributes
     end
   end

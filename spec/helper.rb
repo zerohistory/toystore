@@ -15,8 +15,6 @@ Bundler.require(:default, :development)
 
 require 'toy'
 require 'adapter/memory'
-require 'adapter/memcached'
-
 require 'support/constants'
 require 'support/identity_map_matcher'
 require 'support/name_and_number_key_factory'
@@ -25,8 +23,6 @@ Logger.new(log_path.join('test.log')).tap do |log|
   LogBuddy.init(:logger => log)
   Toy.logger = log
 end
-
-$memcached = Memcached.new
 
 Rspec.configure do |c|
   c.include(Support::Constants)
